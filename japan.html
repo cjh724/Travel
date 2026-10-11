@@ -21,7 +21,7 @@
   .tab-break { flex-basis: 100%; height: 0; }  /* 추천 탭부터 다음 줄로 */
   .panel { display: none; }
   .panel.active { display: block; }
-  #airport-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
+  #airport-map, .place-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
   .yt-card { border: 1px solid #ccc; border-radius: 8px; margin: 24px 0; overflow: hidden; scroll-margin-top: 60px; }
   .yt-card-head { display: flex; align-items: center; gap: 10px; background: #222; color: #fff; padding: 10px 14px; }
   .yt-card-head h3 { margin: 0; font-size: 1.15em; }
@@ -530,6 +530,18 @@
     <td>같은 가게</td>
   </tr>
 </table>
+
+<h4>지도로 보기</h4>
+<div id="common-map" class="place-map"></div>
+<p class="meta">
+  번호를 누르면 가게 정보와 구글 지도 링크가 나옴. 빨간 점선은 Claude가 제안하는 긴자·츠키지 도보 동선 예시 (1 야마초 → 2 팡 메종 → 3 Age.3 → 4 빈쵸 미츠코시 긴자점, 직선거리 합계 약 1.4km).<br>
+  좌표 출처: 유튜버 공유 구글 지도 링크 (#2 픽필름 고정 댓글, #3 소희맨션 공유 지도), Age.3는 <a href="https://www.openstreetmap.org/node/13564618101">OpenStreetMap</a>. 지도 타일: © OpenStreetMap contributors. 지도를 보려면 인터넷 연결이 필요함.
+</p>
+<ul>
+  <li><b>긴자·츠키지 묶음 (1~5)</b>: 가장 먼 두 곳(야마초 ↔ 마로니에게이트)도 직선거리 약 1.1km로, 걸어서 15분 안쪽. 야마초(츠키지 장외시장)는 아침~점심, 팡 메종·Age.3는 간식, 빈쵸는 식사로 하루 동선에 묶기 좋음</li>
+  <li><b>빈쵸 마루노우치빌딩점 (6)</b>: 도쿄역 바로 앞. 공항 오가는 날 들르기 좋은 위치</li>
+  <li><b>츠지한 아크힐즈점 (7)</b>: 긴자에서 서쪽으로 약 2.5km 떨어져 있어 롯폰기·아카사카 일정과 묶는 게 나음. 츠지한은 니혼바시 본점(도쿄역 근처)도 있음</li>
+</ul>
 
 <h3>영상 목록</h3>
 <table>
@@ -1096,6 +1108,43 @@
       map.invalidateSize();
       map.fitBounds(bounds, { padding: [40, 40] });
     }
+    if (id === "recommend-youtuber") showCommonMap();
+  }
+
+  // 여러 영상에 나온 맛집 지도 (탭이 보일 때 처음 그림)
+  var commonPlaces = [
+    { no: 1, dir: "right", name: "츠키지 야마초", info: "달걀말이 · #1 할명수, #2 픽필름", lat: 35.6651261, lng: 139.77007 },
+    { no: 2, dir: "left", name: "팡 메종 긴자점", info: "소금빵 · #1 할명수, #2 픽필름", lat: 35.6715607, lng: 139.7705344 },
+    { no: 3, dir: "right", name: "Age.3 GINZA", info: "튀김 샌드위치 · #1 할명수, #4 성시경", lat: 35.672791, lng: 139.7713002 },
+    { no: 4, dir: "left", name: "빈쵸 미츠코시 긴자점", info: "장어 히츠마부시 · #2 픽필름", lat: 35.6710522, lng: 139.7661307 },
+    { no: 5, dir: "left", name: "빈쵸 마로니에게이트 긴자1점", info: "장어 히츠마부시 · #3 소희맨션", lat: 35.6743653, lng: 139.7653544 },
+    { no: 6, dir: "top", name: "빈쵸 마루노우치빌딩점", info: "장어 히츠마부시 · #3 소희맨션", lat: 35.6809522, lng: 139.7638136 },
+    { no: 7, dir: "top", name: "츠지한 아카사카 아크힐즈점", info: "해산물 덮밥 · #2 픽필름, #3 소희맨션", lat: 35.6673612, lng: 139.7400189 }
+  ];
+  var commonRoute = [1, 2, 3, 4];  // 긴자·츠키지 도보 동선 예시 (Claude 제안)
+  var commonMap = null, commonBounds = [];
+  function showCommonMap() {
+    if (!commonMap) {
+      commonMap = L.map("common-map");
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(commonMap);
+      commonPlaces.forEach(function (p) {
+        L.marker([p.lat, p.lng]).addTo(commonMap)
+          .bindTooltip(p.no + ". " + p.name, { permanent: true, direction: p.dir })
+          .bindPopup("<b>" + p.no + ". " + p.name + "</b><br>" + p.info +
+            '<br><a href="https://www.google.com/maps/search/?api=1&query=' + p.lat + "," + p.lng + '" target="_blank">구글 지도에서 열기</a>');
+        commonBounds.push([p.lat, p.lng]);
+      });
+      var route = commonRoute.map(function (no) {
+        var p = commonPlaces[no - 1];
+        return [p.lat, p.lng];
+      });
+      L.polyline(route, { color: "#c0392b", weight: 3, dashArray: "6 6" }).addTo(commonMap);
+    }
+    commonMap.invalidateSize();
+    commonMap.fitBounds(commonBounds, { padding: [40, 40] });
   }
   tabs.forEach(function (t) {
     t.addEventListener("click", function () {
