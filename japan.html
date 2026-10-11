@@ -30,8 +30,15 @@
   @media (max-width: 600px) {
     body { margin: 16px auto; padding: 0 12px; font-size: 12px; }
     h1 { font-size: 1.5em; }
-    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    th, td { padding: 6px 8px; min-width: 4.5em; }
+    th, td { padding: 6px 8px; overflow-wrap: anywhere; }
+    /* 제목 행이 있는 표는 모바일에서 행마다 카드로 쌓아서 가로 스크롤을 없앰 */
+    table.stack, table.stack tbody, table.stack tr, table.stack td { display: block; }
+    table.stack tr.head-row { display: none; }
+    table.stack tr { border: 1px solid #ccc; border-radius: 6px; margin: 8px 0; overflow: hidden; }
+    table.stack td { position: relative; border: none; border-bottom: 1px solid #eee; padding: 6px 8px 6px 7.5em; min-height: 1.6em; }
+    table.stack td:last-child { border-bottom: none; }
+    table.stack td::before { content: attr(data-label); position: absolute; left: 8px; width: 6.5em; font-weight: bold; color: #555; }
+    .yt-card-body { padding: 4px 8px 10px; }
   }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -853,6 +860,20 @@
       if (window.scrollY > nav.offsetTop) window.scrollTo(0, nav.offsetTop);
     });
   });
+  // 첫 행이 모두 th인 표: 각 칸에 제목을 data-label로 붙여 모바일 카드 보기에 사용
+  document.querySelectorAll("table").forEach(function (table) {
+    var head = table.rows[0];
+    if (!head || head.querySelector("td")) return;
+    var labels = Array.prototype.map.call(head.cells, function (th) { return th.textContent.trim(); });
+    head.classList.add("head-row");
+    table.classList.add("stack");
+    Array.prototype.slice.call(table.rows, 1).forEach(function (row) {
+      Array.prototype.forEach.call(row.cells, function (cell, i) {
+        cell.setAttribute("data-label", labels[i] || "");
+      });
+    });
+  });
+
   document.querySelectorAll("[data-scroll]").forEach(function (a) {
     a.addEventListener("click", function (e) {
       e.preventDefault();
