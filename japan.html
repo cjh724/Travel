@@ -1457,7 +1457,7 @@
 
 <h3>필수 지도</h3>
 <div id="essentials-map" class="place-map"></div>
-<p class="meta">빨간 원이 도쿄역. 번호를 누르면 정보와 구글 지도 링크가 나옴. 좌표 출처: <a href="https://msearch.gsi.go.jp/">국토지리원 주소 검색</a> (1 하치오지시 하츠자와마치 1277, 2 미나토구 아자부주반 1-6-5). 지도 타일: © OpenStreetMap contributors.</p>
+<p class="meta">빨간 원이 도쿄역. 번호를 누르면 정보와 구글 지도 링크가 나옴. 좌표 출처: <a href="https://msearch.gsi.go.jp/">국토지리원 주소 검색</a> (1 하치오지시 하츠자와마치 1277, 2 미나토구 아자부주반 1-6-5), 3은 <a href="https://www.openstreetmap.org/way/617560918">OpenStreetMap</a>. 지도 타일: © OpenStreetMap contributors.</p>
 
 <h3>필수 목록</h3>
 <table>
@@ -1482,11 +1482,22 @@
     <td>18:00~다음 날 3:00 (자료마다 다름 — 수요일 휴무·20:30 시작 표기도 있음)</td>
     <td><a href="https://www.youtube.com/watch?v=HjCloSxdloU">로로트립 영상</a> (2026-05-20), <a href="https://autoreserve.com/ja/restaurants/mFaf1cddUYBV6n4prb9b">AutoReserve</a>, <a href="https://hitosara.com/0031338241/tel.html">hitosara</a>, <a href="https://www.azabujuban.or.jp/shop/shop_category/eat/13360/">아자부주반 상점가</a></td>
   </tr>
+  <tr>
+    <td><a href="#" class="map-no" data-map="essentials" data-map-no="3">3</a></td>
+    <td>SHIBUYA SKY (시부야 스카이)</td>
+    <td>전망대</td>
+    <td>시부야 — 시부야역 바로 위 시부야 스크램블 스퀘어 옥상 (지상 229m). 명소 탭 9번과 같은 곳</td>
+    <td>옥상 전망대에서 도쿄 시내를 360도로 봄. 아래층에서 스크램블 교차로를 내려다볼 수 있음. 해 질 녘~야경이 인기 (#6 치하루: 옥상에 누워보기 추천, 미세한 진동이 느껴져도 정상)</td>
+    <td>온라인 2,700엔 (15시 전) / 3,400엔 (15시 이후) — 약 22,900~28,800원. 현장 구매는 300엔 더 비쌈</td>
+    <td>10:00~22:30 (마지막 입장 21:20). 날씨가 나쁘면 옥상 폐쇄될 수 있음</td>
+    <td><a href="https://www.gotokyo.org/en/spot/1749/index.html">GO TOKYO</a> (2026-04 기준), <a href="https://www.trvlogue.com/ja/shibuya-sky-tokyo-guide">Trvlogue</a>, <a href="https://docs.google.com/document/d/10wPLG9wnxKFh7s-iE-0TpzhvyKyB6tQGLv8BAyyCwDE/edit?usp=sharing">치하루 가이드북</a></td>
+  </tr>
 </table>
 <div class="warn">⚠️ 주의: 인기 포장마차라 19시쯤 약 50명이 줄 서서 1시간 반 기다렸다는 후기가 있음. 비 오면 쉬니까 가기 전 날씨·영업 여부 확인. 도심에서 멀어 저녁 일정 하나를 통째로 써야 함</div>
 <div class="warn">⚠️ 미확인: 이동 시간은 예전 기사 기준 (JR 운임 개정 전). 다카오역은 다카오산 입구와 가까워 낮에 다카오산을 보고 저녁에 들르는 방법도 있음 (Claude 의견)</div>
 <div class="warn">⚠️ BAR CENTIFOLIA 예약: 영상 기준 "12월까지 예약 마감"일 만큼 예약이 어려움. 예약 사이트(AutoReserve·HAMONI 등)에서 취소분이 나오면 잡을 수 있다는 댓글. 여행 날짜가 정해지면 바로 예약 시도 추천</div>
 <div class="warn">⚠️ BAR CENTIFOLIA 팁 (영상 댓글): 카운터에 앉으면 담요를 무릎에 덮기 (액체질소 파편이 차가움). 글리터 가루를 뿌리는 퍼포먼스가 많아 옷·머리에 묻으니 겨울 외투는 따로 맡기기. 전석 흡연 가능으로 소개한 사이트도 있음 (<a href="https://smonavi.com/?p=4037">스모나비</a>)</div>
+<div class="warn">⚠️ SHIBUYA SKY 예약: 20분 단위 시간 지정 티켓. 해 질 녘·야경 시간대는 온라인에서 먼저 매진되고, 온라인이 매진되면 현장에서도 못 삼. 1월 도쿄 일몰은 대략 16:30~17:00 무렵 (Claude 참고, 출처 확인 안 함)이라 그 전후 시간대를 날짜 정해지면 바로 예약 추천</div>
 </section>
 
 <section class="panel" id="osaka">
@@ -1752,7 +1763,8 @@
   // 필수 지도 (필수 탭이 보일 때 처음 그림)
   var essentialsPlaces = [
     { no: 1, name: "야타이 라멘 슌얏짱", info: "라멘 포장마차 · 다카오역 도보 3~5분 · 화~토 18~23시", lat: 35.641136, lng: 139.285461 },
-    { no: 2, name: "BAR CENTIFOLIA", info: "칵테일 바 · 아자부주반역 도보 2분 · 예약 필수", lat: 35.65659, lng: 139.734238 }
+    { no: 2, name: "BAR CENTIFOLIA", info: "칵테일 바 · 아자부주반역 도보 2분 · 예약 필수", lat: 35.65659, lng: 139.734238 },
+    { no: 3, name: "SHIBUYA SKY", info: "전망대 · 시부야역 위 · 해 질 녘 예약 필수", lat: 35.6583792, lng: 139.7022161 }
   ];
   var essentialsMap = null, essentialsBounds = [tokyoStation], essentialsMarkers = {};
   function showEssentialsMap() {
