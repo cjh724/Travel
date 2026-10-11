@@ -18,6 +18,8 @@
   .tabs { position: sticky; top: 0; z-index: 1000; display: flex; flex-wrap: wrap; gap: 4px; background: #fff; border-bottom: 2px solid #222; padding: 8px 0 0; margin-bottom: 16px; }
   .tab { flex: 0 0 auto; border: 1px solid #ccc; border-bottom: none; background: #f4f4f4; padding: 8px 14px; font-size: 0.95em; cursor: pointer; border-radius: 6px 6px 0 0; color: #222; }
   .tab.active { background: #222; color: #fff; border-color: #222; }
+  .tab.tab-highlight { background: #7fd3ff; border-color: #3aa8e0; color: #003a5c; font-weight: bold; }
+  .tab.tab-highlight.active { background: #0288d1; border-color: #0288d1; color: #fff; }
   .tab-break { flex-basis: 100%; height: 0; }  /* 추천 탭부터 다음 줄로 */
   .panel { display: none; }
   .panel.active { display: block; }
@@ -56,8 +58,8 @@
     table.cards td { padding-left: 7.5em; }
     table.cards td::before { left: 8px; width: 6.5em; }
     .yt-card-body { padding: 4px 8px 10px; }
-    .tabs { gap: 3px; }
-    .tab { padding: 6px 8px; }
+    .tabs { gap: 2px; }
+    .tab { padding: 6px 6px; font-size: 0.9em; }
   }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
@@ -86,6 +88,7 @@
 <nav class="tabs">
   <button class="tab" data-tab="flight">항공편</button>
   <button class="tab" data-tab="transit">공항-대중교통</button>
+  <button class="tab tab-highlight" data-tab="essentials">필수</button>
   <button class="tab" data-tab="day1">1일차</button>
   <button class="tab" data-tab="day2">2일차</button>
   <button class="tab" data-tab="day3">3일차</button>
@@ -96,7 +99,6 @@
   <button class="tab" data-tab="sights">명소</button>
   <button class="tab" data-tab="onsen">온천</button>
   <button class="tab" data-tab="hotels">숙소</button>
-  <button class="tab" data-tab="essentials">필수</button>
   <span class="tab-break"></span>
   <button class="tab" data-tab="osaka">참고(오사카)</button>
 </nav>
