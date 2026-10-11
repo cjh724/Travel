@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>일본(도쿄) 여행 계획 — 2027년 1월</title>
 <style>
-  body { font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #222; font-size: 13px; }
+  body { font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; max-width: 1100px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #222; font-size: 13px; word-break: keep-all; overflow-wrap: break-word; }
   h1 { border-bottom: 2px solid #222; padding-bottom: 8px; }
   h2 { margin-top: 40px; border-left: 4px solid #c0392b; padding-left: 10px; }
   table { border-collapse: collapse; width: 100%; margin: 12px 0; }
@@ -14,8 +14,8 @@
   .warn { background: #fff8e1; border-left: 4px solid #f9a825; padding: 8px 12px; margin: 8px 0; }
   .meta { color: #666; font-size: 0.9em; }
   ul.todo li { margin: 4px 0; }
-  a { overflow-wrap: anywhere; }
-  .tabs { position: sticky; top: 0; z-index: 1000; display: flex; gap: 4px; overflow-x: auto; background: #fff; border-bottom: 2px solid #222; padding: 8px 0 0; margin-bottom: 16px; }
+  a[href*="youtube.com/watch"][href*="t="] { white-space: nowrap; }
+  .tabs { position: sticky; top: 0; z-index: 1000; display: flex; flex-wrap: wrap; gap: 4px; background: #fff; border-bottom: 2px solid #222; padding: 8px 0 0; margin-bottom: 16px; }
   .tab { flex: 0 0 auto; border: 1px solid #ccc; border-bottom: none; background: #f4f4f4; padding: 8px 14px; font-size: 0.95em; cursor: pointer; border-radius: 6px 6px 0 0; color: #222; }
   .tab.active { background: #222; color: #fff; border-color: #222; }
   .panel { display: none; }
@@ -27,17 +27,31 @@
   .yt-num { flex: 0 0 auto; background: #c0392b; color: #fff; font-weight: bold; border-radius: 4px; padding: 2px 8px; }
   .yt-card-body { padding: 4px 14px 12px; }
   .yt-card-body h4 { margin: 18px 0 6px; padding-bottom: 4px; border-bottom: 1px solid #ddd; }
-  @media (max-width: 600px) {
-    body { margin: 16px auto; padding: 0 12px; font-size: 12px; }
-    h1 { font-size: 1.5em; }
-    th, td { padding: 6px 8px; overflow-wrap: anywhere; }
-    /* 제목 행이 있는 표는 모바일에서 행마다 카드로 쌓아서 가로 스크롤을 없앰 */
+  /* 칸이 많고 글이 긴 표(.cards)는 화면 크기와 상관없이 행마다 카드로 보여줌 (좁은 칸에서 글자가 잘게 줄바꿈되는 것 방지) */
+  table.cards, table.cards tbody, table.cards tr, table.cards td { display: block; }
+  table.cards tbody { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr)); gap: 10px; }
+  table.cards tr.head-row { display: none; }
+  table.cards tr { border: 1px solid #ccc; border-radius: 6px; overflow: hidden; background: #fff; }
+  table.cards td { position: relative; border: none; border-bottom: 1px solid #eee; padding: 6px 10px 6px 8.5em; min-height: 1.6em; }
+  table.cards td:first-child { background: #f7f7f7; font-weight: bold; }
+  table.cards td:last-child { border-bottom: none; }
+  table.cards td::before { content: attr(data-label); position: absolute; left: 10px; width: 7.5em; font-weight: bold; color: #666; }
+  @media (max-width: 700px) {
+    /* 칸이 4개 이하인 표(.stack)도 좁은 화면에서는 카드로 쌓음 */
     table.stack, table.stack tbody, table.stack tr, table.stack td { display: block; }
     table.stack tr.head-row { display: none; }
     table.stack tr { border: 1px solid #ccc; border-radius: 6px; margin: 8px 0; overflow: hidden; }
     table.stack td { position: relative; border: none; border-bottom: 1px solid #eee; padding: 6px 8px 6px 7.5em; min-height: 1.6em; }
+    table.stack td:first-child { background: #f7f7f7; font-weight: bold; }
     table.stack td:last-child { border-bottom: none; }
-    table.stack td::before { content: attr(data-label); position: absolute; left: 8px; width: 6.5em; font-weight: bold; color: #555; }
+    table.stack td::before { content: attr(data-label); position: absolute; left: 8px; width: 6.5em; font-weight: bold; color: #666; }
+  }
+  @media (max-width: 600px) {
+    body { margin: 16px auto; padding: 0 12px; font-size: 12px; }
+    h1 { font-size: 1.5em; }
+    th, td { padding: 6px 8px; }
+    table.cards td { padding-left: 7.5em; }
+    table.cards td::before { left: 8px; width: 6.5em; }
     .yt-card-body { padding: 4px 8px 10px; }
   }
 </style>
@@ -1029,7 +1043,13 @@
     if (!head || head.querySelector("td")) return;
     var labels = Array.prototype.map.call(head.cells, function (th) { return th.textContent.trim(); });
     head.classList.add("head-row");
-    table.classList.add("stack");
+    // 칸이 많고 글이 긴 표는 항상 카드, 나머지는 PC에서는 표·좁은 화면에서는 카드
+    var cells = 0, chars = 0;
+    Array.prototype.slice.call(table.rows, 1).forEach(function (row) {
+      Array.prototype.forEach.call(row.cells, function (cell) { cells++; chars += cell.textContent.trim().length; });
+    });
+    var rowChars = cells ? labels.length * chars / cells : 0;
+    table.classList.add(labels.length >= 5 && rowChars >= 90 ? "cards" : "stack");
     Array.prototype.slice.call(table.rows, 1).forEach(function (row) {
       Array.prototype.forEach.call(row.cells, function (cell, i) {
         cell.setAttribute("data-label", labels[i] || "");
