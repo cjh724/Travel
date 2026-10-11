@@ -21,6 +21,7 @@
   .tab-break { flex-basis: 100%; height: 0; }  /* 추천 탭부터 다음 줄로 */
   .panel { display: none; }
   .panel.active { display: block; }
+  .map-no { display: inline-block; min-width: 1.6em; padding: 1px 0; border-radius: 50%; background: #c0392b; color: #fff; font-weight: bold; text-align: center; text-decoration: none; }
   #airport-map, .place-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
   .yt-card { border: 1px solid #ccc; border-radius: 8px; margin: 24px 0; overflow: hidden; scroll-margin-top: 60px; }
   .yt-card-head { display: flex; align-items: center; gap: 10px; background: #222; color: #fff; padding: 10px 14px; }
@@ -491,10 +492,11 @@
 <p class="meta">유튜버가 영상에서 추천한 맛집을 모아두는 탭. 맛집 목록의 ▶ 영상 위치를 누르면 유튜브에서 그 가게 장면부터 재생됨. 원화는 100엔 ≈ 847원(2026-10-11)으로 환산.</p>
 
 <h3>여러 영상에 나온 맛집</h3>
-<p class="meta">아래 영상 목록 중 2개 이상의 영상에 나온 가게. 영상 번호를 누르면 해당 영상 칸으로, ▶를 누르면 유튜브의 그 장면으로 이동.</p>
+<p class="meta">아래 영상 목록 중 2개 이상의 영상에 나온 가게. 영상 번호를 누르면 해당 영상 칸으로, ▶를 누르면 유튜브의 그 장면으로 이동. 지도 번호를 누르면 아래 지도에서 위치가 열림.</p>
 <table>
-  <tr><th>가게</th><th>지역</th><th>종류</th><th>나온 영상</th><th>비고</th></tr>
+  <tr><th>지도</th><th>가게</th><th>지역</th><th>종류</th><th>나온 영상</th><th>비고</th></tr>
   <tr>
+    <td><a href="#" class="map-no" data-map-no="1">1</a></td>
     <td>츠키지 야마초 (山長)</td>
     <td>츠키지</td>
     <td>달걀말이 (꼬치 "쿠시타마")</td>
@@ -502,6 +504,7 @@
     <td>같은 가게</td>
   </tr>
   <tr>
+    <td><a href="#" class="map-no" data-map-no="2">2</a></td>
     <td>팡 메종 긴자점 (パンメゾン)</td>
     <td>긴자</td>
     <td>소금빵</td>
@@ -509,25 +512,28 @@
     <td>같은 가게</td>
   </tr>
   <tr>
-    <td>츠지한 (つじ半)</td>
-    <td>아카사카 (아크힐즈점)</td>
-    <td>해산물 덮밥 "제이타쿠동"</td>
-    <td><a href="#" data-scroll="yt-2">#2 픽필름</a> 12번 <a href="https://www.youtube.com/watch?v=2ZZ_TBBNvWo&amp;t=851s">▶ 14:11</a><br><a href="#" data-scroll="yt-3">#3 소희맨션</a> 저장 지도</td>
-    <td>같은 지점 (아크힐즈점). #3 지도에는 니혼바시 본점 등 3개 지점도 있음</td>
-  </tr>
-  <tr>
-    <td>히츠마부시 나고야 빈쵸 (備長)</td>
-    <td>긴자·마루노우치</td>
-    <td>장어 히츠마부시</td>
-    <td><a href="#" data-scroll="yt-2">#2 픽필름</a> 20번 <a href="https://www.youtube.com/watch?v=2ZZ_TBBNvWo&amp;t=1419s">▶ 23:39</a><br><a href="#" data-scroll="yt-3">#3 소희맨션</a> 저장 지도</td>
-    <td>같은 가게, 다른 지점 (#2 미츠코시 긴자점 / #3 마로니에게이트 긴자1점·마루노우치빌딩점)</td>
-  </tr>
-  <tr>
+    <td><a href="#" class="map-no" data-map-no="3">3</a></td>
     <td>Age.3 GINZA (아게산)</td>
     <td>긴자</td>
     <td>튀김 샌드위치 (아게산도)</td>
     <td><a href="#" data-scroll="yt-1">#1 할명수</a> 9끼 <a href="https://www.youtube.com/watch?v=IR2bnI12TZM&amp;t=1469s">▶ 24:29</a><br><a href="#" data-scroll="yt-4">#4 성시경</a> <a href="https://www.youtube.com/watch?v=M2vpWqrakxM">토리츠바키, 아게산 편</a></td>
     <td>같은 가게</td>
+  </tr>
+  <tr>
+    <td><a href="#" class="map-no" data-map-no="4">4</a> <a href="#" class="map-no" data-map-no="5">5</a> <a href="#" class="map-no" data-map-no="6">6</a></td>
+    <td>히츠마부시 나고야 빈쵸 (備長)</td>
+    <td>긴자·마루노우치</td>
+    <td>장어 히츠마부시</td>
+    <td><a href="#" data-scroll="yt-2">#2 픽필름</a> 20번 <a href="https://www.youtube.com/watch?v=2ZZ_TBBNvWo&amp;t=1419s">▶ 23:39</a><br><a href="#" data-scroll="yt-3">#3 소희맨션</a> 저장 지도</td>
+    <td>같은 가게, 다른 지점 (4 미츠코시 긴자점 = #2 / 5 마로니에게이트 긴자1점·6 마루노우치빌딩점 = #3)</td>
+  </tr>
+  <tr>
+    <td><a href="#" class="map-no" data-map-no="7">7</a></td>
+    <td>츠지한 (つじ半)</td>
+    <td>아카사카 (아크힐즈점)</td>
+    <td>해산물 덮밥 "제이타쿠동"</td>
+    <td><a href="#" data-scroll="yt-2">#2 픽필름</a> 12번 <a href="https://www.youtube.com/watch?v=2ZZ_TBBNvWo&amp;t=851s">▶ 14:11</a><br><a href="#" data-scroll="yt-3">#3 소희맨션</a> 저장 지도</td>
+    <td>같은 지점 (아크힐즈점). #3 지도에는 니혼바시 본점 등 3개 지점도 있음</td>
   </tr>
 </table>
 
@@ -1122,7 +1128,18 @@
     { no: 7, dir: "top", name: "츠지한 아카사카 아크힐즈점", info: "해산물 덮밥 · #2 픽필름, #3 소희맨션", lat: 35.6673612, lng: 139.7400189 }
   ];
   var commonRoute = [1, 2, 3, 4];  // 긴자·츠키지 도보 동선 예시 (Claude 제안)
-  var commonMap = null, commonBounds = [];
+  var commonMap = null, commonBounds = [], commonMarkers = {};
+  // 표의 지도 번호를 누르면 지도로 이동해서 해당 가게 정보를 엶
+  document.querySelectorAll(".map-no").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      showCommonMap();
+      document.getElementById("common-map").scrollIntoView({ behavior: "smooth", block: "center" });
+      var m = commonMarkers[a.dataset.mapNo];
+      commonMap.setView(m.getLatLng(), 16);
+      m.openPopup();
+    });
+  });
   function showCommonMap() {
     if (!commonMap) {
       commonMap = L.map("common-map");
@@ -1131,7 +1148,7 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(commonMap);
       commonPlaces.forEach(function (p) {
-        L.marker([p.lat, p.lng]).addTo(commonMap)
+        commonMarkers[p.no] = L.marker([p.lat, p.lng]).addTo(commonMap)
           .bindTooltip(p.no + ". " + p.name, { permanent: true, direction: p.dir })
           .bindPopup("<b>" + p.no + ". " + p.name + "</b><br>" + p.info +
             '<br><a href="https://www.google.com/maps/search/?api=1&query=' + p.lat + "," + p.lng + '" target="_blank">구글 지도에서 열기</a>');
