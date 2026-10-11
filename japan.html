@@ -464,6 +464,21 @@
     <td><a href="https://www.tobu.co.jp/spaciax/en/guide/">도부 SPACIA X 공식</a>, <a href="https://ekitan.com/en/article/spacia-x">Ekitan</a></td>
   </tr>
 </table>
+<h4>지도로 보기 (도쿄역 기준)</h4>
+<div id="nearby-map" class="place-map"></div>
+<p class="meta">
+  빨간 원이 도쿄역. 점선은 도쿄역에서의 직선 방향이며, 거리는 직선거리(실제 이동 거리·시간과 다름). 핀을 누르면 추천 순위·가는 방법이 나옴.<br>
+  좌표 출처: OpenStreetMap — <a href="https://www.openstreetmap.org/way/235933667">하코네유모토역</a>, <a href="https://www.openstreetmap.org/node/6655139508">가와구치코역</a>, <a href="https://www.openstreetmap.org/node/2266668492">가마쿠라역</a>, <a href="https://www.openstreetmap.org/way/191655339">에노시마</a>, <a href="https://www.openstreetmap.org/way/563585779">요코하마역</a>, <a href="https://www.openstreetmap.org/node/7312795525">가와고에역</a>, <a href="https://www.openstreetmap.org/node/3790954403">도부닛코역</a>. 도쿄역은 <a href="https://www.wikidata.org/wiki/Q283196">위키데이터(Q283196)</a>. 지도 타일: © OpenStreetMap contributors.
+</p>
+<table>
+  <tr><th>방향</th><th>도시 (도쿄역에서 직선거리)</th></tr>
+  <tr><td>남쪽 (가나가와)</td><td>요코하마 약 27km → 가마쿠라 약 45km → 에노시마 약 50km</td></tr>
+  <tr><td>남서쪽 (후지산 방면)</td><td>하코네 약 78km, 가와구치코 약 92km</td></tr>
+  <tr><td>북서쪽 (사이타마)</td><td>가와고에 약 36km</td></tr>
+  <tr><td>북쪽 (도치기)</td><td>닛코 약 119km</td></tr>
+</table>
+<p class="meta">요코하마·가마쿠라·에노시마는 같은 남쪽 방향이라 하루에 묶을 수 있음 (예: 가마쿠라·에노시마 낮 → 요코하마 저녁 야경). 하코네와 가와구치코는 둘 다 후지산 방면이지만 서로 이동이 불편해 하나만 고르는 걸 추천.</p>
+
 <p class="meta">근교 이동은 대부분 JR·사철·버스라 Tokyo Subway Ticket으로는 탈 수 없음. Suica로 결제하거나 지역 전용 패스(하코네 프리패스, 에노시마·가마쿠라 프리패스 등) 이용.</p>
 
 <h4>상황별 추천</h4>
@@ -1121,6 +1136,40 @@
       map.fitBounds(bounds, { padding: [40, 40] });
     }
     if (id === "recommend-youtuber") showCommonMap();
+    if (id === "recommend-claude") showNearbyMap();
+  }
+
+  // 도쿄 근교 지도 (추천(claude) 탭이 보일 때 처음 그림)
+  var tokyoStation = [35.680833, 139.766944];
+  var nearbyPlaces = [
+    { name: "하코네", rank: "⭐ 1", info: "신주쿠 → 하코네유모토, 로망스카 약 80분", km: 78, dir: "left", lat: 35.2331952, lng: 139.1034651 },
+    { name: "가와구치코", rank: "⭐ 2", info: "바스타 신주쿠 → 가와구치코역, 고속버스 약 1시간 45분", km: 92, dir: "left", lat: 35.4982575, lng: 138.7692608 },
+    { name: "가마쿠라", rank: "⭐ 3", info: "도쿄역 → 가마쿠라, JR 요코스카선 약 1시간", km: 45, dir: "right", lat: 35.31936, lng: 139.551161 },
+    { name: "에노시마", rank: "⭐ 3", info: "가마쿠라에서 에노덴으로 연결", km: 50, dir: "bottom", lat: 35.3001052, lng: 139.4806371 },
+    { name: "요코하마", rank: "반나절", info: "시부야 → 요코하마, 도큐 도요코선 약 25~30분", km: 27, dir: "right", lat: 35.4660109, lng: 139.6226361 },
+    { name: "가와고에", rank: "반나절", info: "이케부쿠로 → 가와고에, 도부 도조선 약 30분", km: 36, dir: "left", lat: 35.9079695, lng: 139.4836337 },
+    { name: "닛코", rank: "낮음 (1월)", info: "아사쿠사 → 도부닛코, 특급 약 1시간 50분", km: 119, dir: "right", lat: 36.7475489, lng: 139.619924 }
+  ];
+  var nearbyMap = null, nearbyBounds = [tokyoStation];
+  function showNearbyMap() {
+    if (!nearbyMap) {
+      nearbyMap = L.map("nearby-map");
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(nearbyMap);
+      L.circleMarker(tokyoStation, { radius: 9, color: "#c0392b", fillColor: "#c0392b", fillOpacity: 1 })
+        .addTo(nearbyMap).bindTooltip("도쿄역", { permanent: true, direction: "top" });
+      nearbyPlaces.forEach(function (p) {
+        L.polyline([tokyoStation, [p.lat, p.lng]], { color: "#888", weight: 2, dashArray: "4 6" }).addTo(nearbyMap);
+        L.marker([p.lat, p.lng]).addTo(nearbyMap)
+          .bindTooltip(p.name + " (" + p.rank + ", 약 " + p.km + "km)", { permanent: true, direction: p.dir })
+          .bindPopup("<b>" + p.name + "</b> · 추천 " + p.rank + "<br>" + p.info + "<br>도쿄역에서 직선 약 " + p.km + "km");
+        nearbyBounds.push([p.lat, p.lng]);
+      });
+    }
+    nearbyMap.invalidateSize();
+    nearbyMap.fitBounds(nearbyBounds, { padding: [30, 30] });
   }
 
   // 여러 영상에 나온 맛집 지도 (탭이 보일 때 처음 그림)
