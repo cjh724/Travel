@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>일본(도쿄) 여행 계획 — 2027년 1월</title>
+<style>
+  body { font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; line-height: 1.6; color: #222; }
+  h1 { border-bottom: 2px solid #222; padding-bottom: 8px; }
+  h2 { margin-top: 40px; border-left: 4px solid #c0392b; padding-left: 10px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #ccc; padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: #f4f4f4; }
+  .warn { background: #fff8e1; border-left: 4px solid #f9a825; padding: 8px 12px; margin: 8px 0; }
+  .meta { color: #666; font-size: 0.9em; }
+  ul.todo li { margin: 4px 0; }
+  a { overflow-wrap: anywhere; }
+  .tabs { position: sticky; top: 0; z-index: 1000; display: flex; gap: 4px; overflow-x: auto; background: #fff; border-bottom: 2px solid #222; padding: 8px 0 0; margin-bottom: 16px; }
+  .tab { flex: 0 0 auto; border: 1px solid #ccc; border-bottom: none; background: #f4f4f4; padding: 8px 14px; font-size: 0.95em; cursor: pointer; border-radius: 6px 6px 0 0; color: #222; }
+  .tab.active { background: #222; color: #fff; border-color: #222; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  #airport-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
+  @media (max-width: 600px) {
+    body { margin: 16px auto; padding: 0 12px; font-size: 15px; }
+    h1 { font-size: 1.5em; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    th, td { padding: 6px 8px; min-width: 4.5em; }
+  }
+</style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+
+<h1>일본(도쿄) 여행 계획</h1>
+<p class="meta">최종 조사일: 2026-10-11</p>
+
+<h2>개요</h2>
+<table>
+  <tr><th>시기</th><td>2027년 1월 (날짜 미정)</td></tr>
+  <tr><th>목적지</th><td>도쿄</td></tr>
+  <tr><th>출발 공항</th><td>인천(ICN) / 김포(GMP) 비교 중</td></tr>
+  <tr><th>기간</th><td>3박 4일 정도</td></tr>
+</table>
+
+<h2>다음에 할 일</h2>
+<ul class="todo">
+  <li>여행 날짜(3박 4일) 후보 정하기</li>
+  <li>항공사 공식 사이트에서 날짜를 넣어 운항편과 운임 직접 조회</li>
+  <li>나리타 / 하네다 중 도착 공항 정하기</li>
+</ul>
+
+<nav class="tabs">
+  <button class="tab" data-tab="flight">항공편</button>
+  <button class="tab" data-tab="transit">공항-대중교통</button>
+  <button class="tab" data-tab="day1">1일차</button>
+  <button class="tab" data-tab="day2">2일차</button>
+  <button class="tab" data-tab="day3">3일차</button>
+  <button class="tab" data-tab="day4">4일차</button>
+</nav>
+
+<section class="panel" id="flight">
+<h2>항공편</h2>
+
+<p>도쿄 쪽 도착 공항은 나리타(NRT)와 하네다(HND) 두 곳이 있다.</p>
+
+<h3>인천 출발 3박 4일 날짜 조합별 가격 (스카이스캐너 월별 요금 달력 기준)</h3>
+<p class="meta">
+  출처: 사용자가 2026-10-11에 스카이스캐너 "월별 요금" 화면(인천→나리타, 인천→하네다 / 2027년 1월 / 성인 1명, 일반석 / "직항 항공권" 체크 안 함)을 캡처한 이미지.<br>
+  계산 방법: 달력의 출발일 가격 + (출발일 + 3일) 오는편 가격. 달력 가격은 "만 원" 단위 반올림 표기라 합계도 근사치.<br>
+  ※ 오른쪽 요약에 1/1–1/1 왕복이 나리타 ₩546,192(= 15.8만 + 38.8만), 하네다 ₩869,496(= 21.8만 + 65.2만)으로 표시되어, 달력 칸 가격을 더하면 왕복 가격이 되는 것으로 보고 계산했음 (스카이스캐너 공식 설명은 확인하지 못함).<br>
+  직항 여부, 항공사, 출발·도착 시각은 캡처에 없음.
+</p>
+<table>
+  <tr><th>순위</th><th>공항</th><th>가는 편</th><th>오는 편</th><th>가는 편 가격</th><th>오는 편 가격</th><th>합계(왕복)</th></tr>
+  <tr><td>0</td><td>나리타</td><td>1/26 (화)</td><td>1/29 (금)</td><td>₩15.4만</td><td>₩29.2만</td><td>약 ₩44.6만</td></tr>
+  <tr><td>1</td><td>나리타</td><td>1/12 (화)</td><td>1/15 (금)</td><td>₩15.9만</td><td>₩15.8만</td><td>약 ₩31.7만</td></tr>
+  <tr><td>2</td><td>나리타</td><td>1/20 (수)</td><td>1/23 (토)</td><td>₩16.3만</td><td>₩17.6만</td><td>약 ₩33.9만</td></tr>
+  <tr><td>3</td><td>나리타</td><td>1/5 (화)</td><td>1/8 (금)</td><td>₩17.3만</td><td>₩20.3만</td><td>약 ₩37.6만</td></tr>
+  <tr><td>4</td><td>나리타</td><td>1/8 (금)</td><td>1/11 (월)</td><td>₩15.9만</td><td>₩23.4만</td><td>약 ₩39.3만</td></tr>
+  <tr><td>5</td><td>나리타</td><td>1/9 (토)</td><td>1/12 (화)</td><td>₩15.9만</td><td>₩23.7만</td><td>약 ₩39.6만</td></tr>
+  <tr><td>6</td><td>하네다</td><td>1/28 (목)</td><td>1/31 (일)</td><td>₩16.7만</td><td>₩23.5만</td><td>약 ₩40.2만</td></tr>
+  <tr><td>7</td><td>나리타</td><td>1/23 (토)</td><td>1/26 (화)</td><td>₩16.3만</td><td>₩24.3만</td><td>약 ₩40.6만</td></tr>
+  <tr><td>8</td><td>나리타</td><td>1/18 (월)</td><td>1/21 (목)</td><td>₩16.9만</td><td>₩23.8만</td><td>약 ₩40.7만</td></tr>
+  <tr><td>9</td><td>나리타</td><td>1/3 (일)</td><td>1/6 (수)</td><td>₩18.1만</td><td>₩22.8만</td><td>약 ₩40.9만</td></tr>
+  <tr><td>10</td><td>나리타</td><td>1/4 (월)</td><td>1/7 (목)</td><td>₩16.8만</td><td>₩24.2만</td><td>약 ₩41.0만</td></tr>
+</table>
+<p>하네다 중 가장 저렴한 조합: 1/28(목)→1/31(일) 약 ₩40.2만, 그다음 1/9(토)→1/12(화) 약 ₩41.1만 (₩19.3만 + ₩21.8만).</p>
+
+<h3>김포 출발 3박 4일 날짜 조합별 가격 (스카이스캐너 월별 요금 달력 기준)</h3>
+<p class="meta">
+  출처: 사용자가 2026-10-11에 스카이스캐너 "월별 요금" 화면(김포→하네다, 김포→나리타 / 2027년 1월 / 성인 1명, 일반석)을 캡처한 이미지. 계산 방법은 위 인천 출발 표와 같음.<br>
+  ※ 오른쪽 요약의 1/1–1/1 왕복이 김포→하네다 ₩654,100(= 29.2만 + 36.2만), 김포→나리타 ₩755,177(= 26.8만 + 48.7만)으로, 달력 칸 가격의 합과 일치함.<br>
+  김포→하네다 화면은 "직항 항공권" 체크 안 함. 김포→나리타 화면은 직항 체크칸이 "직항만 (없음)"으로 비활성 표시되어 있음.<br>
+  오는 편 가격이 없는(돋보기 표시) 날짜가 걸린 조합은 제외함 (김포→하네다 2건, 김포→나리타 13건).
+</p>
+<table>
+  <tr><th>순위</th><th>공항</th><th>가는 편</th><th>오는 편</th><th>가는 편 가격</th><th>오는 편 가격</th><th>합계(왕복)</th></tr>
+  <tr><td>0</td><td>김포→나리타</td><td>1/26 (화)</td><td>1/29 (금)</td><td>₩21.3만</td><td>가격 없음 (돋보기 표시)</td><td>계산 불가</td></tr>
+  <tr><td>1</td><td>김포→나리타</td><td>1/17 (일)</td><td>1/20 (수)</td><td>₩22.5만</td><td>₩27.5만</td><td>약 ₩50.0만</td></tr>
+  <tr><td>2</td><td>김포→나리타</td><td>1/18 (월)</td><td>1/21 (목)</td><td>₩20.9만</td><td>₩29.6만</td><td>약 ₩50.5만</td></tr>
+  <tr><td>3</td><td>김포→나리타</td><td>1/4 (월)</td><td>1/7 (목)</td><td>₩24.6만</td><td>₩26.8만</td><td>약 ₩51.4만</td></tr>
+  <tr><td>4</td><td>김포→나리타</td><td>1/16 (토)</td><td>1/19 (화)</td><td>₩20.0만</td><td>₩32.7만</td><td>약 ₩52.7만</td></tr>
+  <tr><td>5</td><td>김포→하네다</td><td>1/19 (화)</td><td>1/22 (금)</td><td>₩23.8만</td><td>₩29.3만</td><td>약 ₩53.1만</td></tr>
+  <tr><td>6</td><td>김포→나리타</td><td>1/8 (금)</td><td>1/11 (월)</td><td>₩20.4만</td><td>₩32.8만</td><td>약 ₩53.2만</td></tr>
+  <tr><td>7</td><td>김포→하네다</td><td>1/9 (토)</td><td>1/12 (화)</td><td>₩23.8만</td><td>₩29.4만</td><td>약 ₩53.2만</td></tr>
+  <tr><td>8</td><td>김포→하네다</td><td>1/16 (토)</td><td>1/19 (화)</td><td>₩23.5만</td><td>₩29.7만</td><td>약 ₩53.2만</td></tr>
+  <tr><td>9</td><td>김포→나리타</td><td>1/12 (화)</td><td>1/15 (금)</td><td>₩20.3만</td><td>₩33.1만</td><td>약 ₩53.4만</td></tr>
+  <tr><td>10</td><td>김포→하네다</td><td>1/13 (수)</td><td>1/16 (토)</td><td>₩23.7만</td><td>₩29.7만</td><td>약 ₩53.4만</td></tr>
+</table>
+<p>0순위 날짜(1/26 → 1/29)를 김포→하네다로 가면: 약 ₩56.5만 (₩23.8만 + ₩32.7만).</p>
+
+<h3>스카이스캐너 1월 편도 최저가 (가격 비교 사이트 기준)</h3>
+<p class="meta">
+  조회일 2026-10-11. 스카이스캐너 노선 페이지에 나온 노선별 1월 최저가 1건씩이며, 1월 전체 항공편 목록이 아님.<br>
+  페이지 안내 원문: "지난 4일 동안 검색된 … 항공권들 중 가장 저렴한 옵션들을 보여드리며, 가격이나 예약 가능 여부는 변경될 수 있습니다."
+  / "이 페이지에 표시된 가격은 지난 12일 동안 확인된 최저가로, 확정이 아닌 예상 가격입니다."<br>
+  편명과 출발·도착 시각은 페이지에 없음. 1월 날짜별 검색 결과 화면은 캡차로 막혀 조회하지 못했음.
+</p>
+
+<h4>가는 편 (인천 → 도쿄), 저렴한 순</h4>
+<table>
+  <tr><th>순위</th><th>가격 (1인, 편도)</th><th>날짜</th><th>노선</th><th>운항사</th><th>출처</th></tr>
+  <tr><td>1</td><td>₩128,508~</td><td>2027-01-27 (수)</td><td>인천(ICN) → 하네다(HND), 직항</td><td>피치항공</td><td><a href="https://www.skyscanner.co.kr/routes/icn/hnd/incheon-international-to-tokyo-haneda.html">스카이스캐너 ICN→HND</a></td></tr>
+  <tr><td>2</td><td>₩148,897~</td><td>2027-01-29 (금)</td><td>인천(ICN) → 나리타(NRT), 직항</td><td>피치항공</td><td><a href="https://www.skyscanner.co.kr/routes/icn/nrt/incheon-international-to-tokyo-narita.html">스카이스캐너 ICN→NRT</a></td></tr>
+</table>
+
+<h4>오는 편 (도쿄 → 인천), 저렴한 순</h4>
+<table>
+  <tr><th>순위</th><th>가격 (1인, 편도)</th><th>날짜</th><th>노선</th><th>운항사</th><th>출처</th></tr>
+  <tr><td>1</td><td>₩123,974~</td><td>2027-01-06 (수)</td><td>나리타(NRT) → 인천(ICN), 직항</td><td>집에어(ZIPAIR)</td><td><a href="https://www.skyscanner.co.kr/routes/nrt/icn/tokyo-narita-to-incheon-international.html">스카이스캐너 NRT→ICN</a></td></tr>
+  <tr><td>2</td><td>₩178,596~</td><td>2027-01-12 (화)</td><td>하네다(HND) → 인천(ICN), 직항</td><td>피치항공</td><td><a href="https://www.skyscanner.co.kr/routes/hnd/icn/tokyo-haneda-to-incheon-international.html">스카이스캐너 HND→ICN</a></td></tr>
+</table>
+<p>※ 위 최저가 날짜끼리는 3박 4일 일정으로 이어지지 않음 (오는 편 최저가 날짜가 가는 편 최저가 날짜보다 앞섬).</p>
+
+<h3>확인하지 못한 내용</h3>
+<div class="warn">⚠️ 미확인: Peach 인천–하네다 MM808 (22:35 출발, 00:55 도착, 적용 기간 2026-03-29 ~ 2026-10-24 하계). 검색 결과 요약에만 나온 내용이고 <a href="https://www.flypeach.com/application/files/1917/7630/3273/Peach_FlightSchedule_20260417_-_.pdf">Peach 국제선 시간표 PDF</a> 원문은 접속 시간 초과로 열지 못했음. 2027년 1월(동계)의 운항 여부와 시각도 확인하지 못했음</div>
+<div class="warn">⚠️ 미확인: 대한항공·아시아나항공의 인천–나리타/하네다 1월 운항편. 대한항공 공식 공지 페이지(<a href="https://www.koreanair.com/contents/footer/customer-support/notice/2026/2609-rservation-information">편명 변경 및 예약정보 이관 공지</a>)가 접속 시간 초과로 열리지 않아 원문을 확인하지 못했음. 검색 결과 요약으로는 "2026-12-17 출발편부터 아시아나 항공편이 대한항공 편명으로 변경"된다고 나오지만 원문은 확인하지 못했음</div>
+<div class="warn">⚠️ 미확인: 제주항공, 진에어, 티웨이항공, 에어서울, 이스타항공, JAL, ANA의 인천–도쿄 1월 운항편과 시각. 공식 사이트 시간표를 확인하지 못했음</div>
+<div class="warn">⚠️ 미확인: 공항 공식 시간표. 나리타공항은 월간 시간표 게시를 2025년 5월부터 잠정 중단했고(<a href="https://www.narita-airport.jp/en/flight/monthly-schedule/">나리타공항 Monthly flight schedule</a>), 하네다공항 공식 시간표 페이지는 찾지 못했음</div>
+</section>
+
+<section class="panel" id="transit">
+<h2>공항-대중교통</h2>
+
+<h3>하네다 vs 나리타</h3>
+<div id="airport-map"></div>
+<p class="meta">
+  지도에는 하네다공항, 나리타공항, 도쿄역(도심 기준점) 위치만 표시했음. 좌표 출처: 위키데이터 좌표(P625) —
+  <a href="https://www.wikidata.org/wiki/Q204853">하네다(Q204853)</a>,
+  <a href="https://www.wikidata.org/wiki/Q36454">나리타(Q36454)</a>,
+  <a href="https://www.wikidata.org/wiki/Q283196">도쿄역(Q283196)</a>.
+  지도 타일: © OpenStreetMap contributors. 지도를 보려면 인터넷 연결이 필요함.
+</p>
+<table>
+  <tr><th>항목</th><th>하네다 (HND)</th><th>나리타 (NRT)</th><th>출처</th></tr>
+  <tr>
+    <td>도쿄 중앙에서 거리</td>
+    <td>17km</td>
+    <td>64km</td>
+    <td>스카이스캐너 노선 페이지 표기 (<a href="https://www.skyscanner.co.kr/routes/icn/tyoa/incheon-international-to-tokyo.html">인천→도쿄</a>)</td>
+  </tr>
+  <tr>
+    <td>도심 전철 연결</td>
+    <td>게이큐선·도쿄 모노레일 직결, 시나가와역까지 "About 15 minutes"</td>
+    <td>게이세이 스카이라이너: 게이세이 우에노까지 "as little as 41 minutes", "the heart of Tokyo in as little as 36 minutes"</td>
+    <td><a href="https://tokyo-haneda.com/en/access/train/index.html">하네다공항 공식 Train &amp; Monorail</a>, <a href="https://www.keisei.co.jp/keisei/tetudou/skyliner/us/">게이세이 스카이라이너 공식</a></td>
+  </tr>
+  <tr>
+    <td>1월 편도 최저가 (인천 출발)</td>
+    <td>₩128,508~ (피치항공, 2027-01-27)</td>
+    <td>₩148,897~ (피치항공, 2027-01-29)</td>
+    <td>스카이스캐너, 조회일 2026-10-11 (아래 표 참고)</td>
+  </tr>
+  <tr>
+    <td>왕복 최저가 (인천 출발, 일정·기간 미표시)</td>
+    <td>₩311,067</td>
+    <td>₩213,279</td>
+    <td>스카이스캐너 <a href="https://www.skyscanner.co.kr/routes/icn/hnd/incheon-international-to-tokyo-haneda.html">ICN→HND</a> / <a href="https://www.skyscanner.co.kr/routes/icn/nrt/incheon-international-to-tokyo-narita.html">ICN→NRT</a>, 조회일 2026-10-11</td>
+  </tr>
+</table>
+<p class="meta">스카이스캐너 가격은 예상 가격이며 날짜에 따라 달라짐. 게이세이 공식 페이지에는 "the heart of Tokyo"(36분)가 어느 역 기준인지 나와 있지 않음.</p>
+<div class="warn">⚠️ 미확인: 인천→하네다 편이 밤늦게 도착한다는 내용(예: 피치 MM808 22:35 → 00:55, 하계 기준). 공식 시간표 원문을 확인하지 못했음 — "항공편" 탭의 "확인하지 못한 내용" 참고</div>
+
+<h3>공항 → 도쿄역 가는 방법</h3>
+<p class="meta">요금은 성인 1인 편도. 조회일 2026-10-11.</p>
+
+<h4>하네다 → 도쿄역</h4>
+<table>
+  <tr><th>방법</th><th>소요 시간</th><th>요금</th><th>출처</th></tr>
+  <tr>
+    <td>전철 (게이큐선 / 도쿄 모노레일, 공항 직결)</td>
+    <td>약 30분 (하네다공항 공식)<br>게이큐 기준: 제3터미널 20분, 제1·2터미널 23분</td>
+    <td>⚠️ 미확인</td>
+    <td><a href="https://tokyo-haneda.com/en/access/train/index.html">하네다공항 Train &amp; Monorail</a>, <a href="https://www.haneda-tokyo-access.com/en/ride/fares.html">게이큐 Fare and Time Search</a></td>
+  </tr>
+  <tr>
+    <td>공항버스 (Airport Transport Service / 게이큐버스)<br>정류장: T1 3번, T2 4번, T3 1번</td>
+    <td>약 35분</td>
+    <td>⚠️ 1,200엔 (미확인)</td>
+    <td><a href="https://tokyo-haneda.com/en/access/bus/index.html">하네다공항 Express Bus &amp; Route Bus</a></td>
+  </tr>
+</table>
+<div class="warn">⚠️ 미확인: 하네다 → 도쿄역 전철 요금과 환승역. 게이큐 요금 검색 페이지는 검색 폼만 있고, 도쿄 모노레일 공식 페이지에는 요금표가 없었음. 하네다공항·게이큐 공식 페이지에는 소요 시간만 있고 어디서 갈아타는지는 나와 있지 않음</div>
+<div class="warn">⚠️ 미확인: 하네다 → 도쿄역 버스 요금 1,200엔. 검색 결과 요약에 나온 금액이며, <a href="https://www.limousinebus.co.jp/en/line/detail/Haneda-Tokyo/">리무진버스 공식 노선 페이지</a>는 접근 거부(403)로 열지 못했음</div>
+
+<h4>나리타 → 도쿄역</h4>
+<table>
+  <tr><th>방법</th><th>소요 시간</th><th>요금</th><th>출처</th></tr>
+  <tr>
+    <td>JR 나리타 익스프레스(N'EX), 도쿄역 직행</td>
+    <td>⚠️ 최단 53분 (미확인)</td>
+    <td>⚠️ 편도 3,070엔 또는 3,140엔 / 14일 이내 왕복권 5,200엔 (미확인)</td>
+    <td>도쿄역 정차: <a href="https://www.narita-airport.jp/en/access/train/">나리타공항 Train</a></td>
+  </tr>
+  <tr>
+    <td>JR 일반 열차 (지바·후나바시·아사쿠사바시·아키하바라 경유 표기)</td>
+    <td>공식 페이지에 없음</td>
+    <td>공식 페이지에 없음</td>
+    <td><a href="https://www.narita-airport.jp/en/access/train/">나리타공항 Train</a></td>
+  </tr>
+  <tr>
+    <td>저가 버스(LCB) "Tokyo / Ginza" 노선<br>정류장: Tokyo Station / Ginza Station / Shinonome Aeon-mae</td>
+    <td>공식 페이지에 없음</td>
+    <td>1,500엔 (심야·이른 아침 편 제외)</td>
+    <td><a href="https://www.narita-airport.jp/en/access/bus/lcb/">나리타공항 LCB</a></td>
+  </tr>
+</table>
+<p>게이세이 스카이라이너는 도쿄역에 서지 않고 게이세이 우에노·닛포리까지 감 (<a href="https://www.narita-airport.jp/en/access/train/">나리타공항 Train</a>).</p>
+<div class="warn">⚠️ 미확인: N'EX 소요 시간·요금. 검색 결과 요약에 나온 값이며 JR 동일본 공식 페이지(<a href="https://www.jreast.co.jp/en/multi/nex/">N'EX</a>, <a href="https://www.jreast.co.jp/en/multi/pass/nex.html">왕복권</a>)가 접근 거부(403)로 열리지 않았음. 편도 요금은 요약상 페이지마다 3,070엔 / 3,140엔으로 달랐음</div>
+
+</section>
+
+<section class="panel" id="day1">
+<h2>1일차</h2>
+<p class="meta">아직 작성 전</p>
+</section>
+
+<section class="panel" id="day2">
+<h2>2일차</h2>
+<p class="meta">아직 작성 전</p>
+</section>
+
+<section class="panel" id="day3">
+<h2>3일차</h2>
+<p class="meta">아직 작성 전</p>
+</section>
+
+<section class="panel" id="day4">
+<h2>4일차</h2>
+<p class="meta">아직 작성 전</p>
+</section>
+
+<script>
+  var places = [
+    { name: "하네다공항 (HND)", lat: 35.553333, lng: 139.781111 },
+    { name: "나리타공항 (NRT)", lat: 35.7649, lng: 140.38845 },
+    { name: "도쿄역", lat: 35.680833, lng: 139.766944 }
+  ];
+  var map = L.map("airport-map");
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+  var bounds = [];
+  places.forEach(function (p) {
+    L.marker([p.lat, p.lng]).addTo(map).bindTooltip(p.name, { permanent: true, direction: "top" });
+    bounds.push([p.lat, p.lng]);
+  });
+  map.fitBounds(bounds, { padding: [40, 40] });
+
+  var tabs = document.querySelectorAll(".tab");
+  var panels = document.querySelectorAll(".panel");
+  function showTab(id) {
+    if (!document.getElementById(id)) id = "flight";
+    tabs.forEach(function (t) { t.classList.toggle("active", t.dataset.tab === id); });
+    panels.forEach(function (p) { p.classList.toggle("active", p.id === id); });
+    if (id === "transit") {
+      map.invalidateSize();
+      map.fitBounds(bounds, { padding: [40, 40] });
+    }
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      history.replaceState(null, "", "#" + t.dataset.tab);
+      showTab(t.dataset.tab);
+      var nav = document.querySelector(".tabs");
+      if (window.scrollY > nav.offsetTop) window.scrollTo(0, nav.offsetTop);
+    });
+  });
+  showTab(location.hash.slice(1));
+</script>
+
+</body>
+</html>
