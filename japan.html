@@ -21,6 +21,12 @@
   .panel { display: none; }
   .panel.active { display: block; }
   #airport-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
+  .yt-card { border: 1px solid #ccc; border-radius: 8px; margin: 24px 0; overflow: hidden; scroll-margin-top: 60px; }
+  .yt-card-head { display: flex; align-items: center; gap: 10px; background: #222; color: #fff; padding: 10px 14px; }
+  .yt-card-head h3 { margin: 0; font-size: 1.15em; }
+  .yt-num { flex: 0 0 auto; background: #c0392b; color: #fff; font-weight: bold; border-radius: 4px; padding: 2px 8px; }
+  .yt-card-body { padding: 4px 14px 12px; }
+  .yt-card-body h4 { margin: 18px 0 6px; padding-bottom: 4px; border-bottom: 1px solid #ddd; }
   @media (max-width: 600px) {
     body { margin: 16px auto; padding: 0 12px; font-size: 12px; }
     h1 { font-size: 1.5em; }
@@ -457,15 +463,34 @@
 
 <section class="panel" id="recommend-youtuber">
 <h2>추천(유튜버)</h2>
-<p class="meta">유튜버가 영상에서 추천한 맛집을 모아두는 탭.</p>
+<p class="meta">유튜버가 영상에서 추천한 맛집을 모아두는 탭. 원화는 100엔 ≈ 847원(2026-10-11)으로 환산.</p>
 
-<h3>할명수 — 도쿄 10끼</h3>
-<p class="meta">
-  영상: <a href="https://www.youtube.com/watch?v=IR2bnI12TZM">도쿄 10끼 다 먹고 나면 궁전으로 갈 수도 있어..🏰🤤 | 할명수 ep.241</a>
-  (할명수, 2025-06-20 업로드). 가게 목록과 지도 링크는 영상 설명란 기준.<br>
-  주소는 설명란의 구글 지도 링크에서 확인. 종류·대표 메뉴·가격은 아래 출처 기준이며, 영상 속 메뉴·평가는 확인하지 못했음.
-  원화는 100엔 ≈ 847원(2026-10-11)으로 환산. 조회일 2026-10-11.
-</p>
+<h3>영상 목록</h3>
+<table>
+  <tr><th>번호</th><th>유튜버</th><th>영상</th><th>맛집 수</th><th>주요 지역</th><th>정리일</th></tr>
+  <tr>
+    <td><a href="#" data-scroll="yt-1">#1</a></td>
+    <td>할명수</td>
+    <td><a href="#" data-scroll="yt-1">도쿄 10끼</a></td>
+    <td>9곳 (+ 편의점)</td>
+    <td>긴자, 츠키지, 츠키시마, 시부야</td>
+    <td>2026-10-11</td>
+  </tr>
+</table>
+
+<div class="yt-card" id="yt-1">
+<div class="yt-card-head"><span class="yt-num">#1</span><h3>할명수 — 도쿄 10끼</h3></div>
+<div class="yt-card-body">
+
+<h4>영상 정보</h4>
+<table>
+  <tr><th>영상</th><td><a href="https://www.youtube.com/watch?v=IR2bnI12TZM">도쿄 10끼 다 먹고 나면 궁전으로 갈 수도 있어..🏰🤤 | 할명수 ep.241</a></td></tr>
+  <tr><th>채널</th><td>할명수 (JTBC)</td></tr>
+  <tr><th>업로드</th><td>2025-06-20</td></tr>
+  <tr><th>정리 기준</th><td>가게 목록·지도 링크는 영상 설명란. 주소는 구글 지도 링크에서 확인. 종류·대표 메뉴·가격은 아래 출처 기준. 조회일 2026-10-11</td></tr>
+</table>
+
+<h4>맛집 목록</h4>
 <table>
   <tr><th>순서</th><th>가게</th><th>지역 (주소)</th><th>종류 / 대표 메뉴</th><th>가격 (참고)</th><th>출처</th></tr>
   <tr>
@@ -558,8 +583,12 @@
   <li><b>시부야</b>: 호루이치</li>
 </ul>
 
+<h4>확인 필요</h4>
 <div class="warn">⚠️ 미확인: 가격은 대부분 후기·소개 기사·예약 사이트 기준이며, 몇 년 전 자료도 있음 (하야시야 신베에 2018년경, 팡 메종 2022년). 현재 가격은 방문 전 확인 필요</div>
 <div class="warn">⚠️ 미확인: 영상에서 실제로 먹은 메뉴와 평가. 영상 자체는 보지 못하고 설명란만 확인했음</div>
+
+</div>
+</div>
 </section>
 
 <script>
@@ -597,6 +626,12 @@
       showTab(t.dataset.tab);
       var nav = document.querySelector(".tabs");
       if (window.scrollY > nav.offsetTop) window.scrollTo(0, nav.offsetTop);
+    });
+  });
+  document.querySelectorAll("[data-scroll]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      document.getElementById(a.dataset.scroll).scrollIntoView({ behavior: "smooth" });
     });
   });
   showTab(location.hash.slice(1));
