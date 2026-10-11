@@ -1453,7 +1453,28 @@
 
 <section class="panel" id="essentials">
 <h2>필수</h2>
-<p class="meta">아직 작성 전</p>
+<p class="meta">꼭 가볼 곳·꼭 알아둘 것을 모아두는 탭. 요금은 성인 1인, 원화는 100엔 ≈ 847원(2026-10-11)으로 환산. 조회일 2026-10-11.</p>
+
+<h3>필수 지도</h3>
+<div id="essentials-map" class="place-map"></div>
+<p class="meta">빨간 원이 도쿄역. 번호를 누르면 정보와 구글 지도 링크가 나옴. 좌표 출처: <a href="https://msearch.gsi.go.jp/">국토지리원 주소 검색</a> (하치오지시 하츠자와마치 1277). 지도 타일: © OpenStreetMap contributors.</p>
+
+<h3>필수 목록</h3>
+<table>
+  <tr><th>지도</th><th>이름</th><th>종류</th><th>위치·가는 법</th><th>특징</th><th>메뉴·가격</th><th>영업</th><th>출처</th></tr>
+  <tr>
+    <td><a href="#" class="map-no" data-map="essentials" data-map-no="1">1</a></td>
+    <td>야타이 라멘 슌얏짱 (屋台ラーメン しゅんやっちゃん)</td>
+    <td>라멘 포장마차</td>
+    <td>하치오지 다카오 — 다카오역 남쪽 출구 도보 약 3~5분, 카페 "이나콧페" 주차장 안. 신주쿠에서 다카오까지 JR 중앙선 쾌속 약 42분 / 게이오선 특급 약 54분 (도쿄역에서 직선 약 45km)</td>
+    <td>기차가 지나가는 골목의 작은 포장마차. 차슈를 듬뿍 올린 진한 간장 라멘. 재료를 직접 만들고 첨가물 없이 다시·닭 육수로 맛을 냄, 짜지 않음. 마지막까지 정성껏 담아 내주는 모습이 인상적이라는 댓글</td>
+    <td>차슈 라멘 950엔 (약 8,000원), 맛달걀 추가 100엔. 현금·PayPay</td>
+    <td>화~토 18:00~23:00. <b>일·월요일, 비 오는 날 휴무</b></td>
+    <td><a href="https://youtube.com/shorts/9ppo5ZbmjdE">공간 탐닉 쇼츠</a> (2025-04-06), <a href="https://www.tablecheck.com/shunyacchan">TableCheck</a>, <a href="https://hamoni.jp/en/area/tokyo/hachiouji/takao">hamoni</a>, 이동 시간 <a href="https://www.kenbiya.com/ar/ns/region/shutoken/9502.html">kenbiya</a></td>
+  </tr>
+</table>
+<div class="warn">⚠️ 주의: 인기 포장마차라 19시쯤 약 50명이 줄 서서 1시간 반 기다렸다는 후기가 있음. 비 오면 쉬니까 가기 전 날씨·영업 여부 확인. 도심에서 멀어 저녁 일정 하나를 통째로 써야 함</div>
+<div class="warn">⚠️ 미확인: 이동 시간은 예전 기사 기준 (JR 운임 개정 전). 다카오역은 다카오산 입구와 가까워 낮에 다카오산을 보고 저녁에 들르는 방법도 있음 (Claude 의견)</div>
 </section>
 
 <section class="panel" id="osaka">
@@ -1565,6 +1586,7 @@
     if (id === "onsen") showOnsenMap();
     if (id === "sights") showSightsMap();
     if (id === "hotels") showHotelsMap();
+    if (id === "essentials") showEssentialsMap();
   }
 
   // 도쿄 근교 지도 (근교(claude) 탭이 보일 때 처음 그림)
@@ -1715,6 +1737,32 @@
     hotelsMap.fitBounds(hotelsBounds, { padding: [40, 40] });
   }
 
+  // 필수 지도 (필수 탭이 보일 때 처음 그림)
+  var essentialsPlaces = [
+    { no: 1, name: "야타이 라멘 슌얏짱", info: "라멘 포장마차 · 다카오역 도보 3~5분 · 화~토 18~23시", lat: 35.641136, lng: 139.285461 }
+  ];
+  var essentialsMap = null, essentialsBounds = [tokyoStation], essentialsMarkers = {};
+  function showEssentialsMap() {
+    if (!essentialsMap) {
+      essentialsMap = L.map("essentials-map");
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(essentialsMap);
+      L.circleMarker(tokyoStation, { radius: 7, color: "#c0392b", fillColor: "#c0392b", fillOpacity: 1 })
+        .addTo(essentialsMap).bindTooltip("도쿄역", { permanent: true, direction: "top" });
+      essentialsPlaces.forEach(function (p) {
+        essentialsMarkers[p.no] = L.marker([p.lat, p.lng]).addTo(essentialsMap)
+          .bindTooltip(p.no + ". " + p.name, { permanent: true, direction: "top" })
+          .bindPopup("<b>" + p.no + ". " + p.name + "</b><br>" + p.info +
+            '<br><a href="https://www.google.com/maps/search/?api=1&query=' + p.lat + "," + p.lng + '" target="_blank">구글 지도에서 열기</a>');
+        essentialsBounds.push([p.lat, p.lng]);
+      });
+    }
+    essentialsMap.invalidateSize();
+    essentialsMap.fitBounds(essentialsBounds, { padding: [40, 40] });
+  }
+
   // 여러 영상에 나온 맛집 지도 (탭이 보일 때 처음 그림)
   var commonPlaces = [
     { no: 1, dir: "right", name: "츠키지 야마초", info: "달걀말이 · #1 할명수, #2 픽필름", lat: 35.6651261, lng: 139.77007 },
@@ -1739,6 +1787,7 @@
         onsen: { show: showOnsenMap, id: "onsen-map", markers: function () { return onsenMarkers; }, map: function () { return onsenMap; }, zoom: 14 },
         sights: { show: showSightsMap, id: "sights-map", markers: function () { return sightsMarkers; }, map: function () { return sightsMap; }, zoom: 16 },
         hotels: { show: showHotelsMap, id: "hotels-map", markers: function () { return hotelsMarkers; }, map: function () { return hotelsMap; }, zoom: 16 },
+        essentials: { show: showEssentialsMap, id: "essentials-map", markers: function () { return essentialsMarkers; }, map: function () { return essentialsMap; }, zoom: 16 },
         common: { show: showCommonMap, id: "common-map", markers: function () { return commonMarkers; }, map: function () { return commonMap; }, zoom: 16 }
       };
       var t = maps[a.dataset.map] || maps.common;
