@@ -2,6 +2,10 @@
 
 여행 계획을 정리한 정적 웹 페이지 모음입니다. GitHub Pages로 배포됩니다.
 
+## 접속 경로
+
+- 일본(도쿄) 여행 계획: https://cjh724.github.io/Travel/japan.html
+
 ## 페이지
 
 | 페이지 | 설명 | 링크 |
