@@ -23,6 +23,9 @@
   .tab-break { flex-basis: 100%; height: 0; }  /* 추천 탭부터 다음 줄로 */
   .panel { display: none; }
   .panel.active { display: block; }
+  .ref-img { margin: 12px 0; }
+  .ref-img img { display: block; max-width: 100%; width: 640px; height: auto; border: 1px solid #ddd; border-radius: 6px; }
+  .ref-img figcaption { color: #666; font-size: 0.9em; margin-top: 4px; }
   .map-view-btn { border: 1px solid #ccc; background: #f4f4f4; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.95em; }
   .map-no { display: inline-block; min-width: 1.6em; padding: 1px 0; border-radius: 50%; background: #c0392b; color: #fff; font-weight: bold; text-align: center; text-decoration: none; }
   #airport-map, .place-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
@@ -1555,7 +1558,34 @@
 
 <section class="panel" id="tokyo">
 <h2>도쿄</h2>
-<p class="meta">아직 작성 전</p>
+<p class="meta">도쿄와 주변 지역을 이해하기 위한 참고 지도 모음. 이미지는 아래 출처의 블로그 글에서 가져온 것으로, 저작권은 각 블로그 작성자에게 있음.</p>
+
+<h3>일본 47도도부현</h3>
+<figure class="ref-img"><img src="images/japan/tokyo/japan.png" alt="일본 47도도부현 지도" loading="lazy"><figcaption>출처: <a href="https://blog.naver.com/dkfman1004/224183719449">네이버 블로그 dkfman1004 「일본지도 일본 지역 도도부현 구분과 지방 특징 대표 도시 관광지 정리」</a></figcaption></figure>
+<p class="meta">도쿄도는 간토 지방(13번). 나리타공항은 치바현(12번), 요코하마는 가나가와현(14번), 근교 탭의 닛코·키누가와는 도치기현(9번), 가와고에는 사이타마현(11번), 가와구치코는 야마나시현(19번).</p>
+
+<h3>도쿄 23구</h3>
+<figure class="ref-img"><img src="images/japan/tokyo/tokyo_23gu.png" alt="도쿄 23구 지도" loading="lazy"><figcaption>출처: <a href="https://blog.naver.com/hyonjp/224402520833">네이버 블로그 hyonjp 「동경 근처 지역 지도~」</a></figcaption></figure>
+<table>
+  <tr><th>구</th><th>이 페이지에 정리한 곳 (주요 지역)</th></tr>
+  <tr><td>주오구 (中央区)</td><td>긴자, 츠키지, 니혼바시, 닌교초 — 츠지한 본점, 야마초, 팡 메종, Age.3, 빈쵸, 나인아워스, 카락사 컬러스·미마루 긴자</td></tr>
+  <tr><td>지요다구 (千代田区)</td><td>도쿄역(마루노우치), 아키하바라, 진보초·오차노미즈 — 마루카, 글리치 커피</td></tr>
+  <tr><td>미나토구 (港区)</td><td>신바시, 롯폰기, 아자부주반, 도쿄타워 — BAR CENTIFOLIA, 렘 롯폰기, 국립신미술관</td></tr>
+  <tr><td>시부야구 (渋谷区)</td><td>시부야, 하라주쿠·오모테산도, 에비스, 메이지 신궁 — SHIBUYA SKY, 히로카츠 텐동</td></tr>
+  <tr><td>신주쿠구 (新宿区)</td><td>신주쿠, 가부키초, 요츠야 — 탄야키 시노부, 신주쿠 워싱턴 호텔</td></tr>
+  <tr><td>다이토구 (台東区)</td><td>우에노, 아사쿠사, 쿠라마에, 오카치마치 — 센소지, 국립서양미술관, 하기노유</td></tr>
+  <tr><td>스미다구 (墨田区)</td><td>스카이트리, 료고쿠 — 카이카 도쿄</td></tr>
+  <tr><td>그 밖</td><td>고토구(토요스 만요클럽), 분쿄구(스파 라쿠아), 시나가와구(OMO5 고탄다), 메구로구(돈카츠 타이호)</td></tr>
+</table>
+<p class="meta">구 분류는 각 탭에 적은 주소를 기준으로 Claude가 정리한 것.</p>
+
+<h3>요코하마 18구 (가나가와현)</h3>
+<figure class="ref-img"><img src="images/japan/tokyo/Yokohama_18gu.png" alt="요코하마 18구 지도" loading="lazy"><figcaption>출처: <a href="https://blog.naver.com/hyonjp/224402520833">네이버 블로그 hyonjp 「동경 근처 지역 지도~」</a></figcaption></figure>
+<p class="meta">근교 탭의 요코하마(차이나타운·미나토미라이)는 나카구(中区)·니시구(西区) 쪽.</p>
+
+<h3>치바 6구 (치바현 치바시)</h3>
+<figure class="ref-img"><img src="images/japan/tokyo/Chiba_6gu.png" alt="치바시 6구 지도" loading="lazy"><figcaption>출처: <a href="https://blog.naver.com/hyonjp/224402520833">네이버 블로그 hyonjp 「동경 근처 지역 지도~」</a></figcaption></figure>
+<p class="meta">치바시는 치바현의 현청 소재지. 나리타공항은 같은 치바현이지만 치바시가 아니라 나리타시에 있음.</p>
 </section>
 
 <section class="panel" id="osaka">
