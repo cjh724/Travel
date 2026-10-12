@@ -30,6 +30,9 @@
   .filter-table td, .filter-table th { padding: 4px 8px; }
   .filter-table td:first-child, .filter-table th:first-child, .filter-table td:nth-child(2), .filter-table th:nth-child(2) { width: 1%; white-space: nowrap; text-align: center; }
   .filter-table input { width: 16px; height: 16px; cursor: pointer; }
+  .jump-no { font-weight: bold; color: #0277bd; }
+  @keyframes flashRow { from { background: #fff59d; } to { background: transparent; } }
+  .flash-row, .flash-row td { animation: flashRow 2s ease-out; }
   .map-view-btn { border: 1px solid #ccc; background: #f4f4f4; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.95em; }
   .map-no { display: inline-block; min-width: 1.6em; padding: 1px 0; border-radius: 50%; background: #c0392b; color: #fff; font-weight: bold; text-align: center; text-decoration: none; }
   #airport-map, .place-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
@@ -543,7 +546,7 @@
 </ul>
 
 <h3>지도에 표시할 맛집 선택</h3>
-<p class="meta">체크한 가게만 위 지도에 표시됨. 맨 위 체크박스로 전체 선택·해제. 도보 동선(1→2→3→4) 중 하나라도 해제하면 빨간 점선도 숨김.</p>
+<p class="meta">체크한 가게만 위 지도에 표시됨. 맨 위 체크박스로 전체 선택·해제. 번호를 누르면 아래 "여러 영상에 나온 맛집" 표의 해당 칸으로 이동. 도보 동선(1→2→3→4) 중 하나라도 해제하면 빨간 점선도 숨김.</p>
 <div id="common-filter"></div>
 
 <h3>여러 영상에 나온 맛집</h3>
@@ -1354,7 +1357,7 @@
 </ul>
 
 <h3>지도에 표시할 명소 선택</h3>
-<p class="meta">체크한 명소만 위 지도에 표시됨. 맨 위 체크박스로 전체 선택·해제.</p>
+<p class="meta">체크한 명소만 위 지도에 표시됨. 맨 위 체크박스로 전체 선택·해제. 번호를 누르면 아래 명소 목록의 해당 칸으로 이동.</p>
 <div id="sights-filter"></div>
 
 <h3>명소 목록</h3>
@@ -1961,7 +1964,7 @@
     document.querySelectorAll('#sights .map-no[data-map="sights"]').forEach(function (a) {
       var cells = a.closest("tr").cells;
       var no = a.dataset.mapNo;
-      html += '<tr><td><input type="checkbox" data-no="' + no + '" checked></td><td>' + no + '</td><td>' +
+      html += '<tr><td><input type="checkbox" data-no="' + no + '" checked></td><td><a href="#" class="jump-no" data-jump-map="sights" data-jump-no="' + no + '">' + no + '</a></td><td>' +
         cells[1].textContent.trim() + '</td><td>' + cells[2].textContent.trim() + '</td></tr>';
     });
     holder.innerHTML = html + "</table>";
@@ -2154,7 +2157,7 @@
     if (!holder) return;
     var html = '<table class="filter-table"><tr><th><input type="checkbox" id="common-all" checked title="전체 선택"></th><th>번호</th><th>가게 (지점)</th><th>지역</th></tr>';
     commonPlaces.forEach(function (p) {
-      html += '<tr><td><input type="checkbox" data-no="' + p.no + '" checked></td><td>' + p.no + '</td><td>' + p.name + '</td><td>' + p.area + '</td></tr>';
+      html += '<tr><td><input type="checkbox" data-no="' + p.no + '" checked></td><td><a href="#" class="jump-no" data-jump-map="common" data-jump-no="' + p.no + '">' + p.no + '</a></td><td>' + p.name + '</td><td>' + p.area + '</td></tr>';
     });
     holder.innerHTML = html + "</table>";
     holder.querySelectorAll("input[data-no]").forEach(function (b) {
@@ -2166,6 +2169,22 @@
       fitVisibleCommon();
     });
   })();
+  // 선택 표의 번호를 누르면 아래 목록의 해당 행으로 이동하고 잠깐 강조
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest(".jump-no");
+    if (!a) return;
+    e.preventDefault();
+    var sel = a.dataset.jumpMap === "sights"
+      ? '.map-no[data-map="sights"][data-map-no="' + a.dataset.jumpNo + '"]'
+      : '.map-no:not([data-map])[data-map-no="' + a.dataset.jumpNo + '"]';
+    var badge = document.querySelector(sel);
+    if (!badge) return;
+    var row = badge.closest("tr");
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
+    row.classList.remove("flash-row");
+    void row.offsetWidth;
+    row.classList.add("flash-row");
+  });
   tabs.forEach(function (t) {
     t.addEventListener("click", function () {
       history.replaceState(null, "", "#" + t.dataset.tab);
