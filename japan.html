@@ -542,6 +542,10 @@
   <li><b>돈카츠 아키라 (12)</b>: 시부야역 서쪽 도겐자카 쪽. SHIBUYA SKY·히로카츠 텐동과 같은 시부야 동선</li>
 </ul>
 
+<h3>지도에 표시할 맛집 선택</h3>
+<p class="meta">체크한 가게만 위 지도에 표시됨. 맨 위 체크박스로 전체 선택·해제. 도보 동선(1→2→3→4) 중 하나라도 해제하면 빨간 점선도 숨김.</p>
+<div id="common-filter"></div>
+
 <h3>여러 영상에 나온 맛집</h3>
 <p class="meta">아래 영상 목록 중 2개 이상의 영상에 나온 가게. 나온 영상이 많은 순서로 정렬 (같으면 지도 번호 순). 영상 번호를 누르면 해당 영상 칸으로, ▶를 누르면 유튜브의 그 장면으로 이동. 지도 번호를 누르면 위 지도에서 위치가 열림.</p>
 <table>
@@ -2064,21 +2068,21 @@
 
   // 여러 영상에 나온 맛집 지도 (탭이 보일 때 처음 그림)
   var commonPlaces = [
-    { no: 1, dir: "right", name: "츠키지 야마초", info: "달걀말이 · #1 할명수, #2 픽필름", lat: 35.6651261, lng: 139.77007 },
-    { no: 2, dir: "left", name: "팡 메종 긴자점", info: "소금빵 · #1 할명수, #2 픽필름", lat: 35.6715607, lng: 139.7705344 },
-    { no: 3, dir: "right", name: "Age.3 GINZA", info: "튀김 샌드위치 · #1 할명수, #4 성시경", lat: 35.672791, lng: 139.7713002 },
-    { no: 4, dir: "left", name: "빈쵸 미츠코시 긴자점", info: "장어 히츠마부시 · #2 픽필름", lat: 35.6710522, lng: 139.7661307 },
-    { no: 5, dir: "left", name: "빈쵸 마로니에게이트 긴자1점", info: "장어 히츠마부시 · #3 소희맨션", lat: 35.6743653, lng: 139.7653544 },
-    { no: 6, dir: "top", name: "빈쵸 마루노우치빌딩점", info: "장어 히츠마부시 · #3 소희맨션", lat: 35.6809522, lng: 139.7638136 },
-    { no: 7, dir: "top", name: "츠지한 아카사카 아크힐즈점", info: "해산물 덮밥 · #2 픽필름, #3 소희맨션", lat: 35.6673612, lng: 139.7400189 },
-    { no: 8, dir: "right", name: "츠지한 니혼바시 본점", info: "해산물 덮밥 · #3 소희맨션, #5 타이거투어, #6 치하루", lat: 35.6807167, lng: 139.7715771 },
-    { no: 9, dir: "right", name: "아후리 롯폰기", info: "유자 시오 라멘 · #6 치하루", lat: 35.663646, lng: 139.7326262 },
-    { no: 10, dir: "right", name: "아후리 에비스", info: "유자 시오 라멘 · #3 소희맨션", lat: 35.6482951, lng: 139.7108723 },
-    { no: 11, dir: "left", name: "아후리 나카메구로점", info: "유자 시오 라멘 · #3 소희맨션", lat: 35.6443648, lng: 139.6996333 },
-    { no: 12, dir: "left", name: "시부야 돈카츠 아키라", info: "돈카츠 · #3 소희맨션, #8 때때때", lat: 35.6591915, lng: 139.6967513 }
+    { no: 1, dir: "right", area: "츠키지", name: "츠키지 야마초", info: "달걀말이 · #1 할명수, #2 픽필름", lat: 35.6651261, lng: 139.77007 },
+    { no: 2, dir: "left", area: "긴자", name: "팡 메종 긴자점", info: "소금빵 · #1 할명수, #2 픽필름", lat: 35.6715607, lng: 139.7705344 },
+    { no: 3, dir: "right", area: "긴자", name: "Age.3 GINZA", info: "튀김 샌드위치 · #1 할명수, #4 성시경", lat: 35.672791, lng: 139.7713002 },
+    { no: 4, dir: "left", area: "긴자", name: "빈쵸 미츠코시 긴자점", info: "장어 히츠마부시 · #2 픽필름", lat: 35.6710522, lng: 139.7661307 },
+    { no: 5, dir: "left", area: "긴자", name: "빈쵸 마로니에게이트 긴자1점", info: "장어 히츠마부시 · #3 소희맨션", lat: 35.6743653, lng: 139.7653544 },
+    { no: 6, dir: "top", area: "도쿄역·마루노우치", name: "빈쵸 마루노우치빌딩점", info: "장어 히츠마부시 · #3 소희맨션", lat: 35.6809522, lng: 139.7638136 },
+    { no: 7, dir: "top", area: "아카사카", name: "츠지한 아카사카 아크힐즈점", info: "해산물 덮밥 · #2 픽필름, #3 소희맨션", lat: 35.6673612, lng: 139.7400189 },
+    { no: 8, dir: "right", area: "니혼바시 (도쿄역)", name: "츠지한 니혼바시 본점", info: "해산물 덮밥 · #3 소희맨션, #5 타이거투어, #6 치하루", lat: 35.6807167, lng: 139.7715771 },
+    { no: 9, dir: "right", area: "롯폰기", name: "아후리 롯폰기", info: "유자 시오 라멘 · #6 치하루", lat: 35.663646, lng: 139.7326262 },
+    { no: 10, dir: "right", area: "에비스", name: "아후리 에비스", info: "유자 시오 라멘 · #3 소희맨션", lat: 35.6482951, lng: 139.7108723 },
+    { no: 11, dir: "left", area: "나카메구로", name: "아후리 나카메구로점", info: "유자 시오 라멘 · #3 소희맨션", lat: 35.6443648, lng: 139.6996333 },
+    { no: 12, dir: "left", area: "시부야", name: "시부야 돈카츠 아키라", info: "돈카츠 · #3 소희맨션, #8 때때때", lat: 35.6591915, lng: 139.6967513 }
   ];
   var commonRoute = [1, 2, 3, 4];  // 긴자·츠키지 도보 동선 예시 (Claude 제안)
-  var commonMap = null, commonBounds = [], commonMarkers = {};
+  var commonMap = null, commonBounds = [], commonMarkers = {}, commonRouteLine = null;
   // 표의 지도 번호를 누르면 지도로 이동해서 해당 가게 정보를 엶
   document.querySelectorAll(".map-no").forEach(function (a) {
     a.addEventListener("click", function (e) {
@@ -2094,6 +2098,7 @@
       var t = maps[a.dataset.map] || maps.common;
       t.show();
       if (a.dataset.map === "sights") setSightVisible(a.dataset.mapNo, true);
+      if (!a.dataset.map) setCommonVisible(Number(a.dataset.mapNo), true);
       document.getElementById(t.id).scrollIntoView({ behavior: "smooth", block: "center" });
       var m = t.markers()[a.dataset.mapNo];
       t.map().setView(m.getLatLng(), t.zoom);
@@ -2118,11 +2123,49 @@
         var p = commonPlaces[no - 1];
         return [p.lat, p.lng];
       });
-      L.polyline(route, { color: "#c0392b", weight: 3, dashArray: "6 6" }).addTo(commonMap);
+      commonRouteLine = L.polyline(route, { color: "#c0392b", weight: 3, dashArray: "6 6" }).addTo(commonMap);
     }
     commonMap.invalidateSize();
-    commonMap.fitBounds(commonBounds, { padding: [40, 40] });
+    fitVisibleCommon();
   }
+  function fitVisibleCommon() {
+    var pts = commonPlaces.filter(function (p) { return commonMap.hasLayer(commonMarkers[p.no]); })
+      .map(function (p) { return [p.lat, p.lng]; });
+    if (pts.length > 1) commonMap.fitBounds(pts, { padding: [40, 40] });
+    else if (pts.length === 1) commonMap.setView(pts[0], 16);
+  }
+  function setCommonVisible(no, on) {
+    showCommonMap();
+    var m = commonMarkers[no];
+    if (!m) return;
+    if (on) m.addTo(commonMap); else commonMap.removeLayer(m);
+    var box = document.querySelector('#common-filter input[data-no="' + no + '"]');
+    if (box) box.checked = on;
+    var routeOn = commonRoute.every(function (n) { return commonMap.hasLayer(commonMarkers[n]); });
+    if (commonRouteLine) { if (routeOn) commonRouteLine.addTo(commonMap); else commonMap.removeLayer(commonRouteLine); }
+    var boxes = document.querySelectorAll('#common-filter input[data-no]');
+    var all = document.getElementById("common-all");
+    var n = Array.prototype.filter.call(boxes, function (b) { return b.checked; }).length;
+    if (all) { all.checked = n === boxes.length; all.indeterminate = n > 0 && n < boxes.length; }
+  }
+  // 맛집 선택 표: commonPlaces에서 번호·가게·지역을 뽑아 체크박스 표를 만듦 (처음엔 전체 선택)
+  (function buildCommonFilter() {
+    var holder = document.getElementById("common-filter");
+    if (!holder) return;
+    var html = '<table class="filter-table"><tr><th><input type="checkbox" id="common-all" checked title="전체 선택"></th><th>번호</th><th>가게 (지점)</th><th>지역</th></tr>';
+    commonPlaces.forEach(function (p) {
+      html += '<tr><td><input type="checkbox" data-no="' + p.no + '" checked></td><td>' + p.no + '</td><td>' + p.name + '</td><td>' + p.area + '</td></tr>';
+    });
+    holder.innerHTML = html + "</table>";
+    holder.querySelectorAll("input[data-no]").forEach(function (b) {
+      b.addEventListener("change", function () { setCommonVisible(Number(b.dataset.no), b.checked); fitVisibleCommon(); });
+    });
+    document.getElementById("common-all").addEventListener("change", function () {
+      var on = this.checked;
+      commonPlaces.forEach(function (p) { setCommonVisible(p.no, on); });
+      fitVisibleCommon();
+    });
+  })();
   tabs.forEach(function (t) {
     t.addEventListener("click", function () {
       history.replaceState(null, "", "#" + t.dataset.tab);
