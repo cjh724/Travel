@@ -27,6 +27,8 @@
   .ref-img img { display: block; max-width: 100%; width: 640px; height: auto; border: 1px solid #ddd; border-radius: 6px; }
   .ref-img figcaption { color: #666; font-size: 0.9em; margin-top: 4px; }
   .red-text { color: #d32f2f; font-weight: bold; }
+  .filter-table td, .filter-table th { padding: 4px 8px; }
+  .filter-table input { width: 16px; height: 16px; cursor: pointer; }
   .map-view-btn { border: 1px solid #ccc; background: #f4f4f4; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.95em; }
   .map-no { display: inline-block; min-width: 1.6em; padding: 1px 0; border-radius: 50%; background: #c0392b; color: #fff; font-weight: bold; text-align: center; text-decoration: none; }
   #airport-map, .place-map { height: 420px; margin: 12px 0; border: 1px solid #ccc; }
@@ -1345,6 +1347,10 @@
   <li><b>맥주공장 (21·22)</b>: 둘 다 도심에서 떨어져 있어 반나절 일정. 산토리는 신주쿠 서쪽 후추시, 기린은 요코하마 츠루미 (요코하마 근교 일정과 묶기 좋음). 리야 영상은 두 곳을 비교 — 어느 쪽이 더 좋았는지는 영상을 보지 못해 확인 못 함</li>
 </ul>
 
+<h3>지도에 표시할 명소 선택</h3>
+<p class="meta">체크한 명소만 위 지도에 표시됨. 맨 위 체크박스로 전체 선택·해제.</p>
+<div id="sights-filter"></div>
+
 <h3>명소 목록</h3>
 <p class="meta">"나온 영상"의 #번호는 맛집(유튜버) 탭의 영상 번호와 같음 (#5 타이거투어, #6 치하루, #8 때때때).</p>
 <table>
@@ -1916,8 +1922,52 @@
       });
     }
     sightsMap.invalidateSize();
-    sightsMap.fitBounds(sightsBounds, { padding: [40, 40] });
+    fitVisibleSights();
   }
+  function fitVisibleSights() {
+    var pts = sightsPlaces.filter(function (p) { return sightsMap.hasLayer(sightsMarkers[p.no]); })
+      .map(function (p) { return [p.lat, p.lng]; });
+    if (pts.length > 1) sightsMap.fitBounds(pts, { padding: [40, 40] });
+    else if (pts.length === 1) sightsMap.setView(pts[0], 15);
+  }
+  function setSightVisible(no, on) {
+    showSightsMap();
+    var m = sightsMarkers[no];
+    if (!m) return;
+    if (on) m.addTo(sightsMap); else sightsMap.removeLayer(m);
+    var box = document.querySelector('#sights-filter input[data-no="' + no + '"]');
+    if (box) box.checked = on;
+    syncSightsAll();
+  }
+  function syncSightsAll() {
+    var boxes = document.querySelectorAll('#sights-filter input[data-no]');
+    var all = document.getElementById("sights-all");
+    if (!all) return;
+    var n = Array.prototype.filter.call(boxes, function (b) { return b.checked; }).length;
+    all.checked = n === boxes.length;
+    all.indeterminate = n > 0 && n < boxes.length;
+  }
+  // 명소 선택 표: 아래 "명소 목록" 표에서 번호·명소·지역만 뽑아 체크박스 표를 만듦 (처음엔 전체 선택)
+  (function buildSightsFilter() {
+    var holder = document.getElementById("sights-filter");
+    if (!holder) return;
+    var html = '<table class="filter-table"><tr><th><input type="checkbox" id="sights-all" checked title="전체 선택"></th><th>번호</th><th>명소</th><th>지역</th></tr>';
+    document.querySelectorAll('#sights .map-no[data-map="sights"]').forEach(function (a) {
+      var cells = a.closest("tr").cells;
+      var no = a.dataset.mapNo;
+      html += '<tr><td><input type="checkbox" data-no="' + no + '" checked></td><td>' + no + '</td><td>' +
+        cells[1].textContent.trim() + '</td><td>' + cells[2].textContent.trim() + '</td></tr>';
+    });
+    holder.innerHTML = html + "</table>";
+    holder.querySelectorAll("input[data-no]").forEach(function (b) {
+      b.addEventListener("change", function () { setSightVisible(b.dataset.no, b.checked); fitVisibleSights(); });
+    });
+    document.getElementById("sights-all").addEventListener("change", function () {
+      var on = this.checked;
+      sightsPlaces.forEach(function (p) { setSightVisible(p.no, on); });
+      fitVisibleSights();
+    });
+  })();
 
   // 숙소 지도 (숙소 탭이 보일 때 처음 그림)
   var hotelsPlaces = [
@@ -2041,6 +2091,7 @@
       };
       var t = maps[a.dataset.map] || maps.common;
       t.show();
+      if (a.dataset.map === "sights") setSightVisible(a.dataset.mapNo, true);
       document.getElementById(t.id).scrollIntoView({ behavior: "smooth", block: "center" });
       var m = t.markers()[a.dataset.mapNo];
       t.map().setView(m.getLatLng(), t.zoom);
