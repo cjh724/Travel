@@ -28,6 +28,7 @@
   .ref-img figcaption { color: #666; font-size: 0.9em; margin-top: 4px; }
   .red-text { color: #d32f2f; font-weight: bold; }
   .filter-table td, .filter-table th { padding: 4px 8px; }
+  .filter-table td:first-child, .filter-table th:first-child, .filter-table td:nth-child(2), .filter-table th:nth-child(2) { width: 1%; white-space: nowrap; text-align: center; }
   .filter-table input { width: 16px; height: 16px; cursor: pointer; }
   .map-view-btn { border: 1px solid #ccc; background: #f4f4f4; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.95em; }
   .map-no { display: inline-block; min-width: 1.6em; padding: 1px 0; border-radius: 50%; background: #c0392b; color: #fff; font-weight: bold; text-align: center; text-decoration: none; }
@@ -64,6 +65,7 @@
     table.cards td { padding-left: 7.5em; }
     table.cards td::before { left: 8px; width: 6.5em; }
     .yt-card-body { padding: 4px 8px 10px; }
+    .filter-table td, .filter-table th { padding: 4px 5px; }
     .tabs { gap: 2px; }
     .tab { padding: 6px 6px; font-size: 0.9em; }
   }
@@ -2132,7 +2134,7 @@
   // 첫 행이 모두 th인 표: 각 칸에 제목을 data-label로 붙여 모바일 카드 보기에 사용
   document.querySelectorAll("table").forEach(function (table) {
     var head = table.rows[0];
-    if (!head || head.querySelector("td")) return;
+    if (!head || head.querySelector("td") || table.classList.contains("filter-table")) return;  // 선택 표는 모바일에서도 표 그대로
     var labels = Array.prototype.map.call(head.cells, function (th) { return th.textContent.trim(); });
     head.classList.add("head-row");
     // 칸이 많고 글이 긴 표는 항상 카드, 나머지는 PC에서는 표·좁은 화면에서는 카드
