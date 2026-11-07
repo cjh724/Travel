@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>동해여행 일정</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root { --bg:#f6f8fb; --card:#fff; --text:#1c2733; --muted:#6b7a8a; --accent:#1e78c8; --line:#dde4ec; }
   @media (prefers-color-scheme: dark) {
@@ -35,7 +36,19 @@
   .check { display:flex; gap:8px; align-items:center; padding:3px 0; }
   .check input[type=checkbox] { width:auto; }
   .check input[type=text] { border:0; background:transparent; padding:2px 4px; }
+  .amt { text-align:right; }
+  th.amt { text-align:right; }
   .total { font-weight:600; margin-top:10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; }
+  .chips button.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+  #overview { width:100%; height:380px; border-radius:10px; z-index:0; }
+  #mapFrame { width:100%; height:380px; border:0; border-radius:10px; }
+  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+  .gallery figure { margin:0; }
+  .gallery img { width:100%; aspect-ratio:3/4; object-fit:cover; object-position:top; border:1px solid var(--line); border-radius:10px; display:block; background:var(--bg); }
+  .gallery figcaption { font-size:13px; color:var(--muted); margin-top:4px; }
+  .maplinks { margin:8px 0 0; font-size:13px; }
+  .maplinks a { color:var(--accent); margin-right:12px; }
 </style>
 </head>
 <body>
@@ -68,6 +81,19 @@
   </section>
 
   <section>
+    <h2>🗺️ 지도</h2>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <input type="text" id="mapQ" placeholder="장소 검색 (예: 묵호등대, 추암 촛대바위)">
+      <div><button id="mapGo">검색</button></div>
+    </div>
+    <p></p>
+    <div id="overview"></div>
+    <iframe id="mapFrame" hidden loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="지도"></iframe>
+    <p class="maplinks"><a id="openMap" target="_blank" rel="noopener">구글맵에서 열기</a><a id="openRoute" target="_blank" rel="noopener">동해역 → 숙소 길찾기</a></p>
+  </section>
+
+  <section>
     <h2>출발지별 이동 계획</h2>
     <table>
       <tr><th>이름</th><th>출발지</th><th>출발 시각</th><th>이동 방법 / 메모</th></tr>
@@ -80,7 +106,6 @@
   <section>
     <h2>일정</h2>
     <table id="schedule"></table>
-    <p><button id="addRow">+ 일정 추가</button></p>
   </section>
 
   <section>
@@ -91,21 +116,26 @@
   </section>
 
   <section>
-    <h2>비용 (N빵)</h2>
+    <h2>비용</h2>
     <table id="budget"></table>
-    <p><button id="addCost">+ 항목 추가</button></p>
     <div class="total" id="total"></div>
   </section>
 
   <section>
-    <h2>준비물</h2>
-    <div id="todo"></div>
-    <p><button id="addTodo">+ 추가</button></p>
+    <h2>📎 갤러리 (승차권 · 예약)</h2>
+    <div class="gallery">
+      <figure><a href="images/eastSea/KakaoTalk_Photo_2026-11-07-14-44-10.jpeg" target="_blank" rel="noopener"><img src="images/eastSea/KakaoTalk_Photo_2026-11-07-14-44-10.jpeg" loading="lazy" alt="서울 → 동해 KTX (12/31 10:59 → 13:36)"></a><figcaption>서울 → 동해 KTX (12/31 10:59 → 13:36)</figcaption></figure>
+      <figure><a href="images/eastSea/KakaoTalk_Photo_2026-11-07-14-42-26%20003.jpeg" target="_blank" rel="noopener"><img src="images/eastSea/KakaoTalk_Photo_2026-11-07-14-42-26%20003.jpeg" loading="lazy" alt="동대구 → 포항 → 동해 승차권 목록"></a><figcaption>동대구 → 포항 → 동해 승차권 목록</figcaption></figure>
+      <figure><a href="images/eastSea/KakaoTalk_Photo_2026-11-07-14-42-26%20002.png" target="_blank" rel="noopener"><img src="images/eastSea/KakaoTalk_Photo_2026-11-07-14-42-26%20002.png" loading="lazy" alt="영수증 · 동대구 10:20 → 포항 10:55"></a><figcaption>영수증 · 동대구 10:20 → 포항 10:55</figcaption></figure>
+      <figure><a href="images/eastSea/KakaoTalk_Photo_2026-11-07-14-42-26%20001.png" target="_blank" rel="noopener"><img src="images/eastSea/KakaoTalk_Photo_2026-11-07-14-42-26%20001.png" loading="lazy" alt="영수증 · 포항 11:43 → 동해 14:15"></a><figcaption>영수증 · 포항 11:43 → 동해 14:15</figcaption></figure>
+      <figure><a href="images/eastSea/KakaoTalk_Photo_2026-11-07-14-44-52.jpeg" target="_blank" rel="noopener"><img src="images/eastSea/KakaoTalk_Photo_2026-11-07-14-44-52.jpeg" loading="lazy" alt="현진관광호텔 예약 확인서"></a><figcaption>현진관광호텔 예약 확인서</figcaption></figure>
+    </div>
   </section>
 
   <p><button class="ghost" id="reset">전체 초기화</button></p>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const KEY = 'eastSea.v1';
 let state = {};
@@ -121,11 +151,12 @@ state.m_dg ??= '기차 동대구 10:20 → 포항 10:55 / 포항 11:43 → 동�
 state.t_dm ??= '10:20';
 state.m_dm ??= '기차 동대구 10:20 → 포항 10:55 / 포항 11:43 → 동해 14:15 (승차권 2매). ⚠️ 구미 → 동대구 이동 미확인';
 state.endDate ??= '2027-01-01';
-state.stay ??= '현진관광호텔 디럭스 트윈 · 2026.12.31 ~ 2027.01.01 (1박) · 체크인 15:00 / 체크아웃 11:00 · 기준 2명 / 최대 4명 · 차량방문';
+state.stay ??= '현진관광호텔 디럭스 트윈 · 2026년 12월 31일 ~ 2027년 1월 1일 (1박) · 체크인 15:00 / 체크아웃 11:00 · 기준 2명 / 최대 4명 · 차량방문';
 state.schedule ??= [
-  { t:'12/31 14:15', what:'동해역 도착 (기차)' },
-  { t:'12/31 15:00', what:'현진관광호텔 체크인' },
-  { t:'1/1 11:00', what:'현진관광호텔 체크아웃' }
+  { t:'2026년 12월 31일 14:15', what:'동해역 도착 (기차)' },
+  { t:'2026년 12월 31일 15:00', what:'현진관광호텔 체크인' },
+  { t:'2027년 1월 1일 11:00', what:'현진관광호텔 체크아웃' },
+  { t:'2027년 1월 1일', what:'울진 덕구온천 (시간 미정)' }
 ];
 state.costs ??= [
   { n:'숙박 (현진관광호텔 1박)', amt:'230000' },
@@ -137,7 +168,6 @@ state.costs ??= [
   { n:'입장료/체험', amt:'' },
   { n:'기타', amt:'' }
 ];
-state.todo ??= [{ n:'', done:false }];
 
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
 
@@ -149,7 +179,7 @@ document.querySelectorAll('[data-save]').forEach(el => {
 
 function renderSchedule() {
   const t = document.getElementById('schedule');
-  t.innerHTML = '<tr><th style="width:30%">날짜/시간</th><th>내용</th><th></th></tr>';
+  t.innerHTML = '<tr><th style="width:42%">날짜/시간</th><th>내용</th><th></th></tr>';
   state.schedule.forEach((r, i) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td><input type="text" value="${esc(r.t)}" placeholder="1일차 10:00"></td>
@@ -164,51 +194,94 @@ function renderSchedule() {
 
 function renderBudget() {
   const t = document.getElementById('budget');
-  t.innerHTML = '<tr><th>항목</th><th style="width:30%">금액(원)</th><th></th></tr>';
+  t.innerHTML = '<tr><th>항목</th><th class="amt" style="width:30%">금액(원)</th><th></th></tr>';
   state.costs.forEach((r, i) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td><input type="text" value="${esc(r.n)}" placeholder="숙소, 기름값 ..."></td>
-      <td><input type="number" value="${esc(r.amt)}"></td><td><button class="ghost">✕</button></td>`;
+      <td><input type="text" inputmode="numeric" class="amt" value="${fmt(r.amt)}" placeholder="0"></td><td><button class="ghost">✕</button></td>`;
     const [a, b] = tr.querySelectorAll('input');
     a.oninput = () => { r.n = a.value; save(); };
-    b.oninput = () => { r.amt = b.value; save(); sum(); };
+    b.oninput = () => {
+      const pos = b.selectionStart, before = b.value.slice(0, pos).replace(/\D/g, '').length;
+      r.amt = b.value.replace(/\D/g, ''); b.value = fmt(r.amt);
+      let n = 0, np = 0;
+      while (np < b.value.length && n < before) { if (/\d/.test(b.value[np])) n++; np++; }
+      b.setSelectionRange(np, np);
+      save(); sum();
+    };
     tr.querySelector('button').onclick = () => { state.costs.splice(i, 1); save(); renderBudget(); };
     t.appendChild(tr);
   });
   sum();
 }
+function fmt(v) { const d = String(v ?? '').replace(/\D/g, ''); return d ? Number(d).toLocaleString('en-US') : ''; }
 function sum() {
   const s = state.costs.reduce((a, r) => a + (Number(r.amt) || 0), 0);
   document.getElementById('total').textContent =
-    `합계 ${s.toLocaleString()}원 · 1인당 ${Math.ceil(s / 3).toLocaleString()}원`;
-}
-
-function renderTodo() {
-  const d = document.getElementById('todo');
-  d.innerHTML = '';
-  state.todo.forEach((r, i) => {
-    const div = document.createElement('div');
-    div.className = 'check';
-    div.innerHTML = `<input type="checkbox" ${r.done ? 'checked' : ''}>
-      <input type="text" value="${esc(r.n)}" placeholder="준비물"><button class="ghost">✕</button>`;
-    const [c, t] = div.querySelectorAll('input');
-    c.onchange = () => { r.done = c.checked; save(); };
-    t.oninput = () => { r.n = t.value; save(); };
-    div.querySelector('button').onclick = () => { state.todo.splice(i, 1); save(); renderTodo(); };
-    d.appendChild(div);
-  });
+    `합계 ${s.toLocaleString()}원`;
 }
 
 function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
-document.getElementById('addRow').onclick = () => { state.schedule.push({ t:'', what:'' }); save(); renderSchedule(); };
-document.getElementById('addCost').onclick = () => { state.costs.push({ n:'', amt:'' }); save(); renderBudget(); };
-document.getElementById('addTodo').onclick = () => { state.todo.push({ n:'', done:false }); save(); renderTodo(); };
 document.getElementById('reset').onclick = () => {
   if (confirm('모든 입력을 지울까요?')) { try { localStorage.removeItem(KEY); } catch (e) {} location.reload(); }
 };
 
-renderSchedule(); renderBudget(); renderTodo();
+// map (Google Maps embed, no API key)
+const PLACES = [
+  { n:'동해역', q:'동해역' },
+  { n:'현진관광호텔', q:'현진관광호텔 동해' },
+  { n:'묵호항', q:'묵호항' },
+  { n:'추암 촛대바위', q:'추암 촛대바위' },
+  { n:'덕구온천', q:'울진 덕구온천' },
+  { n:'무릉계곡', q:'무릉계곡' }
+];
+const STARTS = [
+  { n:'나 · 서울역', ll:[37.5547, 126.9707] },
+  { n:'도미노 · 구미역', ll:[36.1284, 128.3312] },
+  { n:'대기 · 동대구역', ll:[35.8798, 128.6283] }
+];
+let ov;
+function showOverview() {
+  document.getElementById('mapFrame').hidden = true;
+  document.getElementById('overview').hidden = false;
+  document.getElementById('openMap').href = 'https://www.google.com/maps/dir/' +
+    STARTS.map(p => p.ll.join(',')).join('/');
+  document.getElementById('openMap').textContent = '구글맵에서 세 역 보기';
+  document.querySelectorAll('#chips button').forEach((b, i) => b.classList.toggle('on', i === 0));
+  if (!ov && window.L) {
+    ov = L.map('overview');
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:18, attribution:'&copy; OpenStreetMap' }).addTo(ov);
+    STARTS.forEach(p => L.marker(p.ll).addTo(ov).bindTooltip(p.n, { permanent:true, direction:'right' }));
+  }
+  if (ov) { ov.invalidateSize(); ov.fitBounds(STARTS.map(p => p.ll), { padding:[40, 40] }); }
+}
+function showMap(q, idx) {
+  document.getElementById('overview').hidden = true;
+  document.getElementById('mapFrame').hidden = false;
+  document.getElementById('openMap').textContent = '구글맵에서 열기';
+  const enc = encodeURIComponent(q);
+  document.getElementById('mapFrame').src = `https://www.google.com/maps?q=${enc}&hl=ko&z=14&output=embed`;
+  document.getElementById('openMap').href = `https://www.google.com/maps/search/?api=1&query=${enc}`;
+  document.querySelectorAll('#chips button').forEach((b, i) => b.classList.toggle('on', i === idx));
+}
+const c0 = document.createElement('button');
+c0.className = 'ghost'; c0.textContent = '출발지 전체'; c0.onclick = showOverview;
+document.getElementById('chips').appendChild(c0);
+PLACES.forEach((p, i) => {
+  const b = document.createElement('button');
+  b.className = 'ghost'; b.textContent = p.n; b.onclick = () => showMap(p.q, i + 1);
+  document.getElementById('chips').appendChild(b);
+});
+document.getElementById('openRoute').href =
+  'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent('동해역') +
+  '&destination=' + encodeURIComponent('현진관광호텔 동해') + '&travelmode=transit';
+const goSearch = () => { const q = document.getElementById('mapQ').value.trim(); if (q) showMap('동해 ' + q, -1); };
+document.getElementById('mapGo').onclick = goSearch;
+document.getElementById('mapQ').onkeydown = e => { if (e.key === 'Enter') goSearch(); };
+showOverview();
+
+renderSchedule(); renderBudget();
 </script>
 </body>
 </html>
