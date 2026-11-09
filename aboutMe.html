@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>나에 대해서</title>
+<style>
+  :root {
+    --bg: #faf8f4; --fg: #222; --muted: #6b6b6b; --card: #fff; --line: #ddd6c8;
+    --wood: #2e7d4f; --fire: #c8412f; --earth: #a8801f; --metal: #6f7782; --water: #2c6aa8;
+    --warn-bg: #fff4d6; --warn-line: #e0b84a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17181a; --fg: #e8e6e1; --muted: #a09d96; --card: #212325; --line: #3a3d40;
+      --wood: #5fbf86; --fire: #ef7b69; --earth: #d9b24f; --metal: #a9b1bc; --water: #6aa7e0;
+      --warn-bg: #3a3320; --warn-line: #8a7230;
+    }
+  }
+  html { font-size: 90%; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; line-height: 1.6; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1.1rem; margin: 32px 0 12px; }
+  nav { display: flex; gap: 4px; margin: 0 0 16px; border-bottom: 2px solid var(--line); }
+  nav button { font: inherit; font-weight: 600; color: var(--muted); background: none; border: 0; border-bottom: 3px solid transparent; margin-bottom: -2px; padding: 8px 18px; cursor: pointer; }
+  nav button[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--fg); }
+  .panel[hidden] { display: none; }
+  .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px; margin: 8px 0; }
+  .q p { margin: 0 0 4px; font-weight: 600; }
+  .q ul { list-style: none; padding-left: 0; margin: 0; } .q li { margin: 2px 0; }
+  .q label { cursor: pointer; display: block; padding: 2px 0; }
+  .actions { display: flex; gap: 8px; margin: 16px 0; }
+  .actions button { font: inherit; font-weight: 600; color: var(--fg); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 18px; cursor: pointer; }
+  .result { background: var(--card); border: 2px solid var(--line); border-radius: 10px; padding: 12px 16px; margin: 12px 0; }
+  .result .type { font-size: 2rem; font-weight: 700; }
+  .bars { margin: 8px 0 12px; }
+  .bar { display: grid; grid-template-columns: 2.2rem 1fr 2.2rem; gap: 8px; align-items: center; margin: 6px 0; }
+  .bar .lbl { font-weight: 700; text-align: center; color: var(--muted); }
+  .bar .lbl.win { color: var(--fg); }
+  .bar .track { display: flex; height: 22px; background: var(--line); border-radius: 6px; overflow: hidden; }
+  .bar .seg { display: flex; align-items: center; justify-content: center; color: #fff; font-size: .8rem; font-weight: 700; }
+  .bar .seg.a { background: var(--water); } .bar .seg.b { background: var(--fire); }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .info { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+  .info div { display: flex; gap: 12px; padding: 2px 0; }
+  .form div { align-items: center; flex-wrap: wrap; }
+  .form > div > label:first-child { color: var(--muted); min-width: 96px; }
+  .form input[type=date], .form input[type=time], .form select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; }
+  .form .note { color: var(--fg); background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 6px; padding: 6px 10px; }
+  .go { font: inherit; font-weight: 700; color: var(--bg); background: var(--fg); border: 0; border-radius: 999px; padding: 8px 28px; cursor: pointer; }
+  .daeun small { display: block; font-weight: 400; color: var(--muted); font-size: .75rem; }
+  .form .note[hidden] { display: none; }
+  .info span:first-child { color: var(--muted); min-width: 64px; }
+  .pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .pillar { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 4px; text-align: center; }
+  .pillar .label { color: var(--muted); font-size: .85rem; }
+  .ch { font-size: 2.4rem; font-weight: 700; line-height: 1.2; margin-top: 6px; }
+  .ko { font-size: .85rem; color: var(--muted); }
+  .ss { font-size: .8rem; margin-top: 2px; }
+  .pillar.day { border-width: 2px; }
+  .wood { color: var(--wood); } .fire { color: var(--fire); } .earth { color: var(--earth); }
+  .metal { color: var(--metal); } .water { color: var(--water); }
+  #saju-sub, #pillars-text { white-space: nowrap; overflow: hidden; font-size: clamp(.68rem, 3.4vw, .95rem); }
+  .cmp > div { display: grid; grid-template-columns: 2rem 1fr; gap: 8px; align-items: center; margin: 6px 0; }
+  .cmp > div > div { min-width: 0; padding-right: 1.5rem; }
+  .cmp span { font-weight: 600; color: var(--muted); }
+  .cmp i { display: block; height: 14px; border-radius: 4px; margin: 2px 0; position: relative; }
+  .cmp i b { position: absolute; left: calc(100% + 6px); top: -3px; font-size: .75rem; font-weight: 600; color: var(--fg); }
+  .cmp i.a, .dot.a { background: var(--water); } .cmp i.b, .dot.b { background: var(--fire); }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 2px 0 8px; }
+  .chk { margin-left: 8px; font-size: .9rem; cursor: pointer; }
+  .pillar.unk { opacity: .55; display: flex; flex-direction: column; justify-content: center; }
+  input:disabled { opacity: .45; }
+  .score { display: flex; align-items: center; gap: 16px; margin: 8px 0; }
+  .score .big { font-size: 2.4rem; font-weight: 700; min-width: 4.5rem; }
+  .gauge { flex: 1; height: 16px; background: var(--line); border-radius: 8px; overflow: hidden; }
+  .gauge i { display: block; height: 100%; background: var(--water); }
+  .radarbox { display: flex; justify-content: center; }
+  .radarbox svg { width: 100%; max-width: 320px; height: auto; }
+  details { margin: 8px 0; } summary { cursor: pointer; font-weight: 600; }
+  .h4 { font-size: .95rem; margin: 16px 0 4px; }
+  ol.love { padding-left: 1.2rem; } ol.love li { margin: 10px 0; }
+  .tcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 12px 0; }
+  .tcard { background: var(--card); border: 2px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .tcard .top { padding: 18px 8px 10px; text-align: center; color: #fff; }
+  .tcard .top b { display: block; font-size: 2.2rem; line-height: 1.1; }
+  .tcard .top span { font-size: .8rem; opacity: .9; }
+  .tcard .nm { padding: 8px 12px 0; font-weight: 700; } .tcard .nm small { display: block; color: var(--muted); font-weight: 400; }
+  .tcard p { padding: 4px 12px 12px; margin: 0; font-size: .9rem; }
+  .tcard.m .top { background: #6b5b95; } .tcard.w .top { background: var(--fire); } .tcard.c .top { background: var(--water); } .tcard.s .top { background: var(--metal); } .tcard.p .top { background: var(--earth); }
+  .facebox { display: flex; justify-content: center; } .facebox svg { width: 100%; max-width: 300px; height: auto; }
+  .fh { fill: var(--card); stroke: var(--line); stroke-width: 3; }
+  .fz path, .fz ellipse { fill: var(--line); fill-opacity: .5; stroke: var(--muted); stroke-width: 1.5; cursor: pointer; }
+  .fz text { fill: var(--fg); font-size: 14px; font-weight: 700; text-anchor: middle; pointer-events: none; } .fz text.sm { font-size: 12px; }
+  .fz.on path, .fz.on ellipse { fill: var(--water); fill-opacity: .55; stroke: var(--water); }
+  .fz:focus { outline: none; }
+  .hbars { margin: 8px 0; }
+  .hbars div { display: grid; grid-template-columns: 3rem 1fr 3.4rem; gap: 8px; align-items: center; margin: 4px 0; }
+  .hbars span { color: var(--muted); font-weight: 600; }
+  .hbars b { white-space: nowrap; }
+  .hbars i { display: block; height: 18px; border-radius: 4px; background: var(--metal); }
+  .hbars i.wood { background: var(--wood); } .hbars i.fire { background: var(--fire); } .hbars i.earth { background: var(--earth); } .hbars i.metal { background: var(--metal); } .hbars i.water { background: var(--water); }
+  .hbars i.ss { background: var(--water); }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  th, td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: .95rem; }
+  tr:last-child td { border-bottom: 0; }
+  .warn { background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 10px; padding: 10px 14px; margin: 12px 0; font-size: .92rem; }
+  .daeun { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; text-align: center; }
+  .daeun div { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 0; font-weight: 600; }
+  @media (max-width: 480px) { .ch { font-size: 1.9rem; } .daeun { grid-template-columns: repeat(4, 1fr); } }
+  body { overflow-wrap: break-word; -webkit-text-size-adjust: 100%; }
+  a, td, th, li, p { overflow-wrap: anywhere; }
+  @media (max-width: 480px) {
+    main { padding: 20px 12px 48px; }
+    h1 { font-size: 1.35rem; }
+    nav button { flex: 1; padding: 10px 8px; }
+    th, td { padding: 6px 8px; font-size: .88rem; }
+    .pillars { gap: 4px; } .pillar { padding: 10px 2px; }
+    .form > div > label:first-child { min-width: 100%; }
+    .form input[type=date], .form input[type=time], .form select { min-height: 40px; font-size: 16px; max-width: 100%; }
+    .bar { grid-template-columns: 1.6rem 1fr 1.6rem; gap: 6px; }
+    .result .type { font-size: 1.7rem; }
+    .q label { padding: 6px 0; }
+    .hbars div { grid-template-columns: 2.6rem 1fr 1.2rem; }
+  }
+  .h3 { font-size: 1rem; margin: 20px 0 8px; }
+  ul { padding-left: 20px; } li { margin: 6px 0; }
+  footer { margin-top: 32px; color: var(--muted); font-size: .85rem; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <h1>나에 대해서</h1>
+  <nav role="tablist"><button role="tab" id="tab-saju" aria-controls="saju" aria-selected="true">사주</button><button role="tab" id="tab-mbti" aria-controls="mbti" aria-selected="false">MBTI</button><button role="tab" id="tab-match" aria-controls="match" aria-selected="false">궁합</button><button role="tab" id="tab-tarot" aria-controls="tarot" aria-selected="false">타로</button><button role="tab" id="tab-face" aria-controls="face" aria-selected="false">관상</button></nav>
+
+  <div class="panel" id="saju" role="tabpanel" aria-labelledby="tab-saju">
+  <p class="sub" id="saju-sub">1990.07.24 03:30 (양력) · 경상북도 구미시 · 남자</p>
+
+  <div class="info form">
+    <div><label for="in-date">생년월일 (양력)</label><input type="date" id="in-date" value="1990-07-24" min="1920-01-01" max="2100-12-31"></div>
+    <div><label for="in-time">태어난 시간</label><input type="time" id="in-time" value="03:30"> <label class="chk"><input type="checkbox" id="in-tu"> 시간 모름</label></div>
+    <div><label for="in-place">태어난 곳</label><select id="in-place"><option>서울특별시</option><option>부산광역시</option><option>대구광역시</option><option>인천광역시</option><option>전남광주통합특별시</option><option>대전광역시</option><option>울산광역시</option><option>세종특별자치시</option><option>경기도</option><option>강원특별자치도</option><option>충청북도</option><option>충청남도</option><option>전북특별자치도</option><option selected>경상북도</option><option>경상남도</option><option>제주특별자치도</option></select> <select id="in-city" aria-label="시·군"></select></div>
+    <div><label>성별</label><span><label><input type="radio" name="gender" value="남자" checked> 남자</label> <label><input type="radio" name="gender" value="여자"> 여자</label></span></div>
+    <div><button type="button" id="in-go" class="go">조회</button></div>
+    <div class="note ko" id="in-note" hidden>⚠️ 입력값이 바뀌었습니다. 조회 버튼을 눌러야 아래 결과에 반영됩니다.</div>
+  </div>
+  <p class="ko" id="place-why"><b>태어난 곳을 묻는 이유:</b> 지역마다 경도가 달라서 같은 시계 시각이라도 실제 태양 시각이 다르기 때문에, 시주(태어난 시각의 기둥)를 정할 때 출생지 경도로 시각을 보정해야 한다는 주장이 있습니다(<a href="https://koreascience.kr/article/JAKO202317262225360.page">역서의 시각 설정에 관한 타당성 연구, 학술 논문 1편</a>). ⚠️ 이 페이지는 아직 경도 보정을 적용하지 않아서 <b>태어난 곳은 계산에 쓰이지 않고</b> 화면에 표시만 합니다. 이 보정이 표준인지도 확인하지 못했습니다.</p>
+
+  <h2>사주 팔자</h2>
+  <div class="pillars" id="pillars"></div>
+  <p class="ko" id="pillars-text"></p>
+  <p id="ddi"></p>
+  <div class="info ko" id="pillars-help">
+    <p><b>카드 읽는 법</b></p>
+    <ul>
+      <li><b>카드 4장:</b> 오른쪽부터 태어난 해(연주) · 달(월주) · 날(일주) · 시각(시주)입니다. 카드마다 글자가 위아래 두 개라서 4장 합쳐 8글자, 그래서 "팔자"라고 합니다.</li>
+      <li><b>위 글자(천간)와 아래 글자(지지):</b> 둘 다 한자이고, 그 밑에 한글 읽는 법과 오행(나무·불·흙·쇠·물)이 적혀 있습니다.</li>
+      <li><b>글자 색:</b> 오행을 나타냅니다. 초록=나무(목), 빨강=불(화), 노랑=흙(토), 회색=쇠(금), 파랑=물(수)입니다.</li>
+      <li><b>"일주 (나)" 카드:</b> 테두리가 굵은 카드입니다. 이 카드의 위 글자가 "나"를 뜻하고, 나머지 7글자는 이 글자와의 관계로 이름이 붙습니다.</li>
+      <li><b>글자 밑의 이름(편인, 상관 등):</b> "나"와 그 글자가 어떤 사이인지를 나타내는 이름표(십성)입니다. 위 아래 두 글자가 각각 따로 이름을 받습니다. 이름표 뜻은 아래 "쉽게 풀어 읽기"에 있습니다.</li>
+      <li><b>⚠️ 아래 글자의 전통 자리:</b> 아래 글자(지지)는 연주=조상, 월주=부모, 일주=배우자, 시주=자식 자리로 본다는 전통 규칙이 있습니다(<a href="https://koreascience.kr/article/JAKO202209059084683.pdf">출처: 십성 논문</a>). 위 글자(천간)에도 같은 자리를 붙이는지는 확인하지 못했습니다. 실제 가족이나 앞날을 보여 준다는 근거는 아닙니다.</li>
+    </ul>
+    <p><b>이 사주의 카드를 풀어 읽으면</b></p>
+    <ul id="pillars-detail"></ul>
+  </div>
+  <div id="flags"></div>
+
+  <h2>쉽게 풀어 읽기</h2>
+  <div class="warn">
+    ⚠️ <b>미확인:</b> 아래는 명리학(사주 풀이)에서 전통적으로 쓰는 규칙을 이 사주에 대입해 쉬운 말로 옮긴 것입니다.
+    공식 자료로 근거를 확인하지 못했고, 과학적으로 입증된 예측도 아닙니다. 재미와 참고용으로만 보세요.
+  </div>
+  <h3 class="h3">1. "나"는 어떤 글자인가</h3>
+  <p id="me-text"></p>
+  <h3 class="h3">2. 나머지 글자들의 관계 (십성이 뭔가요?)</h3>
+  <div class="info ko">
+    <p><b>쉽게 말해, 사주의 글자마다 붙는 "이름표"입니다.</b> 사주에는 8글자가 있는데, 그중 하나(일간)를 "나"로 정하고, 나머지 글자가 "나와 어떤 사이인지"에 따라 이름을 붙입니다. 이 이름표 열 가지를 십성이라고 부릅니다.</p>
+    <p><b>어떻게 정하나요?</b> 모든 글자는 나무(목)·불(화)·흙(토)·쇠(금)·물(수) 중 하나에 속합니다. 이 다섯 가지는 서로 돕거나(예: 흙이 쇠를 키움) 누르는(예: 쇠가 나무를 벰) 관계가 있습니다. "나"의 오행과 그 글자의 오행이 어떤 관계인지, 음양이 같은지 다른지를 보고 이름을 붙입니다.</p>
+    <p><b>"편재가 있다"는 말은?</b> 어떤 자리의 글자가 "나(일간)가 누르는 오행이고 음양이 같다"는 조건에 맞아 <b>편재라는 이름표를 받았다</b>는 뜻입니다. 예를 들어 "나"가 쇠(庚)이면 나무(寅)는 쇠가 베는 대상이라, 그 나무 글자에 편재 이름표가 붙습니다. 이 계산 규칙은 논문으로 확인했습니다.</p>
+    <p><b>그래서 뭐가 달라지나요?</b> 전통 풀이에서는 편재를 "재물, 돈 쓰임, 바깥 활동"에 비유합니다. 즉 "편재가 있다"는 전통 풀이로는 "그 자리에 돈이나 바깥 활동을 상징하는 글자가 있다"는 정도의 말입니다. ⚠️ 이 비유는 공식 자료로 확인하지 못했습니다. 실제로 돈을 잘 번다거나 쓴다는 뜻이 아닙니다.</p>
+  </div>
+  <table id="ss-table"></table>
+  <p class="ko">지지 줄의 "○○ 자리"는 『자평진전』이 연지를 조상, 월지를 부모, 일지를 아내, 시지를 자식에 배속한다는 전통 규칙입니다(출처: <a href="https://koreascience.kr/article/JAKO202209059084683.pdf">이남연·김기승, 십성 논문</a>). ⚠️ 이 논문은 지지 기준 설명만 확인했고, 천간에도 같은 자리를 붙이는지는 확인하지 못했습니다. 실제 가족이나 앞날을 보여 준다는 근거는 아닙니다.</p>
+  <h3 class="h3">3. 한 줄씩 정리</h3>
+  <ul id="oneline"></ul>
+  <h3 class="h3">4. 전체 요약</h3>
+  <div id="summary"></div>
+  <h3 class="h3">5. 장점 · 단점 · 연애 스타일</h3>
+  <div class="warn">⚠️ <b>이 항목은 근거가 약합니다.</b> 아래 문장은 명리학 서적(김기승, 『사주심리치료학』, 2011)이 십성별로 적은 성향을 <a href="https://koreascience.kr/article/JAKO202209059084683.pdf">이남연·김기승의 십성 논문</a>이 인용한 것을 옮긴 것입니다. 이런 성향 서술이 실제 사람의 성격과 맞는다는 검증은 확인하지 못했습니다. 원문에 있는 일부 강한 표현은 생략했고, 한 사주에 같은 이름표가 여러 개이거나 위치가 다를 때 영향이 얼마나 달라지는지도 확인하지 못했습니다. 재미와 참고용으로만 보세요.</div>
+  <div id="traits"></div>
+
+  <h2 id="el-h">오행 분포 (8글자, 천간과 지지 글자 기준)</h2>
+  <div class="row" id="el-chips"></div>
+  <div class="hbars" id="el-bars" role="img" aria-label="오행 분포 막대그래프"></div>
+  <div class="radarbox"><svg id="el-radar" viewBox="0 0 300 280" role="img" aria-label="오행 분포 레이더 차트"></svg></div>
+  <p class="ko">레이더 차트는 오행별 비율을 오각형 위에 그린 것입니다. 바깥으로 갈수록 그 오행이 많고, 모양이 한쪽으로 기울수록 한 오행에 몰려 있습니다.</p>
+  <p class="ko">막대 길이는 전체 글자 중 차지하는 비율입니다.</p>
+  <h3 class="h3">십성 분포 (일간 제외 7글자)</h3>
+  <div class="hbars" id="ss-bars" role="img" aria-label="십성 분포 막대그래프"></div>
+  <p class="ko">막대 길이는 전체 글자 중 차지하는 비율입니다.</p>
+
+  <h2>대운</h2>
+  <p id="daeun-text"></p>
+  <div class="daeun" id="daeun"></div>
+  <p id="daeun-detail"></p>
+  <div class="warn">⚠️ 미확인: 순행/역행 규칙(연간 음양과 성별), "3일 = 1년" 환산, 대운수를 반올림하는 방식은 공식 자료로 확인하지 못했습니다.</div>
+
+  <h2>계산 방식과 검증</h2>
+  <p class="ko">이 페이지의 사주는 입력값으로 브라우저에서 직접 계산합니다. 외부 API를 부르지 않습니다. 확인한 내용에는 출처를 달았고, 확인하지 못한 내용은 ⚠️로 표시했습니다.</p>
+  <table>
+    <tr><th>항목</th><th>방식 / 상태</th></tr>
+    <tr><td>일주</td><td>율리우스 일수를 60으로 나눈 나머지로 계산. 기본값 1990.07.24가 음양력 정보 API의 일진 경인(庚寅)과 일치함을 확인. 출처: <a href="https://www.data.go.kr/data/15012679/openapi.do">한국천문연구원 음양력 정보</a></td></tr>
+    <tr><td>절기 시각 (연주·월주 경계)</td><td>한국천문연구원 「1920년-2100년 24기 입기 시각」 자료의 12개 절(節) 시각을 페이지에 넣어 사용. 기본값 해(1990) 소서 07-07 18:00, 입추 08-08 03:46이 특일 정보 API 값과 같음. 출처: <a href="https://astro.kasi.re.kr/kor/almanac/solarTerms/download">한국천문연구원 24기 입기 시각(1920-2100)</a>. 이 자료는 한국 표준시(UTC+9) 기준이며, 과거 표준자오선 변경이나 서머타임은 고려하지 않았다고 자료에 적혀 있습니다. 미래 시각은 지구 자전 속도를 예측할 수 없어 수 초에서 수 분까지 달라질 수 있다고 합니다.</td></tr>
+    <tr><td>입력 시각 (표준시·서머타임)</td><td>국가기록원에 따르면 1954년에 동경 127°30′를 표준 자오선으로 썼고 1961년 8월 10일부터 다시 동경 135°를 썼으며, 서머타임은 1949~1961년과 1987~1988년에 시행했습니다. 이 페이지는 항상 UTC+9로 가정하고 해당 연도에는 경고만 띄웁니다. 정확한 시행·종료 날짜는 확인하지 못했습니다(⚠️ 국가기록원 자료 안에서도 폐지 시점 표기가 1988년과 1989년으로 엇갈립니다). 출처: <a href="https://theme.archives.go.kr/next/koreaOfRecord/summerTime.do">국가기록원 서머타임</a></td></tr>
+    <tr><td>시주</td><td>표준시 기준 2시간 구간(자시 23:00~01:00)에 일간으로 시간 천간을 정함. 기본값 戊寅은 이 규칙의 결과입니다. ⚠️ 어느 기준이 맞는지는 확정하지 못했습니다. 학술 논문 한 편은 출생지 경도로 시진을 정하고 정자시법을 써야 한다고 주장하지만(<a href="https://koreascience.kr/article/JAKO202317262225360.page">이○○·신○○, 역서의 시각 설정에 관한 타당성 연구, 한국과학기술정보연구원 koreascience</a>), 이는 한 논문의 주장이며 표준으로 확인한 것은 아닙니다. 야자시·조자시 구분도 자료마다 다릅니다.</td></tr>
+    <tr><td>띠</td><td>태어난 해의 지지를 동물 이름으로 부르는 것을 띠라고 하고, 자=쥐, 축=소, 인=호랑이, 묘=토끼, 진=용, 사=뱀, 오=말, 미=양, 신=원숭이, 유=닭, 술=개, 해=돼지입니다. 출처: <a href="https://encykorea.aks.ac.kr/Contents/Item/E0017225">한국민족문화대백과사전 「띠」</a>. ⚠️ 이 페이지는 입춘 기준 연주의 지지로 띠를 정합니다. 띠가 입춘과 설날 중 무엇을 기준으로 바뀌는지는 이 백과사전 항목에서 확인하지 못했습니다.</td></tr>
+    <tr><td>출생지</td><td>⚠️ 현재 계산에 쓰지 않습니다(경도 보정 미적용).</td></tr>
+    <tr><td>십성 이름 붙이는 방법</td><td>일간과 오행이 같으면 비견·겁재, 일간이 생하면 식신·상관, 일간이 극하면 편재·정재, 일간을 극하면 편관·정관, 일간을 생하면 편인·정인이며 음양이 같으면 비견·식신·편재·편관·편인, 다르면 겁재·상관·정재·정관·정인. 출처: <a href="https://koreascience.kr/article/JAKO202209059084683.pdf">이남연·김기승, 명리학에서 십성(十星)의 성립과 개념 확장에 관한 연구, 산업진흥연구 2022</a> (이 논문은 재성·관성을 "극을 받는"이라고 적은 문장이 있어 표현이 엇갈리는 부분은 편관 문장의 "극해오는 오행"과 맞춰 위 방향으로 해석했습니다).</td></tr>
+    <tr><td>장점·단점·연애 스타일</td><td>십성별 성향 서술은 김기승 『사주심리치료학』(2011)을 인용한 <a href="https://koreascience.kr/article/JAKO202209059084683.pdf">십성 논문</a>에서 옮김. ⚠️ 이런 성향 서술이 실제 성격과 맞는다는 검증은 확인하지 못했고, 연애 스타일을 직접 설명한 자료는 찾지 못했습니다.</td></tr>
+    <tr><td>궁합 점수</td><td>⚠️ Claude가 임의로 정한 배점(일간·일지 관계 각 30점, 오행 균형 40점)의 결과. 공식·학술 근거 없음.</td></tr>
+    <tr><td>지지의 오행·음양 (지지 본기)</td><td>⚠️ 미확인: 지지를 본기 한 글자(자→계, 축→기, 인→갑, …)로 바꿔 십성을 매기는 규칙은 공식·학술 자료에서 확인하지 못했습니다. 학파에 따라 다를 수 있습니다.</td></tr>
+    <tr><td>대운 순행·역행</td><td>출생연도 천간이 양이면서 남자, 또는 음이면서 여자는 순행, 음남·양녀는 역행. 월주를 기준으로 10년씩 바뀝니다. 출처: <a href="https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003221050">최재봉·최정준, 사주명리의 대운계산법 검토, 동방문화와 사상 18호, 2025</a></td></tr>
+    <tr><td>대운수 (3일 = 1년, 반올림)</td><td>⚠️ 미확인: "3일을 1년으로 환산"하는 규칙과 나머지를 반올림하는 방식은 공식·학술 자료로 확인하지 못했습니다. 위 논문은 널리 쓰이는 대운 프로그램 세 개 중 하나만 보정치를 줘서 첫 대운 시점이 서로 다르다고 밝히고 있어, 프로그램마다 값이 다를 수 있습니다.</td></tr>
+  </table>
+  <div id="default-ver">
+  <h2>기본값 검증 기록</h2>
+  <table>
+    <tr><th>항목</th><th>상태</th></tr>
+    <tr><td>연주 경오</td><td>음양력 정보 API의 세차 값 경오(庚午)와 일치. 출처: <a href="https://www.data.go.kr/data/15012679/openapi.do">한국천문연구원 음양력 정보</a></td></tr>
+    <tr><td>월주 계미</td><td>음양력 정보 API의 월건 값 계미(癸未)와 일치. 7월 24일은 소서(07-07)~입추(08-08) 사이. 출처: <a href="https://www.data.go.kr/data/15012679/openapi.do">한국천문연구원 음양력 정보</a>, <a href="https://www.data.go.kr/data/15012690/openapi.do">특일 정보(24절기)</a></td></tr>
+    <tr><td>일주 경인</td><td>음양력 정보 API의 일진 값 경인(庚寅)과 일치. 출처: <a href="https://www.data.go.kr/data/15012679/openapi.do">한국천문연구원 음양력 정보</a></td></tr>
+    <tr><td>시주</td><td>⚠️ 미확인 (03:30은 시 경계라 기준에 따라 달라지는 값. 위 "계산 방식과 검증" 표의 시주 항목 참고)</td></tr>
+    <tr><td>오행 · 십성 분류</td><td>십성 이름 붙이는 규칙은 논문으로 확인. ⚠️ 미확인: 지지를 본기 한 글자로 바꾸는 규칙과 지지의 음양 분류(학파에 따라 다를 수 있음)</td></tr>
+  </table>
+  <p class="ko">음양력 API 조회 결과 음력은 1990년 6월 3일입니다. 확인에 쓴 자료: <a href="https://astro.kasi.re.kr/life/pageView/8">KASI 음양력 변환</a>(음력 날짜),
+  <a href="https://www.data.go.kr/data/15012679/openapi.do">음양력 정보 API</a>(세차·월건·일진),
+  <a href="https://www.data.go.kr/data/15012690/openapi.do">특일 정보 API</a>(24절기).</p>
+  </div>
+  </div>
+
+  <div class="panel" id="mbti" role="tabpanel" aria-labelledby="tab-mbti" hidden>
+  <div class="warn">⚠️ 공식 MBTI 검사가 아님 — 네 가지 선호 지표(E/I, S/N, T/F, J/P)를 기준으로 Claude가 직접 만든 자가 점검 질문지입니다. 결과는 참고용이며 공식 검사 결과와 다를 수 있습니다.</div>
+  <div class="result" id="result" aria-live="polite"><div class="type" id="type">-</div><div id="bars" class="bars" role="img" aria-label="지표별 응답 비중"></div><div id="detail" class="ko">16문항에 모두 답하면 결과가 나옵니다.</div><div id="desc" class="ko"></div></div>
+  <p class="ko">각 문항에서 더 가까운 쪽(A/B)을 고르세요. 지표별 4문항 중 더 많이 고른 쪽이 해당 지표의 선호입니다.</p>
+  <h2>1. 에너지 방향 (E / I)</h2>
+  <div class="q"><p>1. 쉬는 날 에너지를 채우는 방법은?</p><ul><li><label><input type="radio" name="q1" value="A"> A. 사람들을 만나 어울린다</label></li><li><label><input type="radio" name="q1" value="B"> B. 혼자 조용히 시간을 보낸다</label></li></ul></div>
+  <div class="q"><p>2. 처음 보는 사람들이 모인 자리에서는?</p><ul><li><label><input type="radio" name="q2" value="A"> A. 먼저 말을 걸고 금방 어울린다</label></li><li><label><input type="radio" name="q2" value="B"> B. 누가 말을 걸어주길 기다리거나 아는 사람 옆에 있는다</label></li></ul></div>
+  <div class="q"><p>3. 생각을 정리할 때는?</p><ul><li><label><input type="radio" name="q3" value="A"> A. 말하면서 정리된다</label></li><li><label><input type="radio" name="q3" value="B"> B. 머릿속으로 충분히 정리한 뒤 말한다</label></li></ul></div>
+  <div class="q"><p>4. 하루 종일 사람들과 일한 뒤에는?</p><ul><li><label><input type="radio" name="q4" value="A"> A. 오히려 활력이 생긴다</label></li><li><label><input type="radio" name="q4" value="B"> B. 지쳐서 혼자 있고 싶다</label></li></ul></div>
+  <h2>2. 인식 방식 (S / N)</h2>
+  <div class="q"><p>5. 새로운 것을 배울 때는?</p><ul><li><label><input type="radio" name="q5" value="A"> A. 구체적인 예시와 실제 사례부터 본다</label></li><li><label><input type="radio" name="q5" value="B"> B. 전체 개념과 원리부터 이해하려 한다</label></li></ul></div>
+  <div class="q"><p>6. 더 끌리는 사람은?</p><ul><li><label><input type="radio" name="q6" value="A"> A. 현실적이고 경험이 풍부한 사람</label></li><li><label><input type="radio" name="q6" value="B"> B. 상상력이 풍부하고 아이디어가 많은 사람</label></li></ul></div>
+  <div class="q"><p>7. 대화할 때 나는?</p><ul><li><label><input type="radio" name="q7" value="A"> A. 있었던 일을 사실 위주로 구체적으로 이야기한다</label></li><li><label><input type="radio" name="q7" value="B"> B. 비유나 가능성, 의미를 얹어 이야기한다</label></li></ul></div>
+  <div class="q"><p>8. 일을 할 때 더 믿는 것은?</p><ul><li><label><input type="radio" name="q8" value="A"> A. 검증된 방법과 경험</label></li><li><label><input type="radio" name="q8" value="B"> B. 직관과 새로운 시도</label></li></ul></div>
+  <h2>3. 판단 방식 (T / F)</h2>
+  <div class="q"><p>9. 친구가 고민을 털어놓으면?</p><ul><li><label><input type="radio" name="q9" value="A"> A. 원인을 분석하고 해결책을 제시한다</label></li><li><label><input type="radio" name="q9" value="B"> B. 먼저 공감하고 감정을 받아준다</label></li></ul></div>
+  <div class="q"><p>10. 결정을 내릴 때 더 중시하는 것은?</p><ul><li><label><input type="radio" name="q10" value="A"> A. 논리와 객관적 기준</label></li><li><label><input type="radio" name="q10" value="B"> B. 사람들의 감정과 관계</label></li></ul></div>
+  <div class="q"><p>11. 비판을 들었을 때?</p><ul><li><label><input type="radio" name="q11" value="A"> A. 내용이 타당한지부터 따진다</label></li><li><label><input type="radio" name="q11" value="B"> B. 말투나 분위기에 먼저 마음이 쓰인다</label></li></ul></div>
+  <div class="q"><p>12. 더 듣기 싫은 평가는?</p><ul><li><label><input type="radio" name="q12" value="A"> A. 비합리적이다</label></li><li><label><input type="radio" name="q12" value="B"> B. 냉정하다</label></li></ul></div>
+  <h2>4. 생활 양식 (J / P)</h2>
+  <div class="q"><p>13. 여행을 갈 때는?</p><ul><li><label><input type="radio" name="q13" value="A"> A. 일정과 예약을 미리 짜둔다</label></li><li><label><input type="radio" name="q13" value="B"> B. 큰 틀만 정하고 그때그때 움직인다</label></li></ul></div>
+  <div class="q"><p>14. 마감이 있는 일은?</p><ul><li><label><input type="radio" name="q14" value="A"> A. 미리미리 끝내둔다</label></li><li><label><input type="radio" name="q14" value="B"> B. 마감이 가까워질 때 집중이 잘 된다</label></li></ul></div>
+  <div class="q"><p>15. 계획이 갑자기 바뀌면?</p><ul><li><label><input type="radio" name="q15" value="A"> A. 스트레스를 받는다</label></li><li><label><input type="radio" name="q15" value="B"> B. 오히려 괜찮거나 즐겁다</label></li></ul></div>
+  <div class="q"><p>16. 책상과 파일 정리는?</p><ul><li><label><input type="radio" name="q16" value="A"> A. 정해진 자리와 규칙이 있다</label></li><li><label><input type="radio" name="q16" value="B"> B. 필요할 때 찾을 수 있으면 충분하다</label></li></ul></div>
+  <div class="actions"><button type="button" id="reset">다시 하기</button></div>
+  <h2>출처</h2>
+  <ul class="ko">
+    <li>ISTJ 유형 설명: <a href="https://www.myersbriggs.org/my-mbti-personality-type/mbti-basics/the-16-mbti-types.htm">The Myers &amp; Briggs Foundation – The 16 MBTI Types</a>의 영어 원문을 Claude가 한국어로 옮김 (공식 번역 아님)</li>
+    <li>네 가지 선호 지표(E/I, S/N, T/F, J/P) 구분: 위 같은 페이지의 "Most people find that one preference, in a preference pair, best describes their natural way of doing things" 문구와 같은 틀을 따름</li>
+    <li>⚠️ 미확인: 16개 문항과 4문항당 다수결로 지표를 정하는 방식은 출처가 없는 Claude의 자작입니다. 공식 검사의 문항·채점 방식과 다릅니다.</li>
+    <li>⚠️ 미확인: ISTJ 외 15개 유형의 설명은 확인하지 않았습니다.</li>
+    <li>⚠️ 미확인: 위 영어 문장은 페이지를 요약 도구로 읽어 얻은 인용이며, 원문 페이지와 직접 대조하지는 않았습니다.</li>
+  </ul>
+  </div>
+
+  <div class="panel" id="match" role="tabpanel" aria-labelledby="tab-match" hidden>
+  <div class="warn">⚠️ 이 탭은 두 사람의 사주를 나란히 계산해 오행·십성 관계를 보여 줍니다. 위쪽의 <b>종합 점수는 Claude가 임의로 정한 배점의 결과</b>이고, "잘 맞는다/안 맞는다"는 판정은 하지 않습니다. 사주 궁합이 실제 관계를 맞힌다는 검증 자료를 확인하지 못했고, 합·충·형·해 같은 궁합 규칙도 공식 자료로 확인하지 못했습니다.</div>
+  <h2>나</h2>
+  <div class="info form">
+    <div><label for="m-date">생년월일 (양력)</label><input type="date" id="m-date" value="1990-07-24" min="1920-01-01" max="2100-12-31"></div>
+    <div><label for="m-time">태어난 시간</label><input type="time" id="m-time" value="03:30"> <label class="chk"><input type="checkbox" id="m-tu"> 시간 모름</label></div>
+    <div><label for="m-place">태어난 곳</label><select id="m-place"></select> <select id="m-city" aria-label="시·군"></select></div>
+    <div><label>성별</label><span><label><input type="radio" name="mgender" value="남자" checked> 남자</label> <label><input type="radio" name="mgender" value="여자"> 여자</label></span></div>
+  </div>
+  <h2>상대</h2>
+  <div class="info form">
+    <div><label for="p-date">생년월일 (양력)</label><input type="date" id="p-date" min="1920-01-01" max="2100-12-31"></div>
+    <div><label for="p-time">태어난 시간</label><input type="time" id="p-time"> <label class="chk"><input type="checkbox" id="p-tu"> 시간 모름</label></div>
+    <div><label for="p-place">태어난 곳</label><select id="p-place"></select> <select id="p-city" aria-label="시·군"></select></div>
+    <div><label>성별</label><span><label><input type="radio" name="pgender" value="남자"> 남자</label> <label><input type="radio" name="pgender" value="여자" checked> 여자</label></span></div>
+    <div><button type="button" id="p-go" class="go">조회</button></div>
+    <div class="note ko" id="p-note" hidden></div>
+  </div>
+  <div id="m-result" hidden>
+    <h2>종합 (참고용 점수)</h2>
+    <div class="warn">⚠️ <b>이 점수는 Claude가 임의로 만든 계산식의 결과입니다.</b> 사주 궁합 점수를 어떻게 매기는지에 대한 공식·학술 근거를 확인하지 못했고, 점수가 실제 관계를 예측한다는 검증 자료도 확인하지 못했습니다. 아래 계산식(배점)은 근거 없이 정한 것이라 다른 배점을 쓰면 점수가 달라집니다. 재미와 참고용으로만 보세요.</div>
+    <div class="score"><div class="big" id="m-score">-</div><div class="gauge"><i id="m-gauge"></i></div></div>
+    <div class="hbars" id="m-break"></div>
+    <div class="radarbox"><svg id="m-radar" viewBox="0 0 300 280" role="img" aria-label="오행 분포 레이더 차트"></svg></div>
+    <p class="ko"><span class="dot a"></span>나 <span class="dot b"></span>상대. 레이더 차트는 오행별 비율(각자 전체 글자 중)을 겹쳐 그린 것입니다. 바깥으로 갈수록 그 오행이 많습니다.</p>
+    <p id="m-sum"></p>
+    <details><summary>점수 계산식 보기 (Claude 자작, 근거 없음)</summary>
+      <ul class="ko">
+        <li><b>일간 관계 (30점):</b> 두 일간의 오행이 한쪽이 다른 쪽을 키워 주는 관계(생)이면 30점, 같은 오행이면 20점, 한쪽이 다른 쪽을 누르는 관계(극)이면 10점.</li>
+        <li><b>일지 관계 (30점):</b> 두 일지의 오행(본기 기준)으로 위와 같은 배점.</li>
+        <li><b>오행 균형 (40점):</b> 두 사람의 오행 비율을 평균내서 다섯 오행이 고르게 퍼질수록 높게(한 오행에 몰리면 0점에 가까움). 균형 = 1 − (각 오행 비율과 20%의 차이 합 ÷ 1.6), 점수 = 40 × 균형.</li>
+        <li>생·극을 점수로 환산하는 배점과 균형 항목은 제가 정한 것입니다. 오행의 생(生)·극(剋) 관계 자체는 십성 논문으로 확인했습니다.</li>
+        <li>합·충·형·해, 월주·연주·시주의 관계는 계산에 넣지 않았습니다.</li>
+      </ul>
+    </details>
+    <h2>두 사람의 사주</h2>
+    <h3 class="h3">나</h3><p class="ko" id="m-i1"></p><div class="pillars" id="m-p1"></div>
+    <h3 class="h3">상대</h3><p class="ko" id="m-i2"></p><div class="pillars" id="m-p2"></div>
+    <div id="m-flags"></div>
+    <h2>오행 분포 비교</h2>
+    <div class="cmp" id="m-el"></div>
+    <p class="ko"><span class="dot a"></span>나 <span class="dot b"></span>상대. 막대 길이는 각자 전체 글자 중 차지하는 비율이고, 숫자는 글자 수입니다.</p>
+    <h2>서로의 관계 (계산한 사실)</h2>
+    <table id="m-rel"></table>
+    <p class="ko">"나→상대"는 내 일간(또는 일지)을 기준으로 상대 글자에 붙는 십성 이름표이고, "상대→나"는 반대 방향입니다. 십성 이름 붙이는 규칙은 <a href="https://koreascience.kr/article/JAKO202209059084683.pdf">십성 논문</a>으로 확인했습니다.</p>
+    <h2>쉽게 풀어 읽기</h2>
+    <div class="warn">⚠️ 아래는 위에서 계산한 사실을 쉬운 말로 풀고, 이름표(십성)의 전통 뜻풀이를 덧붙인 것입니다. 궁합이 좋다/나쁘다는 판정이 아니고, 전통 뜻풀이는 공식 자료로 확인하지 못했습니다.</div>
+    <ul id="m-read" class="ko"></ul>
+    <div class="warn">⚠️ 미확인: 두 사람의 천간·지지가 서로 합(合)·충(沖)·형(刑)·해(害)가 되는지, 그것이 궁합에서 무엇을 뜻하는지는 공식 자료로 확인하지 못해 계산하지 않았습니다.</div>
+  </div>
+  </div>
+
+  <div class="panel" id="tarot" role="tabpanel" aria-labelledby="tab-tarot" hidden>
+  <div class="warn">⚠️ <b>재미와 참고용입니다.</b> 아래 카드 의미는 A. E. 웨이트의 『The Pictorial Key to the Tarot』(1910)에 적힌 정방향 의미를 Claude가 한국어로 옮긴 것이고, 이 의미가 실제 일을 맞힌다는 근거는 확인하지 못했습니다. 웨이트 본인도 이 책 3부에서 대아르카나의 점술적 의미가 "인위적이고 임의적"이라고 적었습니다. 카드 그림은 넣지 않았고, 역방향 의미와 3장 뽑기의 자리별 의미(과거·현재·미래 등)는 넣지 않았습니다.</div>
+  <div class="info form">
+    <div><label>뽑는 장수</label><span><label><input type="radio" name="tn" value="1" checked> 1장</label> <label><input type="radio" name="tn" value="3"> 3장</label></span></div>
+    <div><button type="button" id="tarot-go" class="go">카드 뽑기</button></div>
+  </div>
+  <div id="tarot-out" class="tcards"></div>
+  <p class="ko">전체 78장(대아르카나 22장 + 소아르카나 56장) 중에서 이 브라우저의 난수로 같은 카드가 겹치지 않게 뽑습니다. 출처: <a href="https://archive.org/details/A.EWaiteThePictorialKeyToTheTarot">A. E. Waite, The Pictorial Key to the Tarot (1910)</a> 원문 텍스트. 지팡이 8과 컵 5는 원문 파일에서 카드별 설명을 확보하지 못해 같은 책 3부 4절 "소아르카나의 추가 의미"로 대신했고 카드에 ⚠️로 표시했습니다.</p>
+  </div>
+
+  <div class="panel" id="face" role="tabpanel" aria-labelledby="tab-face" hidden>
+  <div class="warn">⚠️ <b>사진을 받지 않고, 개인의 얼굴을 풀이하지 않습니다.</b> 이 탭은 전통 관상에서 얼굴을 어떻게 나눠 보는지 용어만 설명합니다. 관상으로 운명을 판단할 수 있다는 근거는 확인하지 못했습니다. 한국민족문화대백과사전은 관상을 "상을 보아 운명재수를 판단하여 미래에 닥쳐올 흉사를 예방하고 복을 부르려는 점법"이라고 정의합니다.</div>
+  <h2>얼굴 부위 (눌러 보세요)</h2>
+  <div class="facebox"><svg id="face-svg" viewBox="0 0 260 330" role="img" aria-label="얼굴 부위 그림">
+    <ellipse cx="130" cy="170" rx="86" ry="130" class="fh"/>
+    <g id="fz-forehead" class="fz" data-k="forehead"><path d="M62 98 Q130 20 198 98 Q130 72 62 98Z"/><text x="130" y="78">이마</text></g>
+    <g id="fz-brow" class="fz" data-k="brow"><path d="M78 118 Q100 108 120 118"/><path d="M140 118 Q160 108 182 118"/><text x="130" y="108" class="sm">눈썹</text></g>
+    <g id="fz-eye" class="fz" data-k="eye"><ellipse cx="98" cy="136" rx="16" ry="7"/><ellipse cx="162" cy="136" rx="16" ry="7"/><text x="130" y="128" class="sm">눈</text></g>
+    <g id="fz-ear" class="fz" data-k="ear"><ellipse cx="42" cy="160" rx="9" ry="22"/><ellipse cx="218" cy="160" rx="9" ry="22"/><text x="20" y="196" class="sm">귀</text><text x="240" y="196" class="sm">귀</text></g>
+    <g id="fz-nose" class="fz" data-k="nose"><path d="M130 132 L112 190 Q130 202 148 190Z"/><text x="130" y="178" class="sm">코</text></g>
+    <g id="fz-mouth" class="fz" data-k="mouth"><path d="M104 222 Q130 238 156 222 Q130 214 104 222Z"/><text x="130" y="232" class="sm">입</text></g>
+    <g id="fz-chin" class="fz" data-k="chin"><path d="M84 262 Q130 308 176 262 Q130 278 84 262Z"/><text x="130" y="288">턱</text></g>
+  </svg></div>
+  <div class="info ko" id="face-info"><p>부위를 누르면 이 부위가 전통 관상의 어떤 구분에 속하는지 보여 줍니다.</p></div>
+  <h2>전통 관상의 구분 (한국민족문화대백과사전 「관상」 기준)</h2>
+  <table>
+    <tr><th>구분</th><th>내용</th></tr>
+    <tr><td>얼굴을 나누는 이름들</td><td>오관(五官)·육부(六府)·삼재(三才)·삼정(三停)·오성(五星)·육요(六曜)·오악(五嶽)·사독(四瀆)·십이궁(十二宮)·사학당(四學堂)·팔학당(八學堂) 등을 잡고 관찰한다고 합니다.</td></tr>
+    <tr><td>삼재·삼정</td><td>삼재는 이마·코·턱을 천(天)·지(地)·인(人)으로 구분하고, 삼정은 삼재와 같은 부위를 상·중·하정으로 나눕니다.</td></tr>
+    <tr><td>오관</td><td>귀·눈썹·눈·코·입입니다(『마의상법』 번역 논문 초록 기준).</td></tr>
+    <tr><td>오성</td><td>금·목·수·화·토성을 각기 왼쪽 귀·오른쪽 귀·입·이마·코에 배치한 것입니다.</td></tr>
+    <tr><td>육부</td><td>얼굴을 좌우로 양분한 뒤 각기 상·중·하부로 나누어 관상합니다.</td></tr>
+    <tr><td>십이궁</td><td>명궁·재백·형제·전택·남녀·노복·처첩·질액·천이·관록·복덕·상모입니다. 각 궁이 얼굴의 어디인지는 이 항목에서 확인하지 못했습니다.</td></tr>
+    <tr><td>그 밖의 요소</td><td>사주를 함께 따지기도 하고 기색(氣色)과 심상(心相)을 아울러 본다고 합니다.</td></tr>
+    <tr><td>한국식 차이</td><td>중국과 달리 이마보다 턱을, 눈을 더 중시한다고 설명합니다.</td></tr>
+  </table>
+  <p class="ko">출처: <a href="https://encykorea.aks.ac.kr/Article/E0004873">한국민족문화대백과사전 「관상」</a>(조흥윤, 2023.2.7 수정), <a href="https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART002822786">관상서 『麻衣相法』의 번역 난점과 번역문 분석</a>(백수진, 한중인문학연구 74호, 2022). ⚠️ 각 부위의 모양이 길한지 흉한지(예: 귀의 모양, 눈꼬리 방향)는 확인한 항목이 일부뿐이고 이 탭에는 넣지 않았습니다.</p>
+  </div>
+
+  <footer>사주·궁합 풀이는 전통 해석 규칙을 옮긴 것이고 성격이나 앞날을 보증하지 않습니다. 공식 자료로 확인하지 못한 내용은 ⚠️로 표시했습니다. MBTI는 공식 검사가 아닙니다.</footer>
+</main>
+<script>
+  const tabs = document.querySelectorAll('nav [role=tab]');
+  function show(name) {
+    tabs.forEach(t => {
+      const on = t.id === 'tab-' + name;
+      t.setAttribute('aria-selected', on);
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+    try { localStorage.setItem('aboutMe-tab', name); } catch (e) {}
+  }
+  tabs.forEach(t => t.addEventListener('click', () => show(t.id.slice(4))));
+  let saved = null;
+  try { saved = localStorage.getItem('aboutMe-tab'); } catch (e) {}
+  if (['mbti', 'match', 'tarot', 'face'].includes(saved)) show(saved);
+
+  const AX = [['E','I',1],['S','N',5],['T','F',9],['J','P',13]];
+  function calc() {
+    let type = '', parts = [], done = true, tie = false, bars = '';
+    AX.forEach(([a, b, s]) => {
+      let ca = 0, cb = 0, ans = 0;
+      for (let i = s; i < s + 4; i++) {
+        const v = document.querySelector('input[name=q' + i + ']:checked');
+        if (v) { ans++; v.value === 'A' ? ca++ : cb++; }
+      }
+      if (ans < 4) done = false;
+      const win = ca === cb ? '' : (ca > cb ? 'a' : 'b');
+      bars += '<div class="bar"><span class="lbl' + (win === 'a' ? ' win' : '') + '">' + a + '</span><div class="track">' +
+        (ca ? '<div class="seg a" style="width:' + ca * 25 + '%">' + ca + '</div>' : '') +
+        (cb ? '<div class="seg b" style="width:' + cb * 25 + '%">' + cb + '</div>' : '') +
+        '</div><span class="lbl' + (win === 'b' ? ' win' : '') + '">' + b + '</span></div>';
+      parts.push(a + ' ' + ca + ' : ' + cb + ' ' + b);
+      if (ans === 4 && ca === cb) { tie = true; type += '?'; }
+      else type += ans < 4 ? '-' : (ca > cb ? a : b);
+    });
+    document.getElementById('type').textContent = type;
+    document.getElementById('bars').innerHTML = bars;
+    document.getElementById('detail').innerHTML = parts.join('<br>') +
+      (done ? (tie ? '<br>⚠️ 2:2로 갈린 지표(?)는 어느 쪽인지 정할 수 없습니다.' : '') : '<br>아직 답하지 않은 문항이 있습니다.') +
+      '<br>⚠️ 공식 MBTI 검사 결과가 아닌 자가 점검 결과입니다.';
+    const DESC = {
+      ISTJ: ['조용하고 진지하며, 철저하고 믿을 수 있는 모습으로 성공을 이룹니다. 실용적이고, 사실 위주이며, 현실적이고, 책임감이 있습니다. 무엇을 해야 할지 논리적으로 결정하고, 방해가 되는 일이 있어도 꾸준히 그 일을 해 나갑니다. 일, 집, 삶 등 모든 것을 질서 있고 정돈되게 만드는 데서 즐거움을 느낍니다. 전통과 충성을 중시합니다.']
+    };
+    document.getElementById('desc').innerHTML = DESC[type]
+      ? '<br><b>' + type + ' 유형 설명</b><br>' + DESC[type][0] +
+        '<br><a href="https://www.myersbriggs.org/my-mbti-personality-type/mbti-basics/the-16-mbti-types.htm">The Myers &amp; Briggs Foundation – The 16 MBTI Types</a>' +
+        '<br>⚠️ 이 설명은 공식 검사로 판정된 유형에 대한 것이며, 이 자가 점검 결과가 공식 결과와 같다는 보장은 없습니다. 위 한국어 문장은 공식 번역이 아니라 Claude가 영어 원문을 옮긴 것입니다.'
+      : (type.length === 4 && !/[-?]/.test(type) ? '<br>⚠️ 미확인: ' + type + ' 유형의 공식 설명은 아직 확인하지 않았습니다.' : '');
+    try { localStorage.setItem('aboutMe-mbti', JSON.stringify([...document.querySelectorAll('.q input:checked')].map(x => x.name + x.value))); } catch (e) {}
+  }
+  const CITY = {"서울특별시": ["종로구", "중구", "용산구", "성동구", "광진구", "동대문구", "중랑구", "성북구", "강북구", "도봉구", "노원구", "은평구", "서대문구", "마포구", "양천구", "강서구", "구로구", "금천구", "영등포구", "동작구", "관악구", "서초구", "강남구", "송파구", "강동구"], "부산광역시": ["중구", "서구", "동구", "영도구", "부산진구", "동래구", "남구", "북구", "해운대구", "사하구", "금정구", "강서구", "연제구", "수영구", "사상구", "기장군"], "대구광역시": ["중구", "동구", "서구", "남구", "북구", "수성구", "달서구", "달성군", "군위군"], "인천광역시": ["제물포구", "영종구", "미추홀구", "연수구", "남동구", "부평구", "계양구", "서해구", "검단구", "강화군", "옹진군"], "전남광주통합특별시": ["목포시", "여수시", "순천시", "나주시", "광양시", "동구", "서구", "남구", "북구", "광산구", "담양군", "곡성군", "구례군", "고흥군", "보성군", "화순군", "장흥군", "강진군", "해남군", "영암군", "무안군", "함평군", "영광군", "장성군", "완도군", "진도군", "신안군"], "대전광역시": ["동구", "중구", "서구", "유성구", "대덕구"], "울산광역시": ["중구", "남구", "동구", "북구", "울주군"], "경기도": ["수원시", "성남시", "의정부시", "안양시", "부천시", "광명시", "평택시", "동두천시", "안산시", "고양시", "과천시", "구리시", "남양주시", "오산시", "시흥시", "군포시", "의왕시", "하남시", "용인시", "파주시", "이천시", "안성시", "김포시", "화성시", "광주시", "양주시", "포천시", "여주시", "연천군", "가평군", "양평군"], "강원특별자치도": ["춘천시", "원주시", "강릉시", "동해시", "태백시", "속초시", "삼척시", "홍천군", "횡성군", "영월군", "평창군", "정선군", "철원군", "화천군", "양구군", "인제군", "고성군", "양양군"], "충청북도": ["청주시", "충주시", "제천시", "보은군", "옥천군", "영동군", "증평군", "진천군", "괴산군", "음성군", "단양군"], "충청남도": ["천안시", "공주시", "보령시", "아산시", "서산시", "논산시", "계룡시", "당진시", "금산군", "부여군", "서천군", "청양군", "홍성군", "예산군", "태안군"], "전북특별자치도": ["전주시", "군산시", "익산시", "정읍시", "남원시", "김제시", "완주군", "진안군", "무주군", "장수군", "임실군", "순창군", "고창군", "부안군"], "경상북도": ["포항시", "경주시", "김천시", "안동시", "구미시", "영주시", "영천시", "상주시", "문경시", "경산시", "의성군", "청송군", "영양군", "영덕군", "청도군", "고령군", "성주군", "칠곡군", "예천군", "봉화군", "울진군", "울릉군"], "경상남도": ["창원시", "진주시", "통영시", "사천시", "김해시", "밀양시", "거제시", "양산시", "의령군", "함안군", "창녕군", "고성군", "남해군", "하동군", "산청군", "함양군", "거창군", "합천군"], "제주특별자치도": ["제주시", "서귀포시"]};
+  function fillCity() {
+    const c = document.getElementById('in-city'), list = CITY[document.getElementById('in-place').value] || [];
+    c.innerHTML = '<option value="">시·군 선택 안 함</option>' + list.map(x => '<option' + (x === '구미시' ? ' selected' : '') + '>' + x + '</option>').join('');
+    c.value = list.includes('구미시') ? '구미시' : '';
+  }
+  fillCity();
+  document.getElementById('in-place').addEventListener('change', fillCity);
+  document.querySelectorAll('.q input').forEach(x => x.addEventListener('change', calc));
+  document.getElementById('reset').addEventListener('click', () => {
+    document.querySelectorAll('.q input').forEach(x => x.checked = false);
+    calc();
+  });
+  try {
+    (JSON.parse(localStorage.getItem('aboutMe-mbti') || '[]')).forEach(k => {
+      const el = document.querySelector('input[name=' + k.slice(0, -1) + '][value=' + k.slice(-1) + ']');
+      if (el) el.checked = true;
+    });
+  } catch (e) {}
+  calc();
+</script>
+<script>
+(function () {
+// CALC-START
+const JIE_KASI = {"1920":"01062341 02051126 03060551 04051115 05060511 06060950 07072019 08080558 09080827 10082329 11080205 12071830","1921":"01060534 02041720 03061145 04051709 05061104 06061541 07080207 08081143 09081410 10090511 11080746 12080011","1922":"01061117 02042306 03061734 04052258 05061653 06062130 07080757 08081737 09082006 10091109 11081345 12080611","1923":"01061714 02050500 03062324 04060446 05062238 06070314 07081342 08082324 09090157 10091703 11081940 12081205","1924":"01062306 02051050 03060512 04051033 05060426 06060902 07071929 08080512 09080746 10082252 11080129 12071753","1925":"01060453 02041637 03061100 04051622 05061018 06061456 07080125 08081107 09081340 10090447 11080726 12072352","1926":"01061054 02042238 03061700 04052218 05061608 06062042 07080706 08081644 09081916 10091025 11081308 12080539","1927":"01061645 02050430 03062250 04060406 05062153 06070225 07081250 08082231 09090105 10091615 11081857 12081126","1928":"01062231 02051016 03060437 04050955 05060343 06060817 07071844 08080428 09080702 10082210 11080050 12071717","1929":"01060422 02041609 03061032 04051551 05060940 06061411 07080032 08081009 09081240 10090347 11080627 12072256","1930":"01061003 02042151 03061617 04052137 05061527 06061958 07080620 08081557 09081828 10090937 11081220 12080451","1931":"01061556 02050341 03062202 04060320 05062110 06070142 07081206 08082145 09090017 10091527 11081810 12081040","1932":"01062145 02050929 03060349 04050906 05060255 06060728 07071752 08080332 09080603 10082110 11072350 12071618","1933":"01060323 02041509 03060931 04051450 05060842 06061317 07072344 08080926 09081157 10090304 11080543 12072211","1934":"01060916 02042104 03061526 04052044 05061431 06061901 07080524 08081504 09081736 10090845 11081127 12080357","1935":"01061502 02050249 03062110 04060226 05062012 06070042 07081106 08082048 09082324 10091436 11081718 12080945","1936":"01062047 02050829 03060249 04050807 05060156 06060631 07071658 08080243 09080521 10082032 11072315 12071542","1937":"01060244 02041426 03060844 04051401 05060751 06061223 07072246 08080825 09081059 10090211 11080455 12072126","1938":"01060831 02042015 03061434 04051949 05061335 06061807 07080431 08081413 09081648 10090801 11081048 12080322","1939":"01061428 02050210 03062026 04060137 05061921 06062352 07081018 08082003 09082242 10091357 11081644 12080917","1940":"01062024 02050808 03060224 04050735 05060116 06060544 07071608 08080151 09080429 10081942 11072227 12071458","1941":"01060204 02041350 03060810 04051325 05060710 06061139 07072203 08080746 09081024 10090138 11080424 12072056","1942":"01060802 02041949 03061409 04051924 05061307 06061733 07080352 08081330 09081606 10090722 11081011 12080247","1943":"01061355 02050140 03061959 04060111 05061853 06062319 07080939 08081919 09082155 10091310 11081559 12080833","1944":"01061939 02050723 03060140 04050654 05060040 06060511 07071536 08080119 09080356 10081909 11072155 12071428","1945":"01060134 02041319 03060738 04051252 05060637 06061105 07072127 08080705 09080938 10090049 11080334 12072008","1946":"01060716 02041904 03061325 04051839 05061221 06061649 07080311 08081252 09081527 10090641 11080927 12080200","1947":"01061306 02050050 03061908 04060020 05061803 06062231 07080856 08081841 09082121 10091237 11081524 12080756","1948":"01061900 02050642 03060058 04050609 05052352 06060420 07071444 08080026 09080305 10081820 11072107 12071338","1949":"01060041 02041223 03060639 04051152 05060537 06061007 07072032 08080615 09080854 10090011 11080300 12071933","1950":"01060639 02041821 03061235 04051744 05061125 06061551 07080213 08081155 09081434 10090552 11080844 12080122","1951":"01061230 02050013 03061827 04052333 05061709 06062133 07080754 08081737 09082018 10091136 11081427 12080702","1952":"01061810 02050553 03060007 04050515 05052254 06060320 07071345 08072331 09080214 10081732 11072022 12071256","1953":"01060002 02041146 03060602 04051113 05060452 06060916 07071935 08080515 09080753 10082310 11080201 12071837","1954":"01060545 02041731 03061149 04051659 05061038 06061501 07080119 08081059 09081338 10090457 11080751 12080029","1955":"01061136 02042318 03061731 04052239 05061618 06062043 07080706 08081650 09081932 10091052 11081345 12080623","1956":"01061730 02050512 03052324 04050431 05052210 06060236 07071258 08072240 09080119 10081636 11071926 12071202","1957":"01052310 02041055 03060510 04051019 05060358 06060825 07071848 08080432 09080712 10082230 11080120 12071756","1958":"01060504 02041649 03061105 04051612 05060949 06061412 07080033 08081017 09081259 10090419 11080712 12072350","1959":"01061058 02042242 03061657 04052203 05061539 06062000 07080620 08081604 09081848 10091010 11081302 12080537","1960":"01061642 02050423 03052236 04050344 05052123 06060149 07071213 08072200 09080045 10081609 11071902 12071138","1961":"01052243 02041022 03060435 04050942 05060321 06060746 07071807 08080348 09080629 10082151 11080046 12071726","1962":"01060435 02041617 03061030 04051534 05060909 06061331 07072351 08080934 09081215 10090338 11080635 12072317","1963":"01061026 02042208 03061617 04052119 05061452 06061914 07080538 08081525 09081812 10090936 11081232 12080513","1964":"01061622 02050405 03052216 04050318 05052051 06060112 07071132 08072116 09072359 10081522 11071815 12071053","1965":"01052202 02040946 03060401 04050907 05060242 06060702 07071721 08080305 09080548 10082111 11080007 12071646","1966":"01060354 02041538 03060951 04051456 05060830 06061250 07072307 08080849 09081132 10090257 11080555 12072238","1967":"01060948 02042131 03061542 04052045 05061417 06061836 07080453 08081435 09081718 10090841 11081137 12080417","1968":"01061526 02050307 03052118 04050221 05051956 06060019 07071042 08072027 09072311 10081434 11071729 12071008","1969":"01052117 02040859 03060311 04050815 05060150 06060611 07071632 08080214 09080455 10082017 11072311 12071551","1970":"01060302 02041446 03060858 04051402 05060734 06061152 07072211 08080754 09081038 10090202 11080458 12072137","1971":"01060845 02042025 03061435 04051936 05061308 06061729 07080351 08081340 09081630 10090759 11081057 12080336","1972":"01061442 02050220 03052028 04050129 05051901 06052322 07070943 08071929 09072215 10081342 11071639 12070919","1973":"01052025 02040804 03060213 04050714 05060046 06060507 07071527 08080113 09080359 10081927 11072228 12071510","1974":"01060220 02041400 03060807 04051305 05060634 06061052 07072111 08080657 09080945 10090115 11080418 12072105","1975":"01060818 02041959 03061406 04051901 05061227 06061642 07080259 08081245 09081533 10090702 11081003 12080246","1976":"01061357 02050139 03051948 04050046 05051814 06052231 07070851 08071838 09072128 10081258 11071559 12070841","1977":"01051951 02040733 03060144 04050646 05060016 06060432 07071448 08080030 09080316 10081844 11072146 12071431","1978":"01060143 02041327 03060738 04051239 05060609 06061023 07072037 08080618 09080902 10090031 11080334 12072020","1979":"01060732 02041912 03061320 04051818 05061147 06061605 07080225 08081211 09081500 10090630 11080933 12080218","1980":"01061329 02050109 03051917 04050015 05051744 06052204 07070824 08071809 09072053 10081219 11071518 12070801","1981":"01051913 02040655 03060105 04050605 05052335 06060353 07071412 08072357 09080243 10081810 11072109 12071351","1982":"01060103 02041245 03060655 04051153 05060520 06060936 07071955 08080542 09080832 10090002 11080304 12071948","1983":"01060659 02041840 03061247 04051744 05061111 06061526 07080143 08081130 09081420 10090551 11080852 12080134","1984":"01061241 02050019 03051825 04042322 05051651 06052109 07070729 08071718 09072010 10081143 11071446 12070728","1985":"01051835 02040612 03060016 04050514 05052243 06060300 07071319 08072304 09080153 10081725 11072029 12071316","1986":"01060028 02041208 03060612 04051106 05060431 06060844 07071901 08080446 09080735 10082307 11080213 12071901","1987":"01060613 02041752 03061154 04051644 05061006 06061419 07080039 08081029 09081324 10090500 11080806 12080052","1988":"01061204 02042343 03051747 04042239 05051602 06052015 07070633 08071620 09071912 10081044 11071349 12070634","1989":"01051746 02040527 03052334 04050430 05052154 06060205 07071219 08072204 09080054 10081627 11071934 12071221","1990":"01052333 02041114 03060519 04051013 05060335 06060746 07071800 08080346 09080637 10082214 11080123 12071814","1991":"01060528 02041708 03061112 04051605 05060927 06061338 07072353 08080937 09081227 10090401 11080708 12072356","1992":"01061109 02042248 03051652 04042145 05051509 06051922 07070540 08071527 09071818 10080951 11071257 12070544","1993":"01051657 02040437 03052243 04050337 05052102 06060115 07071132 08072118 09080008 10081540 11071846 12071134","1994":"01052248 02041031 03060438 04050932 05060254 06060705 07071719 08080304 09080555 10082129 11080036 12071723","1995":"01060434 02041613 03061016 04051508 05060830 06061242 07072301 08080852 09081149 10090327 11080636 12072322","1996":"01061031 02042208 03051610 04042102 05051426 06051841 07070500 08071449 09071742 10080919 11071227 12070514","1997":"01051624 02040402 03052204 04050256 05052019 06060033 07071049 08072036 09072329 10081505 11071815 12071105","1998":"01052218 02040957 03060357 04050845 05060203 06060613 07071630 08080220 09080516 10082056 11080008 12071702","1999":"01060417 02041557 03060958 04051445 05060801 06061209 07072225 08080814 09081110 10090248 11080558 12072247","2000":"01061001 02042140 03051543 04042032 05051350 06051759 07070414 08071403 09071659 10080838 11071148 12070437","2001":"01051549 02040329 03052133 04050224 05051945 06052354 07071007 08071952 09072246 10081425 11071737 12071029","2002":"01052144 02040924 03060328 04050818 05060137 06060545 07071556 08080139 09080431 10082009 11072322 12071614","2003":"01060328 02041505 03060905 04051352 05060710 06061120 07072136 08080724 09081020 10090201 11080513 12072205","2004":"01060919 02042056 03051456 04041943 05051302 06051714 07070331 08071320 09071613 10080749 11071059 12070349","2005":"01051503 02040243 03052045 04050134 05051853 06052302 07070917 08071903 09072157 10081333 11071642 12070933","2006":"01052047 02040827 03060229 04050715 05060031 06060437 07071451 08080041 09080339 10081921 11072235 12071527","2007":"01060240 02041418 03060818 04051305 05060620 06061027 07072042 08080631 09080929 10090112 11080424 12072114","2008":"01060825 02042000 03051359 04041846 05051203 06051612 07070227 08071216 09071514 10080657 11071011 12070302","2009":"01051414 02040150 03051948 04050034 05051751 06052159 07070814 08071801 09072058 10081240 11071556 12070852","2010":"01052009 02040748 03060146 04050630 05052344 06060349 07071402 08072349 09080245 10081826 11072143 12071438","2011":"01060155 02041333 03060730 04051212 05060523 06060927 07071942 08080533 09080834 10090019 11080335 12072029","2012":"01060744 02041922 03051321 04041806 05051120 06051526 07070141 08071131 09071429 10080612 11070926 12070219","2013":"01051334 02040113 03051915 04050002 05051718 06052123 07070735 08071720 09072016 10081159 11071514 12070809","2014":"01051924 02040703 03060102 04050547 05052259 06060303 07071315 08072302 09080201 10081748 11072107 12071404","2015":"01060121 02041258 03060656 04051139 05060453 06060858 07071912 08080501 09080800 10082343 11080259 12071953","2016":"01060708 02041846 03051244 04041728 05051042 06051449 07070103 08071053 09071351 10080533 11070848 12070141","2017":"01051256 02040034 03051833 04042317 05051631 06052037 07070651 08071640 09071939 10081122 11071438 12070733","2018":"01051849 02040628 03060028 04050513 05052225 06060229 07071242 08072231 09080130 10081715 11072032 12071326","2019":"01060039 02041214 03060610 04051051 05060403 06060806 07071821 08080413 09080717 10082306 11080224 12071918","2020":"01060630 02041803 03051157 04041638 05050951 06051358 07070014 08071006 09071308 10080455 11070814 12070110","2021":"01051223 02032359 03051754 04042235 05051547 06051952 07070605 08071554 09071853 10081039 11071359 12070657","2022":"01051814 02040551 03052344 04050420 05052126 06060126 07071138 08072129 09080032 10081622 11071945 12071246","2023":"01060005 02041143 03060536 04051013 05060319 06060718 07071731 08080323 09080627 10082216 11080136 12071833","2024":"01060549 02041727 03051123 04041602 05050910 06051310 07062320 08070909 09071211 10080400 11070720 12070017","2025":"01051133 02032310 03051707 04042149 05051457 06051857 07070505 08071452 09071752 10080941 11071304 12070605","2026":"01051723 02040502 03052259 04050340 05052049 06060048 07071057 08072043 09072341 10081529 11071852 12071153","2027":"01052310 02041046 03060440 04050917 05060225 06060626 07071637 08080227 09080528 10082117 11080039 12071738","2028":"01060455 02041631 03051025 04041503 05050812 06051216 07062230 08070821 09071122 10080309 11070627 12062325","2029":"01051042 02032221 03051618 04042058 05051408 06051810 07070422 08071412 09071712 10080858 11071217 12070514","2030":"01051631 02040408 03052203 04050241 05051946 06052345 07070955 08071947 09072253 10081445 11071809 12071108","2031":"01052223 02040958 03060351 04050828 05060135 06060536 07071549 08080143 09080450 10082043 11080006 12071703","2032":"01060416 02041549 03050940 04041418 05050726 06051128 07062141 08070733 09071038 10080230 11070554 12062253","2033":"01051008 02032142 03051532 04042008 05051314 06051713 07070325 08071316 09071620 10080814 11071141 12070445","2034":"01051605 02040341 03052132 04050206 05051909 06052307 07070918 08071909 09072214 10081407 11071734 12071037","2035":"01052156 02040932 03060322 04050754 05060055 06060451 07071501 08080054 09080403 10081958 11072324 12071626","2036":"01060344 02041520 03050912 04041346 05050649 06051047 07062058 08070649 09070955 10080149 11070515 12062216","2037":"01050934 02032112 03051506 04041944 05051250 06051647 07070255 08071243 09071546 10080738 11071104 12070407","2038":"01051527 02040304 03052056 04050130 05051831 06052226 07070833 08071821 09072126 10081322 11071651 12070956","2039":"01052117 02040853 03060243 04050716 05060018 06060416 07071426 08080018 09080324 10081917 11072243 12071545","2040":"01060304 02041440 03050831 04041306 05050609 06051008 07062019 08070610 09070914 10080106 11070429 12062130","2041":"01050848 02032025 03051418 04041853 05051155 06051550 07070159 08071149 09071454 10080647 11071013 12070316","2042":"01051435 02040213 03052006 04050041 05051743 06052138 07070747 08071739 09072046 10081241 11071608 12070909","2043":"01052025 02040759 03060148 04050620 05052322 06060318 07071328 08072321 09080230 10081828 11072156 12071457","2044":"01060213 02041344 03050732 04041203 05050506 06050904 07061916 08070509 09070817 10080013 11070342 12062045","2045":"01050803 02031936 03051325 04041757 05051100 06051457 07070108 08071100 09071406 10080601 11070930 12070236","2046":"01051356 02040131 03051918 04042345 05051641 06052032 07070640 08071633 09071943 10081143 11071514 12070821","2047":"01051943 02040718 03060105 04050533 05052229 06060221 07071231 08072226 09080138 10081738 11072108 12071411","2048":"01060130 02041305 03050654 04041125 05050425 06050818 07061827 08070419 09070728 10072327 11070257 12062001","2049":"01050719 02031854 03051243 04041715 05051013 06051404 07070009 08070958 09071306 10080505 11070839 12070147","2050":"01051308 02040044 03051833 04042303 05051602 06051955 07070602 08071553 09071901 10081100 11071434 12070742","2051":"01051902 02040636 03060022 04050450 05052147 06060141 07071150 08072142 09080052 10081651 11072022 12071329","2052":"01060049 02041223 03050610 04041038 05050335 06050730 07061740 08070334 09070642 10072240 11070210 12061916","2053":"01050636 02031813 03051204 04041635 05050934 06051328 07062337 08070930 09071239 10080436 11070806 12070112","2054":"01051233 02040008 03051756 04042223 05051518 06051908 07070514 08071507 09071820 10081023 11071357 12070704","2055":"01051823 02040556 03052342 04050409 05052104 06060056 07071106 08072101 09080016 10081619 11071953 12071259","2056":"01060016 02041148 03050533 04041000 05050258 06050653 07061703 08070256 09070608 10072210 11070144 12061851","2057":"01050610 02031743 03051127 04041553 05050847 06051237 07062243 08070834 09071145 10080347 11070723 12070035","2058":"01051159 02032335 03051720 04042144 05051436 06051825 07070432 08071426 09071738 10080942 11071318 12070628","2059":"01051750 02040524 03052309 04050333 05052024 06060013 07071019 08072013 09072327 10081531 11071906 12071214","2060":"01052334 02041109 03050455 04040920 05050213 06050602 07061608 08070200 09070511 10072114 11070049 12061758","2061":"01050519 02031654 03051042 04041511 05050807 06051157 07062203 08070753 09071103 10080305 11070640 12062351","2062":"01051113 02032248 03051632 04042056 05051348 06051735 07070339 08071330 09071641 10080845 11071223 12070535","2063":"01051658 02040432 03052215 04050238 05051929 06052318 07070926 08071921 09072234 10081438 11071813 12071121","2064":"01052242 02041015 03050400 04040825 05050119 06050511 07061520 08070115 09070427 10072029 11070002 12061710","2065":"01050430 02031604 03050950 04041415 05050706 06051053 07062058 08070650 09071003 10080207 11070543 12062254","2066":"01051016 02032150 03051535 04041958 05051249 06051637 07070243 08071238 09071554 10080802 11071140 12070449","2067":"01051608 02040338 03052119 04050141 05051833 06052222 07070830 08071826 09072143 10081352 11071731 12071041","2068":"01052200 02040930 03050310 04040731 05050021 06050410 07061418 08070012 09070327 10071934 11062314 12061627","2069":"01050349 02031522 03050903 04041325 05050616 06051004 07062012 08070607 09070921 10080128 11070508 12062223","2070":"01050948 02032123 03051503 04041921 05051206 06051549 07070153 08071147 09071505 10080714 11071056 12070412","2071":"01051537 02040312 03052053 04050112 05051756 06052139 07070744 08071740 09072059 10081309 11071650 12071002","2072":"01052124 02040858 03050242 04040705 05042355 06050341 07061346 08062340 09070256 10071904 11062245 12061557","2073":"01050320 02031454 03050838 04041300 05050549 06050932 07061932 08070521 09070834 10080042 11070425 12062141","2074":"01050907 02032042 03051425 04041846 05051134 06051519 07070122 08071114 09071429 10080638 11071021 12070335","2075":"01051459 02040232 03052012 04050032 05051721 06052108 07070715 08071709 09072025 10081233 11071613 12070926","2076":"01052048 02040821 03050202 04040621 05042309 06050256 07061302 08062256 09070210 10071816 11062155 12061507","2077":"01050230 02031404 03050748 04041210 05050459 06050846 07061852 08070448 09070804 10080012 11070351 12062104","2078":"01050826 02031959 03051339 04041757 05051043 06051426 07070030 08071025 09071345 10080557 11070941 12070254","2079":"01051415 02040144 03051922 04042339 05051624 06052007 07070613 08071611 09071932 10081145 11071528 12070841","2080":"01052001 02040729 03050106 04040524 05042212 06050159 07061207 08062204 09070124 10071736 11062120 12061435","2081":"01050157 02031327 03050704 04041119 05050401 06050742 07061745 08070338 09070656 10072308 11070254 12062013","2082":"01050740 02031914 03051252 04041704 05050944 06051324 07062326 08070923 09071244 10080459 11070846 12070203","2083":"01051328 02040100 03051838 04042252 05051533 06051913 07070517 08071514 09071836 10081051 11071437 12070753","2084":"01051916 02040648 03050026 04040442 05042124 06050104 07061105 08062058 09070016 10071629 11062015 12061333","2085":"01050058 02031231 03050612 04041030 05050315 06050656 07061658 08070251 09070609 10072222 11070209 12061929","2086":"01050655 02031828 03051205 04041619 05050900 06051240 07062242 08070835 09071154 10080409 11070757 12070117","2087":"01051244 02040017 03051754 04042206 05051446 06051826 07070430 08071426 09071746 10080959 11071345 12070702","2088":"01051827 02040600 03042339 04040354 05042038 06050022 07061028 08062025 09062346 10071558 11061942 12061258","2089":"01050023 02031156 03050536 04040952 05050233 06050612 07061613 08070206 09070526 10072140 11070126 12061845","2090":"01050610 02031744 03051123 04041538 05050818 06051157 07062158 08070754 09071118 10080335 11070724 12070042","2091":"01051204 02032333 03051708 04042122 05051405 06051747 07070353 08071351 09071715 10080933 11071322 12070640","2092":"01051803 02040531 03042304 04040316 05041958 06042340 07060943 08061938 09062258 10071513 11061903 12061223","2093":"01042349 02031120 03050456 04040908 05050148 06050528 07061532 08070130 09070452 10072108 11070058 12061819","2094":"01050547 02031719 03051053 04041502 05050738 06051114 07062116 08070713 09071038 10080257 11070649 12070010","2095":"01051137 02032309 03051644 04042053 05051328 06051702 07070303 08071301 09071625 10080844 11071235 12070554","2096":"01051718 02040449 03042225 04040238 05041918 06042256 07060859 08061855 09062219 10071437 11061828 12061148","2097":"01042313 02031044 03050420 04040832 05050110 06050446 07061443 08070035 09070355 10072013 11070006 12061730","2098":"01050458 02031631 03051006 04041415 05050651 06051025 07062024 08070619 09070941 10080200 11070553 12062315","2099":"01051041 02032212 03051545 04041953 05051231 06051610 07070214 08071212 09071536 10080754 11071145 12070505","2100":"01051631 02040402 03052137 04050146 05051823 06052200 07070801 08071756 09072117 10081333 11071722 12071042"};
+const GAN = '甲乙丙丁戊己庚辛壬癸', JI = '子丑寅卯辰巳午未申酉戌亥';
+const GAN_KO = '갑을병정무기경신임계', JI_KO = '자축인묘진사오미신유술해';
+const DDI = ['쥐', '소', '호랑이', '토끼', '용', '뱀', '말', '양', '원숭이', '닭', '개', '돼지'];
+const EL_KO = ['목', '화', '토', '금', '수'], EL_CLS = ['wood', 'fire', 'earth', 'metal', 'water'];
+const HIDDEN = [9, 5, 0, 1, 4, 2, 3, 5, 6, 7, 4, 8]; // 지지 본기 천간 (자→계, 축→기, ...)
+const RAD = Math.PI / 180;
+function jdn(y, m, d) {
+  const a = Math.floor((14 - m) / 12), yy = y + 4800 - a, mm = m + 12 * a - 3;
+  return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045;
+}
+function deltaT(y) {
+  let t;
+  if (y < 1920) { t = y - 1900; return -2.79 + 1.494119 * t - 0.0598939 * t * t + 0.0061966 * t ** 3 - 0.000197 * t ** 4; }
+  if (y < 1941) { t = y - 1920; return 21.20 + 0.84493 * t - 0.0761 * t * t + 0.0020936 * t ** 3; }
+  if (y < 1961) { t = y - 1950; return 29.07 + 0.407 * t - t * t / 233 + t ** 3 / 2547; }
+  if (y < 1986) { t = y - 1975; return 45.45 + 1.067 * t - t * t / 260 - t ** 3 / 718; }
+  if (y < 2005) { t = y - 2000; return 63.86 + 0.3345 * t - 0.060374 * t * t + 0.0017275 * t ** 3 + 0.000651814 * t ** 4 + 0.00002373599 * t ** 5; }
+  t = y - 2000; return 62.92 + 0.32217 * t + 0.005589 * t * t;
+}
+function sunLon(jdUT) {
+  const y = 2000 + (jdUT - 2451545) / 365.25, T = (jdUT + deltaT(y) / 86400 - 2451545) / 36525;
+  const L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T, M = (357.52911 + 35999.05029 * T - 0.0001537 * T * T) * RAD;
+  const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M) + (0.019993 - 0.000101 * T) * Math.sin(2 * M) + 0.000289 * Math.sin(3 * M);
+  const om = (125.04 - 1934.136 * T) * RAD;
+  return (((L0 + C - 0.00569 - 0.00478 * Math.sin(om)) % 360) + 360) % 360;
+}
+const kstToJD = (y, m, d, h, mi) => jdn(y, m, d) - 0.5 + (h * 60 + mi) / 1440 - 9 / 24;
+function termJD(target, jd) { // target 황경에 도달하는 시각(JD, UT). jd 근처에서 찾음
+  const diff = ((target - sunLon(jd) + 540) % 360) - 180, guess = jd + diff / 0.9856;
+  let lo = guess - 20, hi = guess + 20;
+  const f = j => ((sunLon(j) - target + 540) % 360) - 180;
+  for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; if (f(mid) < 0) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+function jdToKST(j) {
+  const t = j + 9 / 24 + 0.5, z = Math.floor(t), f = t - z;
+  const al = Math.floor((z - 1867216.25) / 36524.25), a = z + 1 + al - Math.floor(al / 4);
+  const b = a + 1524, c = Math.floor((b - 122.1) / 365.25), d = Math.floor(365.25 * c), e = Math.floor((b - d) / 30.6001);
+  const day = b - d - Math.floor(30.6001 * e), mon = e < 14 ? e - 1 : e - 13, yr = mon > 2 ? c - 4716 : c - 4715;
+  const mins = Math.round(f * 1440), p = n => String(n).padStart(2, '0');
+  return { y: yr, m: mon, d: day, h: Math.floor(mins / 60) % 24, mi: mins % 60, text: yr + '.' + p(mon) + '.' + p(day) + ' ' + p(Math.floor(mins / 60) % 24) + ':' + p(mins % 60) };
+}
+const el = s => Math.floor(s / 2);
+function tenGod(me, t) {
+  const rel = (el(t) - el(me) + 5) % 5, same = (t % 2) === (me % 2);
+  return [['비견', '겁재'], ['식신', '상관'], ['편재', '정재'], ['편관', '정관'], ['편인', '정인']][rel][same ? 0 : 1];
+}
+function idx60(s, b) { for (let i = 0; i < 60; i++) if (i % 10 === s && i % 12 === b) return i; }
+const JIE_K = [23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21];
+const JIE_LON = {1: 315, 3: 345, 5: 15, 7: 45, 9: 75, 11: 105, 13: 135, 15: 165, 17: 195, 19: 225, 21: 255, 23: 285};
+const JIE_MD = {23: [1, 6], 1: [2, 4], 3: [3, 6], 5: [4, 5], 7: [5, 6], 9: [6, 6], 11: [7, 7], 13: [8, 8], 15: [9, 8], 17: [10, 8], 19: [11, 7], 21: [12, 7]};
+function jieList(y) { // 해당 연도의 12개 절(節) 입기 시각(JD). 표에 없는 해는 근사 계산
+  const row = JIE_KASI[y];
+  if (row) return row.split(' ').map((t, i) => ({ k: JIE_K[i], jd: kstToJD(y, +t.slice(0, 2), +t.slice(2, 4), 0, 0) + (+t.slice(4, 6) * 60 + +t.slice(6, 8)) / 1440 }));
+  return JIE_K.map(k => ({ k, jd: termJD(JIE_LON[k], kstToJD(y, JIE_MD[k][0], JIE_MD[k][1], 12, 0)) }));
+}
+function calcSaju(y, m, d, h, mi, male) {
+  const jd = kstToJD(y, m, d, h, mi);
+  const ev = [].concat(jieList(y - 1), jieList(y), jieList(y + 1));
+  let pi = -1; ev.forEach((e, i) => { if (e.jd <= jd) pi = i; });
+  const prev = ev[pi].jd, next = ev[pi + 1].jd, mIdx = ev[pi].k === 23 ? 11 : (ev[pi].k - 1) / 2;
+  const ipchun = jieList(y)[1].jd, yr = jd < ipchun ? y - 1 : y;
+  const yn = (((yr - 4) % 60) + 60) % 60, yS = yn % 10, yB = yn % 12;
+  const mB = (2 + mIdx) % 12, mS = ((yS % 5) * 2 + 2 + mIdx) % 10;
+  const dn = (jdn(y, m, d) + 49) % 60, dS = dn % 10, dB = dn % 12;
+  const tm = h * 60 + mi, hB = Math.floor((tm + 60) / 120) % 12;
+  const dsForHour = h >= 23 ? (dS + 1) % 10 : dS;
+  const hS = ((dsForHour % 5) * 2 + hB) % 10;
+  const forward = (yS % 2 === 0) === male;
+  const days = forward ? next - jd : jd - prev, years = days / 3;
+  const base = idx60(mS, mB), list = [];
+  for (let i = 1; i <= 8; i++) { const k = (((base + (forward ? i : -i)) % 60) + 60) % 60; list.push([k % 10, k % 12]); }
+  const offs = ((tm + 60) % 120), hourEdge = Math.min(offs, 120 - offs);
+  return {
+    year: [yS, yB], month: [mS, mB], day: [dS, dB], hour: [hS, hB],
+    yearAdj: yr, prev, next, forward, days, years, list,
+    nearTerm: Math.min(jd - prev, next - jd) * 1440 <= 60, termDay: Math.min(jd - prev, next - jd) < 0.5,
+    hourEdge, hour23: h >= 23
+  };
+}
+// CALC-END
+
+const $ = id => document.getElementById(id);
+const DEF = {d: '1990-07-24', t: '03:30', p: '경상북도 구미시', g: '남자'};
+const MEAN = {
+  '편재': '재물, 돈 쓰임, 바깥 활동과 연결 짓는 글자.', '정인': '공부, 보호, 어머니와 연결 짓는 글자. 나를 도와주는 쪽입니다.',
+  '편인': '공부, 직관, 남다른 재능과 연결 짓는 글자. 나를 도와주는 쪽입니다.', '상관': '말과 표현, 재능, 틀에 얽매이지 않는 성향과 연결 짓는 글자.',
+  '비견': '나와 같은 글자. 친구, 동료, 경쟁과 연결 짓는 글자.', '정관': '직장, 규칙, 책임과 연결 짓는 글자.'
+};
+const REL = ['나와 같은 오행', '내가 생(生)하는 오행', '내가 극(剋)하는 오행', '나를 극(剋)하는 오행', '나를 생(生)하는 오행'];
+const stemEl = s => el(s), brEl = b => el(HIDDEN[b]);
+const cur = () => ({d: $('in-date').value, t: $('in-time').value, u: $('in-tu').checked,
+  p: ($('in-place').value + ' ' + $('in-city').value).trim(), g: document.querySelector('input[name=gender]:checked').value});
+let last = null;
+const UNK = '<div class="pillar unk"><div class="label">시주</div><div class="ch">?</div><div class="ko">시간 모름</div></div>';
+function bindUnknown(t, u) { const f = () => { $(t).disabled = $(u).checked; }; $(u).addEventListener('change', f); f(); }
+bindUnknown('in-time', 'in-tu'); bindUnknown('m-time', 'm-tu'); bindUnknown('p-time', 'p-tu');
+function pillarHTML(label, p, me, isDay) {
+  const [s, b] = p, be = brEl(b);
+  return '<div class="pillar' + (isDay ? ' day' : '') + '"><div class="label">' + label + '</div>' +
+    '<div class="ch ' + EL_CLS[stemEl(s)] + '">' + GAN[s] + '</div><div class="ko">' + GAN_KO[s] + ' · ' + EL_KO[stemEl(s)] + '</div><div class="ss">' + (isDay ? '일간' : tenGod(me, s)) + '</div>' +
+    '<div class="ch ' + EL_CLS[be] + '">' + JI[b] + '</div><div class="ko">' + JI_KO[b] + ' · ' + EL_KO[be] + '</div><div class="ss">' + tenGod(me, HIDDEN[b]) + '</div></div>';
+}
+
+const TRAIT = {
+  '비견': {p: ['자존심이 강하고 성취욕과 추진력이 강하다', '불의와 타협하기 싫어한다', '주어진 일에 책임을 완수한다'], n: ['자존심이 강해 시비와 다툼을 참지 못하는 면이 많다', '주위의 충고나 권유를 무시한다', '걱정과 근심이 많고 감정 기복이 심하다']},
+  '겁재': {p: ['자존심이 강하고 성취욕과 추진력이 강하다', '주관이 뚜렷하고 사리사욕이 없다', '불의와 타협하기 싫어한다'], n: ['질투심이 많고 교만하여 불손한 성향이 짙다']},
+  '식신': {p: ['성격이 관대하고 예의범절이 바르다', '서비스 정신이 좋다', '허영과 이상보다 현실적인 면을 추구한다'], n: ['이론과 말이 앞서고 행동과 실천은 잘 안 된다', '일은 잘 벌이지만 인내심이 부족하고 마무리를 못한다']},
+  '상관': {p: ['언변이 뛰어나 상대를 말로 잘 설득한다', '획기적인 아이디어를 잘 만들어 낸다'], n: ['비밀을 간직하지 못하거나 다른 사람의 자존심을 상하게 한다', '활동적이며 시비를 가려내야 직성이 풀린다']},
+  '편재': {p: ['계산이 빠르고 돈 버는 기술이 탁월하다', '요령이 많은 재주꾼이며 개척정신이 뛰어나다'], n: ['민첩하고 재능이 있으나 지구력이 없다', '말이 낙천적이며 과장하거나 경솔한 면이 있다']},
+  '정재': {p: ['부당한 재물이나 노력한 대가 이상의 재물은 원하지 않는다', '통솔력이 좋고 경영 능력이 좋아 이익을 잘 만든다'], n: ['이해득실은 빠르나 최종 결론을 내릴 적기를 놓친다', '너무 정확한 계산으로 인심이 박하고 인색하다']},
+  '편관': {p: ['권위적이며 총명하고 결단성이 뛰어나다', '개척정신과 모험심, 의협심이 있다'], n: ['이론과 타협보다 먼저 행동으로 해결하려 한다']},
+  '정관': {p: ['명예와 질서를 존중하고 공정한 일 처리로 타인의 모범이 된다', '책임감이 강하고 조직에서 상사를 잘 모신다'], n: ['자존심이 강하여 관용과 이해가 부족하다', '환경에 적응하는 능력이 부족해 갈등을 많이 겪는다']},
+  '편인': {p: ['기회 포착을 잘하며 예·체능에서 탁월한 능력을 발휘한다', '종교에 심취하고 신앙심이 두텁다'], n: ['매사에 기회주의적이며 자기 것만 챙기는 성향이 있다', '눈치가 빠르고 위선적이며 매사가 용두사미이다']},
+  '정인': {p: ['전통과 명예를 지키려는 선비 기질이 강하고 보수적이다', '박학다식하며 인자하고 윗사람을 섬길 줄 안다'], n: ['이기주의적인 성향이 많고 융통성이 부족하다', '계획과 설계는 좋으나 실천력이 약하고 행동이 느리다']}
+};
+const EP5 = ['나무', '불', '흙', '쇠', '물'];
+function traitsHTML(ss, me, r, v, noT) {
+  const list = Object.entries(ss).sort((a, b) => b[1] - a[1]);
+  const head = ([n, c]) => '<b>' + n + (c > 1 ? ' ×' + c : '') + '</b>';
+  const li = (k) => list.map(e => '<li>' + head(e) + ': ' + TRAIT[e[0]][k].join(' / ') + '</li>').join('');
+  const seat = tenGod(me, HIDDEN[r.day[1]]), male = v.g === '남자';
+  const cnt = n => ss[n] || 0;
+  const star = male ? '정재' : '정관', star2 = male ? '편재' : '편관';
+  return '<h4 class="h4">장점 (이 사주에 있는 이름표별)</h4><ul>' + li('p') + '</ul>' +
+    '<h4 class="h4">단점 (이 사주에 있는 이름표별)</h4><ul>' + li('n') + '</ul>' +
+    '<h4 class="h4">연애 스타일</h4>' +
+    '<p class="ko">⚠️ 연애 스타일을 직접 설명한 자료는 찾지 못했습니다. 아래는 전통에서 "연애·결혼과 연결 짓는 자리와 이름표"를 이 사주에 찾아 쉬운 말로 풀어 쓴 것이고, 연애에서 실제로 어떻게 행동한다는 뜻은 아닙니다.</p>' +
+    '<ol class="love">' +
+    '<li><b>① 배우자 자리에 어떤 글자가 있나</b><br>사주 아래 줄에는 가족 자리가 정해져 있습니다. 그중 일주의 아래 글자(일지)가 배우자 자리입니다(십성 논문으로 확인). 이 사주의 배우자 자리는 <b>' + JI[r.day[1]] + '(' + EP5[brEl(r.day[1])] + ')</b>이고, "나"에게 <b>' + seat + '</b> 이름표가 붙었습니다. 쉽게 말해 <b>"배우자 자리에 ' + seat + ' 성격의 글자가 놓여 있다"</b>는 뜻입니다.<br>' + seat + ' 이름표의 성향 서술은 이렇습니다. 장점: ' + TRAIT[seat].p.join(' / ') + '. 단점: ' + TRAIT[seat].n.join(' / ') + '. 이 서술이 연애 모습으로 나타난다는 근거는 확인하지 못했습니다.</li>' +
+    '<li><b>② 배우자 별은 몇 개 있나</b><br>전통에서는 ' + (male ? '남자는 <b>정재</b>를 아내를 뜻하는 이름표로 봅니다(『연해자평』, 『야학신결』).' : '여자는 <b>정관</b>을 남편을 뜻하는 이름표로 봅니다(『야학신결』).') + ' 이 사주에는 ' + star + '가 <b>' + cnt(star) + '개</b>' + (cnt(star) === 0 ? '로 없고, ' : ', ') + star2 + '는 <b>' + cnt(star2) + '개</b>입니다. ' + (male ? '『야학신결』은 남자의 편재를 "첩이나 애인" 등으로도 설명하는데, 이 책의 옛 표현이라 오늘의 관계에 그대로 해당하는지는 확인하지 못했습니다.' : '『야학신결』은 여자의 편관을 "시누이, 애인" 등으로도 설명하는데, 이 책의 옛 표현이라 오늘의 관계에 그대로 해당하는지는 확인하지 못했습니다.') + '<br>"없다/있다"가 연애운이 나쁘다/좋다는 뜻이라는 근거는 확인하지 못했습니다.</li>' +
+    (noT ? '' : '<li><b>③ (참고) 자식 자리</b><br>시주의 아래 글자(시지)는 자식 자리이고, 이 사주에서는 <b>' + tenGod(me, HIDDEN[r.hour[1]]) + '</b> 이름표입니다. 연애보다 결혼 뒤의 이야기에 가까운 자리라 참고로만 적었습니다.</li>') +
+    '<li><b>④ 정리</b><br>이 탭이 확인한 사실은 "배우자 자리의 글자와 이름표", "배우자 별의 개수"까지입니다. 그 사람이 연애에서 다정한지, 적극적인지 같은 구체적인 모습은 이 자료들로 알 수 없습니다.</li></ol>';
+}
+
+const jo = (w, a, b) => { const c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c % 28 !== 0) ? a : b; };
+
+function onelineHTML(me, r, noT, age) {
+  const SEAT = [['연지', '조상', r.year[1]], ['월지', '부모', r.month[1]], ['일지', '배우자', r.day[1]]].concat(noT ? [] : [['시지', '자식', r.hour[1]]]);
+  const meEl = stemEl(me), helper = (meEl + 4) % 5, cnt = [0, 0, 0, 0, 0], ss = {}, helpLet = [], sameLet = [];
+  const pil = [['시', r.hour], ['일', r.day], ['월', r.month], ['연', r.year]];
+  pil.forEach(([k, p], i) => {
+    if (noT && i === 0) return;
+    if (i !== 1) { cnt[stemEl(p[0])]++; const g = tenGod(me, p[0]); ss[g] = (ss[g] || 0) + 1; if (stemEl(p[0]) === helper) helpLet.push(k + '간 ' + GAN[p[0]]); if (stemEl(p[0]) === meEl) sameLet.push(k + '간 ' + GAN[p[0]]); }
+    cnt[brEl(p[1])]++; const g2 = tenGod(me, HIDDEN[p[1]]); ss[g2] = (ss[g2] || 0) + 1;
+    if (brEl(p[1]) === helper) helpLet.push(k + '지 ' + JI[p[1]]); if (brEl(p[1]) === meEl && !(i === 1 && false)) sameLet.push(k + '지 ' + JI[p[1]]);
+  });
+  cnt[meEl]++;
+  const E = EP5, out = [];
+  out.push('<b>"나"를 키워 주는 오행(' + E[helper] + ')의 글자:</b> ' + (helpLet.length ? helpLet.length + '개(' + helpLet.join(', ') + ')' : '없습니다') + '. "나"와 같은 ' + E[meEl] + ' 글자(일간 제외): ' + (sameLet.length ? sameLet.length + '개(' + sameLet.join(', ') + ')' : '없습니다') + '.' +
+    ((brEl(r.month[1]) === helper || brEl(r.month[1]) === meEl) ? ' 태어난 달의 글자(월지)가 "나"를 키워 주거나 같은 오행이면 전통 풀이는 "힘을 받는 구조"라고 부릅니다. ⚠️ 이 풀이 규칙은 확인하지 못했습니다.' : ''));
+  out.push('<b>이름표 개수:</b> ' + Object.entries(ss).sort((a, b) => b[1] - a[1]).map(([n, c]) => n + ' ' + c).join(' · ') + '. 일간(나)은 뺀 값입니다.');
+  out.push('<b>가족 자리별 이름표:</b> ' + SEAT.map(([k, w, b]) => w + ' 자리(' + k + ' ' + JI[b] + ') ' + tenGod(me, HIDDEN[b])).join(' · ') + '. 지지를 가족 자리에 맞추는 규칙은 십성 논문으로 확인했습니다.');
+  out.push('<b>오행 분포:</b> ' + [0, 1, 2, 3, 4].map(i => E[i] + ' ' + cnt[i]).join(', ') + '. ' + ([0, 1, 2, 3, 4].some(i => cnt[i] === 0) ? '없는 오행: ' + [0, 1, 2, 3, 4].filter(i => cnt[i] === 0).map(i => E[i]).join(', ') + '.' : '다섯 가지가 모두 있습니다.'));
+  const HAP = [[0, 1], [2, 11], [3, 10], [4, 9], [5, 8], [6, 7]], br = SEAT.map(([k, w, b]) => [k, b]), pairs = [];
+  for (let i = 0; i < br.length; i++) for (let j = i + 1; j < br.length; j++) if (HAP.some(h => (h[0] === br[i][1] && h[1] === br[j][1]) || (h[1] === br[i][1] && h[0] === br[j][1]))) pairs.push(br[i][0] + ' ' + JI[br[i][1]] + ' · ' + br[j][0] + ' ' + JI[br[j][1]]);
+  out.push('<b>짝으로 어울리는 글자(육합):</b> ' + (pairs.length ? pairs.join(', ') + '이(가) 육합 짝입니다.' : '이 사주의 지지 사이에는 없습니다.') + ' ⚠️ 육합 쌍(자축·인해·묘술·진유·사신·오미)과 그 의미는 공식 자료로 확인하지 못했습니다.');
+  out.push('<b>대운:</b> ' + (r.forward ? '순행' : '역행') + ', ' + age + '세부터 10년마다 ' + r.list.slice(0, 3).map(p => GAN[p[0]] + JI[p[1]]).join(' → ') + ' … 순서로 바뀝니다. 각 시기의 의미는 풀이하지 않았습니다.');
+  if (noT) out.push('<b>시주:</b> 태어난 시간을 몰라 계산하지 않았습니다.');
+  else if (r.hourEdge <= 30) out.push('<b>시주 주의:</b> 태어난 시간이 두 시간 구간 경계(' + r.hourEdge + '분 이내)라서 어느 쪽으로 보느냐에 따라 시주가 바뀝니다.');
+  return out.map(t => '<li>' + t + '</li>').join('');
+}
+function summaryHTML(me, r, v, noT, age, ss) {
+  const SEATS = {'시지': '자식 자리', '일지': '배우자 자리', '월지': '부모 자리', '연지': '조상 자리'};
+  const L = [];
+  [['시', r.hour], ['일', r.day], ['월', r.month], ['연', r.year]].forEach(([k, p], i) => {
+    if (noT && i === 0) return;
+    if (i !== 1) L.push({lab: k + '간', ch: GAN[p[0]], el: stemEl(p[0]), ss: tenGod(me, p[0])});
+    L.push({lab: k + '지', ch: JI[p[1]], el: brEl(p[1]), ss: tenGod(me, HIDDEN[p[1]])});
+  });
+  const meEl = stemEl(me), helper = (meEl + 4) % 5, N = EP5, E = e => N[e];
+  const at = arr => arr.map(x => x.lab + ' ' + x.ch + (SEATS[x.lab] ? '(' + SEATS[x.lab] + ')' : '')).join(', ');
+  const sup = L.filter(x => x.el === helper), same = L.filter(x => x.el === meEl);
+  const support = L.filter(x => x.el === meEl || x.el === helper).length, drain = L.length - support;
+  const cnt = [0, 0, 0, 0, 0]; L.forEach(x => cnt[x.el]++); cnt[meEl]++;
+  const missing = [0, 1, 2, 3, 4].filter(i => cnt[i] === 0), mxEl = Math.max(...cnt);
+  const bal = '<li><b>① 균형 — "나"를 받쳐 주는 글자가 몇 개인지 셉니다.</b><br>' +
+    '사주에서 "나"를 뜻하는 글자는 일주의 윗글자인 ' + GAN[me] + '이고, 오행으로는 ' + E(meEl) + '입니다. 오행에는 "서로 돕는 관계"가 있는데, ' + E(helper) + jo(E(helper), '은', '는') + ' ' + E(meEl) + jo(E(meEl), '을', '를') + ' 키워 주는 쪽입니다. 이 사주에서 ' + E(helper) + '인 글자는 <b>' + sup.length + '개</b>' + (sup.length ? '(' + at(sup) + ')' : '') + '이고, "나"와 같은 ' + E(meEl) + '인 글자는 일간을 빼고 <b>' + same.length + '개</b>' + (same.length ? '(' + at(same) + ')' : '') + '입니다.<br>' +
+    '"나"를 받쳐 주는 쪽(같은 오행 + 키워 주는 오행)이 ' + support + '개, 그 밖의 쪽(내가 키우는 쪽, 내가 누르는 쪽, 나를 누르는 쪽)이 ' + drain + '개입니다. ' + (missing.length ? '다섯 오행 중 ' + missing.map(E).join(', ') + jo(E(missing[missing.length - 1]), '이', '가') + ' 하나도 없습니다.' : '다섯 가지 오행이 모두 들어 있습니다.') + ' 오행별 개수 중 가장 많은 것은 ' + [0, 1, 2, 3, 4].filter(i => cnt[i] === mxEl).map(i => E(i) + ' ' + mxEl + '개').join(', ') + '입니다.<br>' +
+    '⚠️ 개수만 센 것입니다. 이 개수로 "강하다/약하다", "좋다/나쁘다"를 판정하는 기준은 학파마다 달라서 확인하지 못했습니다.</li>';
+  const order = Object.entries(ss).sort((a, b) => b[1] - a[1]);
+  const top = order.filter(e => e[1] === order[0][1]);
+  const topNames = top.map(e => e[0]), even = top.length >= 3;
+  const withTop = L.filter(x => topNames.includes(x.ss));
+  const tl = '<li><b>② ' + (even ? '이름표 — 뚜렷하게 많은 것 없이 고르게 있습니다' : '가장 많은 이름표 — ' + topNames.join(', ') + ' (' + order[0][1] + '개)') + '</b><br>' +
+    '사주의 글자마다 "나와 어떤 사이인가"를 나타내는 이름표(십성)가 붙습니다. ' + (even ? '이 사주는 ' + topNames.map(n => '<b>' + n + '</b>').join(', ') + '이(가) 각각 ' + order[0][1] + '개씩으로 같아서 하나만 두드러지지 않습니다.' : '이 사주에서 가장 많이 나온 이름표는 ' + topNames.map(n => '<b>' + n + '</b>').join(', ') + '입니다.') + ' 해당 글자는 ' + at(withTop) + '입니다.<br>' +
+    topNames.map(n => n + ' 이름표의 전통 뜻풀이: ' + (MEAN[n] || '⚠️ 이 이름표의 뜻풀이는 아직 쓰지 않았습니다.')).join('<br>') + '<br>' +
+    (withTop.some(x => SEATS[x.lab]) ? '사주 아래 줄에는 가족 자리가 정해져 있어서(일지는 배우자, 시지는 자식, 월지는 부모, 연지는 조상) 위 글자 중 ' + withTop.filter(x => SEATS[x.lab]).map(x => SEATS[x.lab]).join(', ') + '에 이 이름표가 놓였습니다. 전통식으로 읽으면 그 자리 이야기에 위 뜻풀이의 주제가 걸려 있다는 정도의 말입니다.<br>' : '') +
+    '⚠️ 이름표 뜻풀이와 자리 읽기는 전통 규칙을 이어 붙인 것입니다. 실제 일이나 가족이 그렇다는 뜻은 아닙니다.</li>';
+  const rest = order.filter(e => !topNames.includes(e[0]));
+  const others = '<li><b>③ 그 밖에 있는 이름표</b><br>' + (rest.length ? rest.map(([n, c]) => '<b>' + n + '</b> ' + c + '개: ' + (MEAN[n] || '⚠️ 뜻풀이는 아직 쓰지 않았습니다.')).join('<br>') : '다른 이름표는 없습니다.') +
+    (ss['상관'] && ss['정관'] ? '<br>상관(말과 재능을 드러내는 쪽)과 정관(규칙과 책임을 지키는 쪽)이 같이 있으면 서로 당기는 방향이 달라 부딪친다고 설명하는 풀이도 있습니다. ⚠️ 이 설명이 맞는다는 근거는 확인하지 못했습니다.' : '') + '</li>';
+  const dae = '<li><b>④ 운의 흐름 — 10년마다 바뀌는 운(대운)이 ' + age + '세부터 이어집니다.</b><br>' +
+    '사주의 글자는 태어난 때에 정해진 것이고, 거기에 더해 10년 단위로 바뀌는 운의 흐름을 대운이라고 합니다. 이 사주는 ' + (r.forward ? '순행' : '역행') + '이고 ' + r.list.map((p, i) => GAN[p[0]] + JI[p[1]] + '(' + (age + i * 10) + '세)').join(' → ') + ' 순서로 바뀝니다.<br>' +
+    '⚠️ 각 시기가 어떤 때인지는 풀이할 근거를 찾지 못해 적지 않았습니다.</li>';
+  const notes = [];
+  if (noT) notes.push('태어난 시간을 몰라 시주를 계산하지 않았고, 위 개수는 시주 글자를 뺀 것입니다. 시간을 알면 시간·시지의 이름표와 오행 개수가 더해집니다.');
+  else if (r.hourEdge <= 30) notes.push('태어난 시간이 두 시간 단위 구간의 경계(' + r.hourEdge + '분 이내)에 걸려 있어, 어느 쪽 시간으로 보느냐에 따라 시주가 바뀝니다. 시주가 바뀌면 시간·시지의 이름표, 오행 개수, 자식 자리 해석이 달라집니다.');
+  if (r.nearTerm || (noT && r.termDay)) notes.push('절기 시각 근처에 태어나 월주(또는 연주)가 달라질 수 있습니다. 월주가 바뀌면 위 내용 대부분이 달라집니다.');
+  const note = '<li><b>⑤ 주의</b><br>' + (notes.length ? notes.join('<br>') : '이 사주는 시 경계나 절기 경계 근처에 걸려 있지 않아, 입력한 시각 기준으로는 위 내용이 크게 달라지지 않습니다. 다만 시주를 정하는 기준 자체(경도 보정 등)는 확인하지 못했습니다.') + '</li>';
+  return '<p><b>한마디로:</b> ' + (support >= drain ? '"나"를 받쳐 주는 쪽 글자가 ' + support + '개로 그 밖의 글자 ' + drain + '개와 비슷하거나 더 많고' : '"나"를 받쳐 주는 쪽 글자가 ' + support + '개, 그 밖의 글자가 ' + drain + '개이고') + ', ' + (even ? '이름표는 ' + topNames.join(', ') + '이 각각 ' + order[0][1] + '개씩으로 고르게 있습니다' : '가장 많은 이름표는 ' + topNames.join(', ') + '입니다') + '. 아래에서 하나씩 풀어 드립니다. 이 문장은 개수를 센 사실을 요약한 것이고, 좋고 나쁨을 판정하지 않습니다.</p><ul>' + bal + tl + others + dae + note + '</ul><p class="ko">⚠️ 미확인: "전통에서는 ~로 본다", "~로 설명하기도 한다"는 해석 규칙을 그대로 옮긴 표현입니다. 이 사주의 성격이나 앞날을 단정하는 말이 아닙니다.</p>';
+}
+function radarSVG(series) { // series: [{share:[5], color:'var(--water)'}]
+  const cx = 150, cy = 140, R = 95, mx = Math.max(0.01, ...series.flatMap(x => x.share)), ang = i => -Math.PI / 2 + i * 2 * Math.PI / 5;
+  const rp = (i, f) => [(cx + R * f * Math.cos(ang(i))).toFixed(1), (cy + R * f * Math.sin(ang(i))).toFixed(1)];
+  const poly = f => [0, 1, 2, 3, 4].map(i => rp(i, f).join(',')).join(' ');
+  return [0.5, 1].map(f => '<polygon points="' + poly(f) + '" style="fill:none;stroke:var(--line)"/>').join('') +
+    [0, 1, 2, 3, 4].map(i => '<line x1="' + cx + '" y1="' + cy + '" x2="' + rp(i, 1)[0] + '" y2="' + rp(i, 1)[1] + '" style="stroke:var(--line)"/>').join('') +
+    series.map(x => '<polygon points="' + [0, 1, 2, 3, 4].map(i => rp(i, x.share[i] / mx).join(',')).join(' ') + '" style="fill:' + x.color + ';fill-opacity:.3;stroke:' + x.color + ';stroke-width:2"/>').join('') +
+    [0, 1, 2, 3, 4].map(i => { const q = rp(i, 1.2); return '<text x="' + q[0] + '" y="' + q[1] + '" text-anchor="middle" dominant-baseline="middle" style="fill:var(--' + EL_CLS[i] + ');font-weight:700;font-size:15px">' + EL_KO[i] + '</text>'; }).join('');
+}
+function bars(list, total, cls) {
+  return list.map(([n, c, k]) => '<div><span>' + n + '</span><i class="' + (k || cls) + '" style="width:' + (c / total * 100) + '%"></i><b>' + c + '</b></div>').join('');
+}
+function query() {
+  const v = cur();
+  if (!v.d || (!v.t && !v.u)) { $('saju-sub').textContent = '생년월일과 태어난 시간을 입력하세요(시간을 모르면 "시간 모름"을 체크).'; return; }
+  const noT = v.u, [y, m, d] = v.d.split('-').map(Number), [h, mi] = (noT ? '12:00' : v.t).split(':').map(Number);
+  if (y < 1920 || y > 2100) { $('saju-sub').textContent = '1920~2100년만 계산합니다(한국천문연구원 절기표 범위).'; return; }
+  const r = calcSaju(y, m, d, h, mi, v.g === '남자'), me = r.day[0];
+  last = v;
+  $('saju-sub').textContent = v.d.replace(/-/g, '.') + ' ' + (noT ? '시간 모름' : v.t) + ' (양력) · ' + (v.p || '출생지 미입력') + ' · ' + v.g;
+  $('in-note').hidden = true;
+  $('pillars').innerHTML = (noT ? UNK : pillarHTML('시주', r.hour, me)) + pillarHTML('일주 (나)', r.day, me, true) + pillarHTML('월주', r.month, me) + pillarHTML('연주', r.year, me);
+  const nm = p => GAN[p[0]] + JI[p[1]] + '(' + GAN_KO[p[0]] + JI_KO[p[1]] + ')';
+  $('pillars-text').textContent = '연주 ' + GAN[r.year[0]] + JI[r.year[1]] + ' · 월주 ' + GAN[r.month[0]] + JI[r.month[1]] + ' · 일주 ' + GAN[r.day[0]] + JI[r.day[1]] + ' · 시주 ' + (noT ? '모름' : GAN[r.hour[0]] + JI[r.hour[1]]);
+  $('ddi').innerHTML = '<b>띠: ' + DDI[r.year[1]] + '띠</b> <span class="ko">(태어난 해의 지지 ' + JI[r.year[1]] + '(' + JI_KO[r.year[1]] + ') · 사주의 연주 기준)</span>' +
+    (m <= 2 ? '<br><span class="ko">⚠️ 1~2월 출생은 일상에서 말하는 띠와 다를 수 있습니다. 이 페이지는 입춘을 기준으로 해를 나눈 연주의 지지로 띠를 정했고, 띠가 입춘과 설날 중 무엇을 기준으로 바뀌는지는 한국민족문화대백과사전에서 확인하지 못했습니다.</span>' : '');
+  const PN = [['연주', '태어난 해', r.year], ['월주', '태어난 달', r.month], ['일주', '태어난 날', r.day]].concat(noT ? [] : [['시주', '태어난 시각', r.hour]]);
+  $('pillars-detail').innerHTML = PN.map(([n, w, p], i) => {
+    const sTop = GAN[p[0]] + '(' + GAN_KO[p[0]] + ', ' + EL_KO[stemEl(p[0])] + ')', sBot = JI[p[1]] + '(' + JI_KO[p[1]] + ', ' + EL_KO[brEl(p[1])] + ')';
+    return '<li><b>' + n + ' (' + w + ') ' + GAN[p[0]] + JI[p[1]] + '</b><br>위 글자 ' + sTop + ' → ' + (n === '일주' ? '"나" 자신' : '"나"와 ' + tenGod(me, p[0]) + ' 사이') +
+      '<br>아래 글자 ' + sBot + ' → "나"와 ' + tenGod(me, HIDDEN[p[1]]) + ' 사이</li>';
+  }).join('');
+  const fl = [];
+  if (noT) fl.push('태어난 시간을 몰라 시주는 계산하지 않았고, 오행·십성은 시주 글자를 뺀 6글자(십성은 5글자)로 셌습니다. 월주·연주·일주도 낮 12시 기준으로 계산했습니다.');
+  if (noT && r.termDay) fl.push('태어난 날에 절기가 들어 있어, 시간을 모르면 월주(또는 연주)가 확정되지 않습니다. 절기 시각은 ' + jdToKST(r.forward ? r.next : r.prev).text + ' 근처입니다.');
+  if (!noT && r.hourEdge <= 30) fl.push('태어난 시간이 시(時) 경계(홀수 시 정각)에서 ' + r.hourEdge + '분 이내입니다. 경도 보정이나 경계 기준에 따라 시주가 달라질 수 있습니다. ⚠️ 미확인: 어느 기준을 쓰는지는 공식 자료로 확인하지 못했습니다.');
+  if (!noT && r.hour23) fl.push('23시 이후는 자시(子時)로 보고, 시간 천간은 다음 날 일간으로 계산했습니다. ⚠️ 미확인: 이 처리 방식은 기준에 따라 다릅니다.');
+  if (!noT && r.nearTerm) fl.push('절기 시각 1시간 이내에 태어났습니다. 절기 시각은 분 단위로 반올림된 값이라 월주(또는 연주)를 어떻게 정하는지 기준에 따라 달라질 수 있습니다.');
+  if ((y >= 1949 && y <= 1961) || y === 1987 || y === 1988) fl.push('이 시기에는 한국에서 서머타임을 시행했거나(1949~1961, 1987~1988) 표준시가 달랐습니다(1954~1961.8.9는 동경 127.5도). 이 페이지는 항상 UTC+9 기준 시각을 쓰므로 출생 시각 표기에 따라 시주가 달라질 수 있습니다. 출처: 국가기록원.');
+  $('flags').innerHTML = fl.map(t => '<div class="warn">⚠️ ' + t + '</div>').join('');
+  const cnt = [0, 0, 0, 0, 0], ss = {};
+  [r.hour, r.day, r.month, r.year].forEach((p, i) => {
+    if (noT && i === 0) return;
+    cnt[stemEl(p[0])]++; cnt[brEl(p[1])]++;
+    if (!(i === 1)) { const k = tenGod(me, p[0]); ss[k] = (ss[k] || 0) + 1; }
+    const k2 = tenGod(me, HIDDEN[p[1]]); ss[k2] = (ss[k2] || 0) + 1;
+  });
+  $('el-chips').innerHTML = cnt.map((c, i) => '<span class="chip ' + EL_CLS[i] + '">' + EL_KO[i] + ' ' + c + '</span>').join('');
+  $('el-bars').innerHTML = bars(cnt.map((c, i) => [EL_KO[i], c, EL_CLS[i]]), noT ? 6 : 8);
+  $('el-radar').innerHTML = radarSVG([{share: cnt.map(c => c / (noT ? 6 : 8)), color: 'var(--water)'}]);
+  $('ss-bars').innerHTML = bars(Object.entries(ss).sort((a, b) => b[1] - a[1]).map(([n, c]) => [n, c, 'ss']), noT ? 5 : 7);
+  $('el-h').textContent = noT ? '오행 분포 (시주 제외 6글자, 천간과 지지 글자 기준)' : '오행 분포 (8글자, 천간과 지지 글자 기준)';
+  const dir = r.forward ? '순행' : '역행', yn = GAN[r.year[0]] + '(' + GAN_KO[r.year[0]] + ', ' + (r.year[0] % 2 ? '음' : '양') + ')';
+  $('daeun-text').textContent = '연간이 ' + yn + '이고 ' + v.g + '이므로 월주 ' + GAN[r.month[0]] + JI[r.month[1]] + '에서 ' + dir + '으로 이어집니다.';
+  const age = Math.round(r.years);
+  $('daeun').innerHTML = r.list.map((p, i) => '<div>' + GAN[p[0]] + JI[p[1]] + '<small>' + (age + i * 10) + '세</small></div>').join('');
+  $('daeun-detail').innerHTML = (noT ? '태어난 시간을 몰라 낮 12시로 계산했습니다(대운수가 최대 약 0.2세 달라질 수 있음). ' : '') + '출생 시각 ' + (r.forward ? '이후 다음' : '이전 직전') + ' 절기까지 약 ' + r.days.toFixed(1) + '일(' + (r.forward ? '다음' : '직전') + ' 절기 ' + jdToKST(r.forward ? r.next : r.prev).text + ', 한국천문연구원 24기 입기 시각표 기준)입니다. 3일을 1년으로 치면 대운수는 약 ' + (r.years).toFixed(1) + '세, 반올림해 ' + age + '세부터입니다.';
+  $('me-text').innerHTML = '사주에서 "나"를 나타내는 글자는 일주의 윗글자인 <b>' + GAN_KO[me] + '(' + GAN[me] + ')</b>입니다. 오행으로는 <b>' + EL_KO[stemEl(me)] + '</b>, ' + (me % 2 ? '음(陰)' : '양(陽)') + '입니다. 나머지 ' + (noT ? 5 : 7) + '글자는 이 "나"와 어떤 관계인지에 따라 이름이 붙습니다. 그 이름이 <b>십성</b>입니다.';
+  const SEAT = {'시지': '자식', '일지': '배우자(아내)', '월지': '부모', '연지': '조상'};
+  const rows = (noT ? [] : [['시간', r.hour[0], 0], ['시지', r.hour[1], 1]]).concat([['일지', r.day[1], 1], ['월간', r.month[0], 0], ['월지', r.month[1], 1], ['연간', r.year[0], 0], ['연지', r.year[1], 1]]);
+  $('ss-table').innerHTML = '<tr><th>어디에</th><th>글자</th><th>관계 이름</th><th>오행 관계</th><th>쉬운 뜻</th></tr>' + rows.map(([w, x, isB]) => {
+    const st = isB ? HIDDEN[x] : x, g = tenGod(me, st), rel = (stemEl(st) - stemEl(me) + 5) % 5;
+    return '<tr><td>' + w + (SEAT[w] ? '<br><span class="ko">' + SEAT[w] + ' 자리</span>' : '') + '</td><td>' + (isB ? JI[x] : GAN[x]) + '</td><td>' + g + '</td><td>' + REL[rel] + ', ' + ((st % 2) === (me % 2) ? '음양 같음' : '음양 다름') + '</td><td>' + (MEAN[g] || '⚠️ 미작성') + '</td></tr>';
+  }).join('');
+  $('traits').innerHTML = traitsHTML(ss, me, r, v, noT);
+  $('summary').innerHTML = summaryHTML(me, r, v, noT, age, ss);
+  $('oneline').innerHTML = onelineHTML(me, r, noT, age);
+  const isDef = (!noT && v.d === DEF.d && v.t === DEF.t);
+  $('default-ver').hidden = !isDef;
+}
+$('in-go').addEventListener('click', query);
+document.querySelectorAll('#saju .form input, #saju .form select').forEach(x => x.addEventListener('change', () => {
+  if (!last) return;
+  const v = cur(); $('in-note').hidden = (v.d === last.d && v.t === last.t && v.u === last.u && v.p === last.p && v.g === last.g);
+}));
+
+// ---- 궁합 탭
+const mCityFill = () => {
+  const c = $('p-city'), list = CITY[$('p-place').value] || [];
+  c.innerHTML = '<option value="">시·군 선택 안 함</option>' + list.map(x => '<option>' + x + '</option>').join('');
+};
+const placeOpts = Array.from($('in-place').options).map(o => '<option>' + o.textContent + '</option>').join('');
+$('p-place').innerHTML = '<option value="">시·도 선택 안 함</option>' + placeOpts;
+$('p-place').value = ''; mCityFill();
+$('p-place').addEventListener('change', mCityFill);
+$('m-place').innerHTML = placeOpts;
+function mmCityFill() {
+  const c = $('m-city'), list = CITY[$('m-place').value] || [];
+  c.innerHTML = '<option value="">시·군 선택 안 함</option>' + list.map(x => '<option>' + x + '</option>').join('');
+}
+$('m-place').value = DEF.p.split(' ')[0]; mmCityFill(); $('m-city').value = DEF.p.split(' ')[1] || '';
+$('m-place').addEventListener('change', mmCityFill);
+function parse(d, t, g, u) { const [y, m, dd] = d.split('-').map(Number), [h, mi] = (u ? '12:00' : t).split(':').map(Number); return {y, m, d: dd, u, r: calcSaju(y, m, dd, h, mi, g === '남자')}; }
+function elCounts(r, u) { const c = [0, 0, 0, 0, 0]; [r.hour, r.day, r.month, r.year].forEach((p, i) => { if (u && i === 0) return; c[stemEl(p[0])]++; c[brEl(p[1])]++; }); return c; }
+function matchQuery() {
+  const v = {d: $('m-date').value, t: $('m-time').value, u: $('m-tu').checked, p: ($('m-place').value + ' ' + $('m-city').value).trim(), g: document.querySelector('input[name=mgender]:checked').value}, pd = $('p-date').value, pt = $('p-time').value, pu = $('p-tu').checked, pg = document.querySelector('input[name=pgender]:checked').value;
+  if (!v.d || (!v.t && !v.u)) { $('p-note').hidden = false; $('p-note').textContent = '나의 생년월일과 태어난 시간을 입력하세요.'; return; }
+  if (!pd || (!pt && !pu)) { $('p-note').hidden = false; $('p-note').textContent = '상대의 생년월일과 태어난 시간을 입력하세요.'; return; }
+  const A = parse(v.d, v.t, v.g, v.u), B = parse(pd, pt, pg, pu);
+  if (A.y < 1920 || A.y > 2100 || B.y < 1920 || B.y > 2100) { $('p-note').hidden = false; $('p-note').textContent = '1920~2100년만 계산합니다.'; return; }
+  $('p-note').hidden = true; $('m-result').hidden = false;
+  const a = A.r, b = B.r, ma = a.day[0], mb = b.day[0];
+  const pp = (pl, ci) => (pl + ' ' + ci).trim() || '출생지 미선택';
+  $('m-i1').textContent = v.d.replace(/-/g, '.') + ' ' + (v.u ? '시간 모름' : v.t) + ' (양력) · ' + pp($('m-place').value, $('m-city').value) + ' · ' + v.g + ' · ' + DDI[a.year[1]] + '띠';
+  $('m-i2').textContent = pd.replace(/-/g, '.') + ' ' + (pu ? '시간 모름' : pt) + ' (양력) · ' + pp($('p-place').value, $('p-city').value) + ' · ' + pg + ' · ' + DDI[b.year[1]] + '띠';
+  $('m-p1').innerHTML = (v.u ? UNK : pillarHTML('시주', a.hour, ma)) + pillarHTML('일주 (나)', a.day, ma, true) + pillarHTML('월주', a.month, ma) + pillarHTML('연주', a.year, ma);
+  $('m-p2').innerHTML = (pu ? UNK : pillarHTML('시주', b.hour, mb)) + pillarHTML('일주 (상대)', b.day, mb, true) + pillarHTML('월주', b.month, mb) + pillarHTML('연주', b.year, mb);
+  const fl = [];
+  [['나', A, a], ['상대', B, b]].forEach(([n, X, r]) => {
+    if (X.u) { fl.push(n + ': 태어난 시간을 몰라 시주 없이 6글자로 비교하고, 월주·연주·일주는 낮 12시 기준으로 계산했습니다.'); if (r.termDay) fl.push(n + ': 태어난 날에 절기가 들어 있어 월주(또는 연주)가 확정되지 않습니다.'); }
+    if (!X.u && r.hourEdge <= 30) fl.push(n + ': 태어난 시간이 시(時) 경계에서 ' + r.hourEdge + '분 이내라 시주가 기준에 따라 달라질 수 있습니다.');
+    if (!X.u && r.nearTerm) fl.push(n + ': 절기 시각 1시간 이내에 태어나 월주(또는 연주)가 기준에 따라 달라질 수 있습니다.');
+    if (!X.u && r.hour23) fl.push(n + ': 23시 이후는 다음 날 일간으로 시간 천간을 계산했습니다(기준에 따라 다름).');
+    if ((X.y >= 1949 && X.y <= 1961) || X.y === 1987 || X.y === 1988) fl.push(n + ': 서머타임·표준시가 달랐던 시기라 출생 시각 표기에 따라 시주가 달라질 수 있습니다.');
+  });
+  $('m-flags').innerHTML = fl.map(t => '<div class="warn">⚠️ ' + t + '</div>').join('');
+  const ca = elCounts(a, v.u), cb = elCounts(b, pu), na = v.u ? 6 : 8, nb = pu ? 6 : 8;
+  $('m-el').innerHTML = EL_KO.map((n, i) => '<div><span class="' + EL_CLS[i] + '">' + n + '</span><div><i class="a" style="width:' + (ca[i] / na * 100) + '%;min-width:2px"><b>' + ca[i] + '</b></i><i class="b" style="width:' + (cb[i] / nb * 100) + '%;min-width:2px"><b>' + cb[i] + '</b></i></div></div>').join('');
+  const sa = HIDDEN[a.day[1]], sb = HIDDEN[b.day[1]];
+  const relTxt = (x, y) => REL[(stemEl(y) - stemEl(x) + 5) % 5] + ', ' + ((y % 2) === (x % 2) ? '음양 같음' : '음양 다름');
+  $('m-rel').innerHTML = '<tr><th>비교</th><th>나→상대</th><th>상대→나</th></tr>' +
+    '<tr><td>일간끼리<br><span class="ko">' + GAN[ma] + '(' + EL_KO[stemEl(ma)] + ') · ' + GAN[mb] + '(' + EL_KO[stemEl(mb)] + ')</span></td><td>' + tenGod(ma, mb) + '<br><span class="ko">' + relTxt(ma, mb) + '</span></td><td>' + tenGod(mb, ma) + '<br><span class="ko">' + relTxt(mb, ma) + '</span></td></tr>' +
+    '<tr><td>일지끼리<br><span class="ko">' + JI[a.day[1]] + '(' + EL_KO[brEl(a.day[1])] + ') · ' + JI[b.day[1]] + '(' + EL_KO[brEl(b.day[1])] + ')</span></td><td>' + tenGod(ma, sb) + '<br><span class="ko">' + relTxt(ma, sb) + '</span></td><td>' + tenGod(mb, sa) + '<br><span class="ko">' + relTxt(mb, sa) + '</span></td></tr>' +
+    '<tr><td>나의 일간 ↔ 상대 월지</td><td>' + tenGod(ma, HIDDEN[b.month[1]]) + '</td><td>' + tenGod(mb, HIDDEN[a.month[1]]) + '<br><span class="ko">(상대 일간 ↔ 나의 월지)</span></td></tr>';
+  // ---- 종합 점수 (Claude 자작 배점)
+  const kind = (e1, e2) => { const d = (e2 - e1 + 5) % 5; return d === 0 ? 'same' : (d === 1 || d === 4) ? 'gen' : 'ctl'; };
+  const PT = {gen: 30, same: 20, ctl: 10}, KN = {gen: '한쪽이 키워 주는 관계(생)', same: '같은 오행', ctl: '한쪽이 누르는 관계(극)'};
+  const k1 = kind(stemEl(ma), stemEl(mb)), k2 = kind(brEl(a.day[1]), brEl(b.day[1]));
+  const shA = ca.map(c => c / na), shB = cb.map(c => c / nb), shM = shA.map((x, i) => (x + shB[i]) / 2);
+  const even = 1 - shM.reduce((t, x) => t + Math.abs(x - 0.2), 0) / 1.6, sc3 = Math.round(40 * even);
+  const total = PT[k1] + PT[k2] + sc3;
+  $('m-score').textContent = total + '점';
+  $('m-gauge').style.width = total + '%';
+  $('m-break').innerHTML = [['일간', PT[k1], 30], ['일지', PT[k2], 30], ['오행', sc3, 40]].map(([n, c, m]) => '<div><span>' + n + '</span><i class="ss" style="width:' + (c / m * 100) + '%"></i><b>' + c + '/' + m + '</b></div>').join('');
+  $('m-sum').innerHTML = '이 계산식으로는 <b>' + total + '점</b>(100점 만점)입니다. 일간 관계 ' + PT[k1] + '/30(' + KN[k1] + '), 일지 관계 ' + PT[k2] + '/30(' + KN[k2] + '), 오행 균형 ' + sc3 + '/40입니다. ⚠️ 이 숫자는 임의로 정한 배점의 결과라서 두 사람이 실제로 잘 맞는지와는 관계가 확인되지 않았습니다.';
+  const cx = 150, cy = 140, R = 95, mx = Math.max(...shA, ...shB, 0.01), ang = i => -Math.PI / 2 + i * 2 * Math.PI / 5;
+  const rp = (i, f) => (cx + R * f * Math.cos(ang(i))).toFixed(1) + ',' + (cy + R * f * Math.sin(ang(i))).toFixed(1);
+  const poly = f => [0, 1, 2, 3, 4].map(i => rp(i, f)).join(' ');
+  $('m-radar').innerHTML = [0.5, 1].map(f => '<polygon points="' + poly(f) + '" style="fill:none;stroke:var(--line)"/>').join('') +
+    [0, 1, 2, 3, 4].map(i => '<line x1="' + cx + '" y1="' + cy + '" x2="' + rp(i, 1).split(',')[0] + '" y2="' + rp(i, 1).split(',')[1] + '" style="stroke:var(--line)"/>').join('') +
+    '<polygon points="' + [0, 1, 2, 3, 4].map(i => rp(i, shA[i] / mx)).join(' ') + '" style="fill:var(--water);fill-opacity:.3;stroke:var(--water);stroke-width:2"/>' +
+    '<polygon points="' + [0, 1, 2, 3, 4].map(i => rp(i, shB[i] / mx)).join(' ') + '" style="fill:var(--fire);fill-opacity:.3;stroke:var(--fire);stroke-width:2"/>' +
+    [0, 1, 2, 3, 4].map(i => { const q = rp(i, 1.2).split(','); return '<text x="' + q[0] + '" y="' + q[1] + '" text-anchor="middle" dominant-baseline="middle" style="fill:var(--' + EL_CLS[i] + ');font-weight:700;font-size:15px">' + EL_KO[i] + '</text>'; }).join('');
+  const PLf = (rel, who) => { const sj = who === '나' ? '내가' : '상대가', ob = who === '나' ? '나를' : '상대를';
+    return ['같은 오행이라 나란히 선 사이', sj + ' 키워 주는(생하는) 쪽', sj + ' 누르는(극하는) 쪽', ob + ' 누르는(극하는) 쪽', ob + ' 키워 주는(생하는) 쪽'][rel]; };
+  const EP = ['나무', '불', '흙', '쇠', '물'];
+  const rd = [];
+  const stemLine = (who, x, y, label) => { const g = tenGod(x, y), rel = (stemEl(y) - stemEl(x) + 5) % 5;
+    return '<li><b>' + label + '</b> ' + who + '의 ' + GAN[x] + '(' + EP[stemEl(x)] + ')에게 ' + GAN[y] + '(' + EP[stemEl(y)] + ')은 "' + g + '"입니다. ' + PLf(rel, who) + '입니다. 전통 뜻풀이: ' + (MEAN[g] || '⚠️ 이 이름표의 뜻풀이는 아직 쓰지 않았습니다.') + '</li>'; };
+  rd.push(stemLine('나', ma, mb, '일간(나 자신)끼리, 내 쪽에서 본 상대:'));
+  rd.push(stemLine('상대', mb, ma, '일간끼리, 상대 쪽에서 본 나:'));
+  rd.push('<li><b>일지(배우자 자리)끼리:</b> 내 일지 ' + JI[a.day[1]] + '(' + EP[brEl(a.day[1])] + ')과 상대 일지 ' + JI[b.day[1]] + '(' + EP[brEl(b.day[1])] + ')는 나→상대 "' + tenGod(ma, sb) + '"(' + PLf((stemEl(sb) - stemEl(ma) + 5) % 5, '나') + '), 상대→나 "' + tenGod(mb, sa) + '"(' + PLf((stemEl(sa) - stemEl(mb) + 5) % 5, '상대') + ')입니다. 일지를 배우자 자리로 본다는 전통 규칙은 십성 논문으로 확인했지만, 두 사람의 일지 관계가 무엇을 뜻하는지는 확인하지 못했습니다.</li>');
+  const need = [], more = [];
+  EP.forEach((n, i) => {
+    if (ca[i] === 0 && cb[i] > 0) need.push('나에게 없는 ' + n + ['가', '이', '이', '가', '이'][i] + ' 상대에게는 ' + cb[i] + '개 있습니다');
+    if (cb[i] === 0 && ca[i] > 0) need.push('상대에게 없는 ' + n + ['가', '이', '이', '가', '이'][i] + ' 나에게는 ' + ca[i] + '개 있습니다');
+  });
+  const top = c => { const m = Math.max(...c); return EP.map((n, i) => c[i] === m ? n + ' ' + m + '개' : null).filter(Boolean).join(', '); };
+  rd.push('<li><b>오행 분포:</b> 가장 많은 오행은 나는 ' + top(ca) + ', 상대는 ' + top(cb) + '입니다. ' + (need.length ? need.join('. ') + '. ' : '한쪽에만 있는 오행은 없습니다. ') + '서로 부족한 오행을 채워 주는 것을 궁합에서 좋게 본다는 규칙은 확인하지 못했습니다. 개수를 센 사실만 적었습니다.</li>');
+  rd.push('<li><b>정리:</b> 이 탭이 계산한 것은 일간·일지의 오행 관계, 십성 이름표, 오행 개수까지입니다. 둘이 잘 맞는지는 이 결과로 알 수 없습니다.</li>');
+  $('m-read').innerHTML = rd.join('');
+}
+$('p-go').addEventListener('click', matchQuery);
+query();
+})();
+</script>
+
+<script>
+(function () {
+const $ = id => document.getElementById(id);
+const ROM = ['0', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX', 'XXI'];
+const MAJOR = [
+  ['바보', 'The Fool', '어리석음, 광기, 낭비, 도취, 정신착란, 열광'],
+  ['마법사', 'The Magician', '솜씨, 외교, 능란함, 교묘함. 병, 고통, 손실, 재난, 적의 함정. 자신감, 의지. 질문자가 남성이면 질문자 자신'],
+  ['여사제', 'The High Priestess', '비밀, 신비, 아직 드러나지 않은 미래. 질문자가 남성이면 그가 관심 갖는 여성, 여성이면 질문자 자신. 침묵, 끈기. 지혜, 학문'],
+  ['여황제', 'The Empress', '다산, 행동, 주도권, 장수. 미지, 은밀함. 또한 어려움, 의심, 무지'],
+  ['황제', 'The Emperor', '안정, 힘, 보호, 실현. 위대한 인물. 도움, 이성, 확신. 권위와 의지'],
+  ['교황', 'The Hierophant', '결혼, 동맹, 속박, 예속. 다른 설명으로는 자비와 선량함. 영감. 질문자가 의지하는 남성'],
+  ['연인', 'The Lovers', '끌림, 사랑, 아름다움, 시련의 극복'],
+  ['전차', 'The Chariot', '구원, 섭리. 또한 전쟁, 승리, 자만, 복수, 문제'],
+  ['힘', 'Fortitude', '힘, 에너지, 행동, 용기, 아량. 또한 완전한 성공과 명예'],
+  ['은둔자', 'The Hermit', '신중, 주의 깊음. 또한 특히 배신, 위장, 악행, 타락'],
+  ['운명의 수레바퀴', 'Wheel of Fortune', '운명, 행운, 성공, 상승, 행복'],
+  ['정의', 'Justice', '공정, 올바름, 청렴, 집행. 정당한 쪽이 법에서 승리함'],
+  ['매달린 사람', 'The Hanged Man', '지혜, 신중, 분별, 시련, 희생, 직관, 점술, 예언'],
+  ['죽음', 'Death', '끝, 필멸, 파괴, 부패. 남자에게는 은인의 상실, 여자에게는 많은 모순, 미혼 여성에게는 혼담의 실패'],
+  ['절제', 'Temperance', '절약, 절도, 검소, 관리, 조정'],
+  ['악마', 'The Devil', '파괴, 폭력, 격렬함, 비범한 노력, 힘, 숙명. 정해진 것이지만 그 때문에 악은 아님'],
+  ['탑', 'The Tower', '불행, 곤궁, 빈곤, 역경, 재앙, 불명예, 기만, 파멸. 특히 예기치 못한 재난'],
+  ['별', 'The Star', '상실, 도난, 박탈, 포기. 다른 해석으로는 희망과 밝은 전망'],
+  ['달', 'The Moon', '숨은 적, 위험, 중상, 어둠, 공포, 기만, 신비한 힘, 오류'],
+  ['태양', 'The Sun', '물질적 행복, 행운의 결혼, 만족'],
+  ['심판', 'The Last Judgment', '입장의 변화, 갱신, 결과. 다른 설명으로는 소송으로 인한 전부의 손실'],
+  ['세계', 'The World', '확실한 성공, 보상, 여행, 길, 이주, 도피, 장소의 변화']
+];
+const SUITS = [['w', '완드(지팡이)', 'Wands'], ['c', '컵', 'Cups'], ['s', '검', 'Swords'], ['p', '펜타클(동전)', 'Pentacles']];
+const RANK = ['에이스', '2', '3', '4', '5', '6', '7', '8', '9', '10', '시종(Page)', '기사(Knight)', '여왕(Queen)', '왕(King)'];
+const REN = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Page', 'Knight', 'Queen', 'King'];
+const MINOR = {
+  w: ['창조, 발명, 사업, 그것을 낳는 힘. 원칙, 시작, 근원. 출생, 가족, 기원. 사업의 출발점. 다른 설명으로는 돈, 재산, 상속',
+    '해석이 갈립니다. 한편으로는 부, 재산, 호화. 다른 한편으로는 육체적 고통, 병, 분함, 슬픔, 굴욕',
+    '확립된 힘, 사업, 노력, 무역, 상업, 발견. 사업에서의 유능한 협력',
+    '시골 생활, 피난처, 일종의 집안 추수 잔치, 휴식, 화합, 조화, 번영, 평화, 그리고 그 완성된 일',
+    '모방(예: 모의 전투). 또한 부와 재산을 찾는 치열한 경쟁과 투쟁, 삶의 싸움. 그래서 금, 이득, 풍요의 카드라고도 함',
+    '승리자가 개선하는 모습. 큰 소식. 소망이 이루어진 기대, 희망의 왕관',
+    '용기의 카드(여섯이 하나를 공격하지만 하나가 유리한 위치에 있음). 지적으로는 토론, 말다툼. 사업에서는 협상, 무역 전쟁, 흥정, 경쟁. 성공의 카드이기도 함',
+    null,
+    '대적하는 가운데의 힘. 공격을 받으면 대담하게 맞섬. 지연, 보류, 연기',
+    '억압이 주된 의미. 그러나 행운, 이득, 어떤 종류의 성공도 의미하며 그때는 그것들의 억압. 겉꾸밈, 위장, 배신',
+    '피부·머리색이 짙은 젊은 남자(원문 dark young man), 충실, 연인, 사자(使者), 우편배달부',
+    '출발, 부재, 도피, 이민. 피부·머리색이 짙은 친근한 젊은 남자. 거처의 변화',
+    '피부·머리색이 짙은 여자(원문 dark woman), 시골 여자, 친근, 정숙, 사랑, 명예로움. 또한 돈에 대한 사랑 또는 사업에서의 일정한 성공',
+    '피부·머리색이 짙은 남자(원문 dark man), 친근, 시골 사람, 대개 기혼, 정직하고 양심적. 곧 닥칠 뜻밖의 유산 소식'],
+  c: ['참된 마음의 집, 기쁨, 만족, 거처, 양식, 풍요, 다산. 성스러운 식탁과 그 행복',
+    '사랑, 열정, 우정, 친화, 결합, 화합, 공감, 양성의 상호 관계. 자연에는 없으나 자연을 성화하는 욕망',
+    '일의 풍성하고 완전하며 즐거운 결말. 행복한 결과, 승리, 성취, 위로, 치유',
+    '권태, 혐오, 반감, 상상 속의 번민. 요정의 선물 같은 다른 술이 주어지지만 위안을 느끼지 못함. 뒤섞인 쾌락의 카드',
+    null,
+    '과거와 기억의 카드. 어린 시절 같은 회상. 행복과 즐거움이지만 과거에서 오는 것, 사라진 것들. 다른 해석으로는 새로운 관계, 새로운 지식, 새로운 환경',
+    '요정의 은총, 성찰의 이미지, 감상, 상상, 관조의 유리에 비친 것들. 얼마간의 성취가 있으나 영속적이거나 실질적인 것은 아님',
+    '실제로는 일의 쇠퇴, 또는 중요하다고 여긴 일이 사실은 사소함. 다른 해석으로는 기쁨, 온화, 소심, 명예, 겸손',
+    '화합, 만족, 육체적 안락. 승리, 성공, 이익. 질문자나 상담 대상자의 만족',
+    '만족, 마음 전체의 안식과 그 완성. 인간적 사랑과 우정의 완성. 질문자가 사는 마을이나 고장',
+    '피부색이 밝은 젊은 남자(원문 fair young man), 봉사하려는 사람, 학구적인 청년. 소식, 전언. 노력, 숙고, 명상',
+    '도착, 접근(때로는 사자). 진전, 제안, 태도, 초대, 자극',
+    '선량하고 정직하며 헌신적인 여자. 사랑하는 지성, 그래서 통찰의 재능. 성공, 행복, 기쁨. 지혜, 덕. 완벽한 배우자와 좋은 어머니',
+    '피부색이 밝은 남자(원문 fair man), 사업·법·신학에 종사. 책임감 있고 질문자를 도우려 함. 공정, 예술과 과학. 창조적 지성'],
+  s: ['승리, 모든 것의 과도한 정도, 정복, 힘의 승리. 사랑에서도 증오에서도 큰 힘의 카드',
+    '순응과 그로 인한 균형, 용기, 우정, 무장 상태의 화합. 다른 해석으로는 다정함, 애정, 친밀. 조화 등 좋은 해석은 조건부로 봐야 함(검은 일반적으로 인간사에서 이로운 힘의 상징이 아님)',
+    '이동, 부재, 지연, 분열, 단절, 흩어짐, 그리고 그림이 뜻하는 모든 것',
+    '경계, 후퇴, 고독, 은둔자의 휴식, 유배, 무덤과 관',
+    '굴욕, 파괴, 취소, 오명, 불명예, 손실, 그리고 이와 비슷한 것들',
+    '물길 여행, 경로, 길, 사자(使者), 위임인, 방편',
+    '계획, 시도, 소망, 희망, 확신. 또한 다툼, 실패할 수 있는 계획, 성가심',
+    '나쁜 소식, 격렬한 분함, 위기, 비난, 속박된 권력, 갈등, 중상. 또한 병',
+    '죽음, 실패, 유산(流産), 지연, 속임, 실망, 절망',
+    '그림이 뜻하는 모든 것. 또한 고통, 괴로움, 눈물, 슬픔, 황량함. 특별히 폭력적인 죽음의 카드는 아님',
+    '권위, 감독, 비밀 업무, 경계, 염탐, 조사와 거기에 따르는 자질',
+    '기량, 용기, 능력, 방어, 솜씨, 적의, 분노, 전쟁, 파괴, 반대, 저항, 파멸. 다른 운명의 카드 곁에서만 죽음을 뜻함',
+    '과부 신세, 여성의 슬픔과 당혹, 부재, 불임, 애도, 궁핍, 별리',
+    '판단이라는 관념에서 비롯되는 모든 것: 힘, 명령, 권위, 투쟁적 지성, 법, 관직'],
+  p: ['완전한 만족, 행복, 황홀. 빠른 소식. 금',
+    '한편으로는 명랑함과 오락(그림의 주제). 또한 글로 쓴 소식과 전언. 장애, 동요, 문제, 분쟁',
+    '기술, 직업, 숙련된 노동. 그러나 보통은 귀족, 명성, 영광의 카드로 봄',
+    '소유의 확실함, 가진 것에 집착함, 선물, 유산, 상속',
+    '무엇보다 물질적 어려움(그림처럼 궁핍이든 다른 형태든). 일부 점술가에게는 사랑하는 사람들(아내, 남편, 친구, 연인)의 카드이고 화합, 친화를 뜻함',
+    '선물, 증여, 만족. 다른 설명으로는 주의, 경계. 지금이 적기, 현재의 번영',
+    '매우 모순됩니다. 주로 돈, 사업, 물물교환의 카드. 한 해석은 말다툼과 다툼, 다른 해석은 순진, 재주, 정화',
+    '일, 고용, 위임, 장인의 솜씨, 기술과 사업의 솜씨, 아마도 준비 단계',
+    '신중, 안전, 성공, 성취, 확신, 분별',
+    '이득, 부. 집안일, 기록, 가문, 가족의 거처',
+    '정진, 공부, 학문, 숙고. 다른 해석으로는 소식, 전언과 그 전달자. 규율, 관리',
+    '유용함, 쓸모, 이해관계, 책임, 올곧음. 모두 평범하고 외적인 차원에서',
+    '풍요, 관대함, 화려함, 안정, 자유',
+    '용기, 실현하는 지성, 사업과 보통의 지적 소질, 때로는 수학적 재능. 이 길에서의 성공']
+};
+const APPX = {w7: '⚠️ 이 카드의 카드별 설명 원문을 확보하지 못해, 같은 책 3부 4절 "소아르카나의 추가 의미"의 한 줄로 대신했습니다: 결혼한 사람에게는 가정 내 다툼', c4: '⚠️ 이 카드의 카드별 설명 원문을 확보하지 못해, 같은 책 3부 4절 "소아르카나의 추가 의미"의 한 줄로 대신했습니다: 대체로 좋음, 행복한 결혼, 또한 세습 재산, 유산, 선물, 사업의 성공'};
+const DECK = MAJOR.map(([n, e, k], i) => ({cls: 'm', top: ROM[i], sub: '대아르카나', n, e, k}));
+SUITS.forEach(([c, sn, se]) => MINOR[c].forEach((k, i) => DECK.push({cls: c, top: i === 0 ? 'A' : i < 10 ? String(i + 1) : ['P', 'N', 'Q', 'K'][i - 10], sub: sn, n: sn.split('(')[0] + ' ' + RANK[i], e: REN[i] + ' of ' + se, k: k || APPX[c + i].replace(/^⚠️ [^:]+: /, ''), warn: k ? '' : APPX[c + i].split(':')[0]})));
+function rnd(n) { const a = new Uint32Array(1), lim = Math.floor(4294967296 / n) * n; do { crypto.getRandomValues(a); } while (a[0] >= lim); return a[0] % n; }
+$('tarot-go').addEventListener('click', () => {
+  const n = +document.querySelector('input[name=tn]:checked').value, pool = DECK.slice(), pick = [];
+  for (let i = 0; i < n; i++) pick.push(pool.splice(rnd(pool.length), 1)[0]);
+  $('tarot-out').innerHTML = pick.map(c => '<div class="tcard ' + c.cls + '"><div class="top"><b>' + c.top + '</b><span>' + c.sub + '</span></div><div class="nm">' + c.n + '<small>' + c.e + '</small></div><p>' + c.k + (c.warn ? '<br><span class="ko">' + c.warn + '</span>' : '') + '</p></div>').join('');
+});
+const FACE = {
+  forehead: ['이마', '삼재: 이마·코·턱 중 천(天)에 해당. 삼정: 상정에 해당(삼정은 삼재와 같은 부위를 상·중·하정으로 나눈다고 적혀 있어 이마를 상정으로 옮김). 오성: 화성이 이마에 배치됨.'],
+  brow: ['눈썹', '오관(귀·눈썹·눈·코·입) 중 하나.'],
+  eye: ['눈', '오관 중 하나. 중국과 달리 한국 관상은 눈을 더 중시한다고 설명합니다.'],
+  ear: ['귀', '오관 중 하나. 오성: 금성은 왼쪽 귀, 목성은 오른쪽 귀에 배치됨(좌우가 누구 기준인지는 확인하지 못했습니다).'],
+  nose: ['코', '오관 중 하나. 삼재: 지(地)에 해당. 삼정: 중정에 해당(위와 같은 방식으로 옮김). 오성: 토성이 코에 배치됨.'],
+  mouth: ['입', '오관 중 하나. 오성: 수성이 입에 배치됨.'],
+  chin: ['턱', '삼재: 인(人)에 해당. 삼정: 하정에 해당(위와 같은 방식으로 옮김). 중국과 달리 한국 관상은 이마보다 턱을 중시한다고 설명합니다.']
+};
+document.querySelectorAll('#face-svg .fz').forEach(g => {
+  g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
+  const f = () => { document.querySelectorAll('#face-svg .fz').forEach(x => x.classList.toggle('on', x === g)); const d = FACE[g.dataset.k]; $('face-info').innerHTML = '<p><b>' + d[0] + '</b></p><p>' + d[1] + '</p><p class="ko">⚠️ 이 부위의 모양이 길한지 흉한지는 확인하지 못해 적지 않았습니다.</p>'; };
+  g.addEventListener('click', f); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f(); } });
+});
+})();
+</script>
+</body>
+</html>
