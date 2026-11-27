@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>선동회 앨범</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fafafa;--paper:#ffffff;--ink:#262626;--muted:#8e8e8e;--line:#dbdbdb;
+    --accent:#d62976;--accent-soft:#fde8f1;--gold:#fa7e1e;--green:#2e9e5b;--neg:#ed4956;
+    --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 18px rgba(150,47,191,.07);
+    --ig:linear-gradient(45deg,#feda75,#fa7e1e 25%,#d62976 50%,#962fbf 75%,#4f5bd5);
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --bg:#000000;--paper:#121212;--ink:#f5f5f5;--muted:#a8a8a8;--line:#262626;
+    --accent:#f0528f;--accent-soft:#3a1426;--gold:#fa9a4a;--green:#58c27d;--neg:#ff6b78;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+  }}
+  :root[data-theme="dark"]{
+    --bg:#000000;--paper:#121212;--ink:#f5f5f5;--muted:#a8a8a8;--line:#262626;
+    --accent:#f0528f;--accent-soft:#3a1426;--gold:#fa9a4a;--green:#58c27d;--neg:#ff6b78;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.3);
+  }
+  *{box-sizing:border-box}
+  html{font-size:14px}
+  .splash{position:fixed;inset:0;z-index:100;background:#000;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;transition:opacity .8s ease,visibility .8s}
+  .splash-bg{position:absolute;inset:-40px;background:center/cover;filter:blur(24px) brightness(.45)}
+  .splash img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;animation:kb 3s ease-out forwards}
+  .splash-txt{position:relative;color:#fff;text-align:center;padding:0 16px 14vh;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+  .splash-txt span{display:block;font-size:.8rem;letter-spacing:.25em;opacity:.9}
+  .splash-txt b{display:block;font-family:"Gowun Batang",serif;font-size:3.2rem;letter-spacing:.08em}
+  .splash-txt small{font-size:1rem;opacity:.9}
+  .splash.out{opacity:0;visibility:hidden}
+  @keyframes kb{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+  .theme{position:fixed;top:14px;right:16px;z-index:10;display:flex;align-items:center;gap:6px;font:inherit;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--muted);cursor:pointer;box-shadow:var(--shadow)}
+  .theme .track{width:36px;height:20px;border-radius:999px;background:var(--line);position:relative;transition:background .2s}
+  .theme .knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s}
+  .theme[aria-checked=true] .track{background:var(--ig)}
+  .theme[aria-checked=true] .knob{left:18px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;line-height:1.65;word-break:keep-all}
+  .wrap{max-width:860px;margin:0 auto;padding:40px 16px 64px}
+  .serif,h1,h2,h3{font-family:"Gowun Batang",serif}
+
+  /* header */
+  header{text-align:center;margin-bottom:28px}
+  .since{display:inline-block;font-size:.78rem;letter-spacing:.2em;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:2px 12px;margin-bottom:12px}
+  h1{font-size:2.2rem;margin:0;letter-spacing:.05em;background:var(--ig);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);margin:6px 0 0}
+  .members{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:16px}
+  .chip{display:inline-block;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:.82rem}
+  .insta{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--accent);text-decoration:none;font-size:.9rem;border-bottom:1px dashed var(--accent)}
+  .insta:hover{opacity:.8}
+  .org{display:flex;flex-direction:column;align-items:center}
+  .node{background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:10px 18px;text-align:center;font-family:"Gowun Batang",serif;font-size:1.1rem;min-width:110px}
+  .node.lead{border:2px solid transparent;background:linear-gradient(var(--paper),var(--paper)) padding-box,var(--ig) border-box;position:relative}
+  .node small{display:block;color:var(--accent);font-size:.75rem;letter-spacing:.1em}
+  .node.lead::after{content:"";position:absolute;left:50%;top:100%;height:20px;border-left:2px solid var(--gold)}
+  .branches{display:flex;gap:14px;margin-top:40px;position:relative;width:100%;justify-content:center}
+  .branch{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;max-width:180px}
+  .branch::before{content:"";position:absolute;left:50%;top:-20px;height:20px;border-left:2px solid var(--gold)}
+  .branch::after{content:"";position:absolute;top:-20px;left:-7px;right:-7px;border-top:2px solid var(--gold)}
+  .branch:first-child::after{left:50%}.branch:last-child::after{right:50%}
+  .region{background:var(--ig);color:#fff;border-radius:999px;padding:2px 14px;font-size:.85rem;margin-bottom:2px}
+  .branch .node{width:100%;min-width:0}
+  .chip.lead{border-color:var(--accent);color:var(--accent)}
+
+  /* tabs */
+  .tabs{display:flex;justify-content:center;gap:4px;margin:0 auto 24px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px;width:max-content;max-width:100%}
+  .tab{font:inherit;border:0;background:none;color:var(--muted);padding:7px 18px;border-radius:999px;cursor:pointer;white-space:nowrap}
+  .tab[aria-selected=true]{background:var(--ig);color:#fff}
+  .panel{display:none}.panel.active{display:block}
+  h2{font-size:1.35rem;margin:0 0 16px}
+  h3{font-size:1.05rem;margin:28px 0 10px}
+
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px}
+
+  /* rules */
+  .rules{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .rule{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:start;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .rule .no{font-family:"Gowun Batang",serif;color:var(--accent);font-weight:700;font-size:.95rem;text-align:center;border-right:1px dashed var(--line);padding-right:10px}
+  .rule p{margin:0}
+  .rule.common .no{color:var(--muted)}
+  .rule.new{border-color:var(--accent);background:linear-gradient(var(--accent-soft),var(--paper) 60%)}
+  .tag{display:inline-block;font-size:.75rem;background:var(--ig);color:#fff;border-radius:6px;padding:0 8px;margin-left:6px;vertical-align:middle}
+  .gifts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+  .gifts div{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:.9rem}
+  .gifts b{display:block;font-family:"Gowun Batang",serif;margin-bottom:2px}
+  .gifts ul{margin:0;padding-left:18px}
+
+  /* photos */
+  .imgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  figure{margin:0;background:#fff;padding:10px 10px 6px;border-radius:4px;box-shadow:var(--shadow)}
+  figure:nth-child(odd){transform:rotate(-.8deg)}figure:nth-child(even){transform:rotate(.8deg)}
+  figure img{width:100%;height:auto;display:block}
+  .frame{position:relative}
+  .hl{position:absolute;border:3px solid #d0342c;border-radius:4px;pointer-events:none}
+  figcaption{color:#6b5a48;font-size:.85rem;text-align:center;padding-top:6px;font-family:"Gowun Batang",serif}
+
+  /* ledger summary */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:28px}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .stat small{color:var(--muted);display:block;font-size:.78rem}
+  .places a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent)}
+  .places a:hover{color:var(--accent)}
+  .ev{scroll-margin-top:60px}
+  .ev.hit .card{outline:2px solid var(--accent);outline-offset:2px}
+  .stat b{font-family:"Gowun Batang",serif;font-size:1.25rem}
+
+  /* timeline */
+  .timeline{position:relative;padding-left:28px}
+  .timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:linear-gradient(#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5)}
+  .ev{position:relative;margin-bottom:18px}
+  .ev::before{content:"";position:absolute;left:-26px;top:22px;width:14px;height:14px;border-radius:50%;background:linear-gradient(var(--paper),var(--paper)) padding-box,var(--ig) border-box;border:3px solid transparent}
+  .ev.dep::before{border-color:var(--green)}
+  .ev.gift::before{border-color:var(--gold)}
+  .alb{margin-bottom:28px}
+  .alb-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+  .alb-head h3{margin:0}
+  .alb-head span{color:var(--muted);font-size:.85rem}
+  .alb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+  .alb-grid figure{cursor:zoom-in}
+  .alb-grid img{aspect-ratio:1;object-fit:cover}
+  .alb-empty{aspect-ratio:1;display:flex;align-items:center;justify-content:center;text-align:center;border:2px dashed var(--line);border-radius:4px;color:var(--muted);font-size:.8rem;padding:8px}
+  .lb{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;user-select:none}
+  .lb-x{position:absolute;top:12px;right:14px;background:none;border:0;color:#fff;font-size:1.6rem;cursor:pointer;z-index:1}
+  .lb[hidden]{display:none}
+  .lb img{max-width:100%;max-height:85vh;border-radius:6px}
+  .lb p{color:#fff;margin:10px 0 0;text-align:center}
+  .ev.plan .card{border-style:dashed;box-shadow:none}
+  .ev.plan .ev-title::after{content:"예정";font-family:"Gowun Dodum",sans-serif;font-size:.72rem;font-weight:400;color:#fff;background:var(--ig);border-radius:999px;padding:1px 9px;margin-left:8px;vertical-align:middle}
+  .ev-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:6px}
+  .ev-date{color:var(--muted);font-size:.85rem}
+  .ev-title{font-family:"Gowun Batang",serif;font-size:1.15rem;font-weight:700;margin:0}
+  .ev-total{margin-left:auto;font-family:"Gowun Batang",serif;font-weight:700;white-space:nowrap}
+  .ev .who{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 10px}
+  .ev .who .chip{background:var(--bg);font-size:.75rem}
+  .items{width:100%;border-collapse:collapse;font-size:.9rem}
+  .items td{padding:5px 0;border-top:1px dashed var(--line);vertical-align:top}
+  .items td.d{color:var(--muted);font-size:.78rem;width:46px;white-space:nowrap}
+  .items td.n{text-align:right;white-space:nowrap;padding-left:10px;font-variant-numeric:tabular-nums}
+  .items td.bal{text-align:right;white-space:nowrap;padding-left:10px;color:var(--muted);font-size:.8rem;width:84px;font-variant-numeric:tabular-nums}
+  .items tr.in td.n{color:var(--green)}
+  .neg{color:var(--neg)!important}
+  .memo{margin-top:10px;background:var(--bg);border-radius:10px;padding:8px 12px;font-size:.85rem;color:var(--muted)}
+  .memo b{color:var(--ink)}
+  .split{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .split span{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:1px 8px;font-size:.8rem;color:var(--ink)}
+  .marker{position:relative;margin:6px 0 18px -28px;padding-left:28px;color:var(--accent);font-size:.82rem;font-family:"Gowun Batang",serif}
+  .marker span{background:var(--bg);padding-right:8px;position:relative}
+  .marker::after{content:"";position:absolute;left:28px;right:0;top:50%;border-top:1px solid var(--accent-soft);z-index:0}
+
+  /* history */
+  .hist{list-style:none;margin:0 0 8px;padding:0}
+  .hist li{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .hist li span:first-child{color:var(--accent);font-family:"Gowun Batang",serif;white-space:nowrap}
+
+  @media (max-width:560px){
+    .wrap{padding:28px 16px 48px}
+    h1{font-size:1.8rem}
+    .tab{padding:7px 12px;font-size:.92rem}
+    .rule{grid-template-columns:1fr;gap:4px}
+    .rule .no{text-align:left;border-right:0;padding:0}
+    .card{padding:14px}
+    .items td.bal{display:none}
+    .ev-total{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash-bg" style="background-image:url(images/sundong3/20240608_chungju/20240608_chungju_11.jpeg)"></div>
+  <img src="images/sundong3/20240608_chungju/20240608_chungju_11.jpeg" alt="">
+  <div class="splash-txt"><span>SINCE 2023.03.01</span><b>선동회</b><small>구미 선주고등학교 3회</small></div>
+</div>
+<button class="theme" id="theme" role="switch" aria-checked="false" aria-label="다크 모드">
+  <span class="ico">☀︎</span><span class="track"><span class="knob"></span></span><span class="ico">☾</span>
+</button>
+<div class="wrap">
+  <header>
+    <span class="since">SINCE 2023.03.01</span>
+    <h1>선동회</h1>
+    <p class="sub">구미 선주고등학교 3회 졸업생 계모임</p>
+    <a class="insta" href="https://www.instagram.com/sundong_3" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+      @sundong_3
+    </a>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" data-t="p1" aria-selected="true">모임 회칙</button>
+    <button class="tab" role="tab" data-t="p2" aria-selected="false">금전출납부</button>
+    <button class="tab" role="tab" data-t="p4" aria-selected="false">히스토리</button>
+    <button class="tab" role="tab" data-t="p5" aria-selected="false">갤러리</button>
+    <button class="tab" role="tab" data-t="p0" aria-selected="false">명단</button>
+  </div>
+
+  <!-- 회칙 -->
+  <section id="p1" class="panel active">
+    <h2>회칙</h2>
+    <ol class="rules">
+      <li class="rule common"><span class="no">공통</span><p>하기 명시된 회칙 이외의 사항은 독소 조항으로 간주하여 모임 참여 인원의 동의를 얻어 회칙으로 추가한다.</p></li>
+      <li class="rule common"><span class="no">공통</span><p>2023년 3월 1일 한 회칙에 대한 이의가 없을 경우, 회칙을 확정하고 모임을 진행한다.</p></li>
+      <li class="rule"><span class="no">제 1 항</span><p>2023년 3월 1일부터 본 모임을 시작한다.</p></li>
+      <li class="rule"><span class="no">제 2 항</span><p>계모임 회비는 월 10,000원으로 하며, 계모임 계좌(카카오뱅크, 조준현)로 입금한다.</p></li>
+      <li class="rule"><span class="no">제 3 항</span><p>계모임 회비 월 입금 기한은 당월 1일부터 10일까지로 한다. (당월 회비 입금은 10일 이내를 원칙으로 한다.)<br>만일 매월 입금이 불가능하다고 여겨질 경우, 연납도 가능하다. (연납 : 120,000원)</p></li>
+      <li class="rule"><span class="no">제 4 항</span><p>계모임은 연 1회 수행하며, 당해년도 모임 후 잔여금액은 차년도로 이월된다. (계모임 미시행 시 차년도로 이월한다.)</p></li>
+      <li class="rule"><span class="no">제 5 항</span><p>회비 사용처는 숙박비, 식비 로만 쓸 것을 제한한다.<br>- 추가 : 만일 해당 비용이 추가적으로 발생할 경우 우선 개인카드로 결재 후 나중에 회비입금 후 통장에서 이체하도록 한다.</p></li>
+      <li class="rule"><span class="no">제 6 항</span><p>회비가 100만원 이상 모일 시 사용처를 추가할 수 있다. (축의금, 조의금 등)<br>단, 회원들의 의견 수렴과정을 필수적으로 한다.</p></li>
+      <li class="rule"><span class="no">제 7 항</span><p>계모임 비용 결제는 회장(김진성) 또는 그 외 개인카드로 진행하며, 그 내용(ex. 영수증 등 결재금액)은 조준현에게 공유하여 금전출납부에 적도록 한다.</p></li>
+      <li class="rule"><span class="no">제 8 항</span><p>계모임 소요 비용(내역) 기입 후, 계모임 계좌주는 2주 이내로 비용을 정산한다.</p></li>
+      <li class="rule"><span class="no">제 9 항</span><p>계모임에 대한 인원 추가는 기존 모임 인원의 모든 동의를 얻어서 진행한다.</p></li>
+      <li class="rule new"><span class="no">제 10 항</span>
+        <div>
+          <p>제 6항에 의거 회비 사용처 추가 (경조사)<span class="tag">2025.06.07(토) 개정</span></p>
+          <p style="color:var(--muted);font-size:.9rem">대상 : 자기 자신을 기준으로 1촌 (부모/자녀)</p>
+          <div class="gifts">
+            <div><b>경사</b><small style="color:var(--muted)">최대한 상품권으로 지급</small>
+              <ul><li>본인 결혼 : 10만원 또는 화환 (선택1)</li><li>자녀 출산 : 10만원</li><li>자녀 입학 : 초 10만원 · 중 15만원 · 고 20만원</li></ul></div>
+            <div><b>조사</b><ul><li>장례 : 화환 (10만원 이내)</li></ul></div>
+          </div>
+        </div>
+      </li>
+    </ol>
+    <h3>촌수 참고 (제10항 1촌 기준)</h3>
+    <div class="imgs">
+      <figure><div class="frame"><img src="images/sundong3/chonsu-paternal.png" alt="친가 1촌부터 8촌까지" loading="lazy"><span class="hl" style="left:38.8%;top:36.1%;width:17.2%;height:37.8%"></span></div><figcaption>친가 (1촌~8촌)</figcaption></figure>
+      <figure><div class="frame"><img src="images/sundong3/chonsu-maternal.png" alt="외가 1촌부터 8촌까지" loading="lazy"><span class="hl" style="left:36.9%;top:37.3%;width:20.2%;height:27.1%"></span></div><figcaption>외가 (1촌~8촌)</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 금전출납부 -->
+  <section id="p2" class="panel">
+    <h2>금전출납부</h2>
+    <div class="stats">
+      <div class="stat"><small>함께한 모임</small><b>6번</b></div>
+      <div class="stat"><small>다녀온 곳</small><b class="places"><a href="#ev-mungyeong">문경</a> · <a href="#ev-taean">태안</a> · <a href="#ev-chungju">충주</a> · <a href="#ev-chuncheon">춘천</a> · <a href="#ev-gumi">구미</a></b></div>
+      <div class="stat"><small>다음 모임</small><b class="places"><a href="#ev-next">11.28 충주</a></b></div>
+    </div>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <!-- 히스토리 -->
+  <section id="p4" class="panel">
+    <h2>히스토리</h2>
+    <ul class="hist">
+      <li><span>2025.06.07(토)</span><span>회칙 개정 — 제10항 경조사비 신설 (현시점)</span></li>
+      <li><span>2025.10.03(금)</span><span>선동회 회식 · 구미 칠곡 축협 한우프라자 (262,000원)</span></li>
+    </ul>
+    <h3>2025.10.03 구미 한우프라자 영수증</h3>
+    <div class="imgs" style="max-width:360px">
+      <figure><img src="images/sundong3/receipt-2025-10-03.png" alt="구미 칠곡 축협 한우프라자 영수증 262,000원" loading="lazy"><figcaption>구미 칠곡 축협 한우프라자 · 262,000원</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 갤러리 -->
+  <section id="p5" class="panel">
+    <h2>갤러리</h2>
+    <div id="album"></div>
+  </section>
+  <div class="lb" id="lb" hidden><button class="lb-x" aria-label="닫기">✕</button><img alt=""><p></p></div>
+
+  <!-- 명단 -->
+  <section id="p0" class="panel">
+    <h2>명단</h2>
+    <div class="org">
+      <div class="node lead"><small>회장</small>김진성</div>
+      <div class="branches">
+        <div class="branch">
+          <div class="region">서울</div>
+          <div class="node">김덕수</div><div class="node">김정준</div><div class="node">조준현</div>
+        </div>
+        <div class="branch">
+          <div class="region">경북</div>
+          <div class="node">김응구</div><div class="node">박준호</div>
+        </div>
+        <div class="branch">
+          <div class="region">충청</div>
+          <div class="node">박상환</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // [날짜, 항목, 입금, 출금, 잔액]
+  const ALL6=['김진성','박준호','김정준','김응구','고상','조준현'];
+  const events=[
+    {k:'trip',id:'ev-mungyeong',when:'2021.11.27 – 28',title:'문경',who:ALL6,total:'440,800',items:[
+      ['11.01','통장잔액 (시작)',500000,0,500000],
+      ['11.27','문경 홈플러스 (김진성)',0,291000,209000],['','선산곱창',0,32000,177000],['','슈퍼',0,13500,163500],
+      ['11.28','목살',0,13300,150200],['','점심 (박준호)',0,71000,79200],['','문경새재 전동차 (김정준)',0,10000,69200],['','문경새재 입장료 (조준현)',0,10000,59200]],
+      memo:'모임장소 : 문경 · 비고 — 통장잔액 적어야 함'},
+    {k:'mark',text:'여기서부터 시작'},
+    {k:'trip',id:'ev-taean',when:'2022.04.23 – 24',title:'태안 (안면도) 장미빛인생 펜션',who:ALL6,total:'-697,370',items:[
+      ['04.23','장미빛인생 펜션 (김진성)',0,180000,-180000],['','서산 롯데마트 (김진성)',0,212370,-392370],['','모둠조개 3kg (김진성)',0,35000,-427370],
+      ['','바베큐 (김진성)',0,15000,-442370],['','선산곱창 (?)',0,10000,-452370],['','오뎅, 막창 (고상)',0,10000,-462370],
+      ['04.24','아침 게국지, 갈치조림 (김진성)',0,207000,-669370],['','카페 (김진성)',0,28000,-697370]],
+      memo:'<b>기타</b> 해미읍성 점심 옛날곱창 (조준현) 50,000원 · 게튀김 (조준현) 6,000원'},
+    {k:'trip',when:'2023.03.25',title:'문경',who:[],items:[],memo:'기록 없음'},
+    {k:'mark',text:'여기서부터 다시 시작 — 카카오뱅크 모임통장 개설 후'},
+    {k:'trip',id:'ev-chungju',when:'2023.11.18 – 19',title:'충주 커피나무펜션 (청풍호 방) · 수안보온천',who:['김진성','김정준','박상환','조준현'],total:'625,460',items:[
+      ['11.18','커피나무펜션 (청풍호 방)',0,200000,-200000],['','점심 행복담는국수',0,30000,-230000],['','이마트 충주점',0,183460,-413460],
+      ['11.19','수안보온천',0,68000,-481460],['','감나무집 (꿩코스 정식)',0,144000,-625460]],
+      memo:'<b>찬조</b> 펜션 — 회장 김진성 · 점심(행복국수) — 진천 박형'},
+    {k:'dep',when:'2024.01.01 · 2024.06.09',title:'모임통장 적립',who:[],total:'1,147,621',items:[
+      ['24.01.01','선동회 모임통장 (이자 미포함)',700000,0,700000],['24.06.09','선동회 모임통장',447621,0,1147621]],
+      memo:'입금기간 : 2023.03 ~ 2023.12'},
+    {k:'trip',when:'2024.06.08 – 09',title:'제1회 선동회 · 충주 커피나무펜션 (충주호 방)',who:['김덕수','김응구','김정준','김진성','박상환','박준호','조준현'],total:'852,290',items:[
+      ['06.08','커피나무펜션 (충주호 방)',0,200000,null],['','펜션 인원추가 + 숯',0,60000,null],['','아그집 들깨칼국수 (점심, 3인)',0,33000,null],
+      ['','이마트 충주점',0,295190,null],['','커피나무 편의점',0,7500,null],
+      ['06.09','카페 마일로 (충주 용천점)',0,38500,null],['','명산아래식당 (쏘가리매운탕, 능이토종닭백숙)',0,178000,null],['','카페 1097',0,40100,295331]],
+      memo:'<b>제1회 선동회 모임</b> — 7명 전원 참석'},
+    {k:'mark',text:'갹출 시작'},
+    {k:'trip',id:'ev-chuncheon',when:'2024.09.29 – 30',title:'춘천 올데이펜션',who:['김응구','김정준','김진성','박준호','조준현'],total:'511,360',items:[
+      ['09.29','원조숯불닭불고기집 (점심)',0,60000,null],['','올데이펜션 (에떼르넬 303호) + 1인 추가',0,170000,null],['','바베큐장 추가요금',0,30000,null],['','이마트 춘천점',0,135360,null],
+      ['09.30','샘밭막국수',0,84000,null],['','샘필드 카페',0,32000,null]],
+      memo:'510,000원에 대한 갹출 (우수리 뺌) · 60,000 / 4 = 15,000 · 450,000 / 5 = 90,000<div class="split"><span>응구 90,000</span><span>진성 105,000</span><span>정준 105,000</span><span>준호 105,000</span><span>준현 105,000</span></div>'},
+    {k:'mark',text:'갹출 종료'},
+    {k:'gift',when:'2025.01.27',title:'박준호 딸 서연이 초등학교 입학 🎒',who:['김진성','김정준','김응구','박준호','조준현'],total:'100,000',items:[]},
+    {k:'gift',id:'ev-gumi',when:'2025.10.03',title:'김응구 아들 도윤이 탄생 👶 · 구미 한우프라자',who:['김진성','김응구','박준호','조준현'],total:'362,000',items:[
+      ['10.03','김응구 아들 도윤이 탄생 축하',0,100000,null],['','선동회 회식 (구미 칠곡 축협 한우프라자)',0,262000,null]],
+      memo:'구미 한우프라자 영수증은 <b>히스토리</b> 탭에서 볼 수 있어요'},
+    {k:'plan',id:'ev-next',when:'2026.11.28',title:'충주 커피나무펜션',who:['김덕수','김응구','김정준','김진성','박상환','박준호','조준현'],items:[],memo:'다가오는 모임 — 7명 전원 참석 예정 · 사용 내역은 다녀온 뒤에 채워요'}
+  ];
+  const f=n=>n.toLocaleString('ko-KR');
+  const amt=(n,cls)=>`<span class="${n<0?'neg':''}">${f(n)}</span>`;
+  document.getElementById('timeline').innerHTML=events.map(e=>{
+    if(e.k==='mark')return `<div class="marker"><span>— ${e.text}</span></div>`;
+    const tot=e.total?`<span class="ev-total ${e.total.startsWith('-')?'neg':''}">${e.k==='dep'?'잔액 ':'총 '}${e.total}원</span>`:'';
+    const who=e.who.length?`<div class="who">${e.who.map(w=>`<span class="chip">${w}</span>`).join('')}</div>`:'';
+    const rows=e.items.length?`<table class="items"><tbody>${e.items.map(([d,n,i,o,b])=>
+      `<tr class="${i?'in':''}"><td class="d">${d}</td><td>${n}</td><td class="n">${i?'+'+f(i):'−'+f(o)}</td><td class="bal">${b==null?'':amt(b)}</td></tr>`).join('')}</tbody></table>`:'';
+    const memo=e.memo?`<div class="memo">${e.memo}</div>`:'';
+    return `<article class="ev ${e.k}"${e.id?` id="${e.id}"`:''}><div class="card"><div class="ev-head"><span class="ev-date">${e.when}</span><h3 class="ev-title">${e.title}</h3>${tot}</div>${who}${rows}${memo}</div></article>`;
+  }).join('');
+
+  // 첫 진입 스플래시: 3초 후 홈으로 (터치하면 바로 넘어감)
+  const sp=document.getElementById('splash');
+  const hideSplash=()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),900)};
+  setTimeout(hideSplash,3000);sp.addEventListener('click',hideSplash);
+
+  const tb=document.getElementById('theme');
+  function setTheme(t){
+    document.documentElement.dataset.theme=t;
+    tb.setAttribute('aria-checked',t==='dark');
+    try{localStorage.setItem('reunionTheme',t)}catch(e){}
+  }
+  tb.addEventListener('click',()=>setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark'));
+  try{const t=localStorage.getItem('reunionTheme');if(t==='dark')setTheme('dark')}catch(e){}
+
+  // 다녀온 곳 링크: 주소창에 #을 남기지 않고 스크롤 (새로고침 시 튐 방지)
+  if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+  // 새로고침·재방문 시 항상 맨 위에서 시작
+  if('scrollRestoration' in history)history.scrollRestoration='manual';
+  window.scrollTo(0,0);
+  window.addEventListener('pageshow',()=>window.scrollTo(0,0));
+  document.querySelectorAll('.places a').forEach(a=>a.addEventListener('click',ev=>{
+    ev.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));if(!t)return;
+    document.querySelectorAll('.ev.hit').forEach(x=>x.classList.remove('hit'));
+    t.classList.add('hit');
+    t.scrollIntoView({behavior:'smooth',block:'start'});
+  }));
+
+  // 갤러리: images/sundong3 에 사진을 넣고 photos 배열에 파일명·설명 추가
+  const album=[
+    {title:'충주 커피나무펜션',when:'2026.11.28',photos:[]},
+    {title:'구미 한우프라자',when:'2025.10.03',photos:[1,2,3,4].map(n=>({src:`20251003_gumi/20251003_gumi_0${n}.jpeg`,cap:`구미 한우프라자 ${n}`}))},
+    {title:'춘천 올데이펜션',when:'2024.09.29 – 30',photos:Array.from({length:31},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20240929_chuncheon/20240929_chuncheon_${n}.jpeg`,cap:`춘천 ${i+1}`}})},
+    {title:'제1회 선동회 · 충주 커피나무펜션',when:'2024.06.08 – 09',photos:Array.from({length:30},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20240608_chungju/20240608_chungju_${n}.jpeg`,cap:`충주 ${i+1}`}})},
+    {title:'충주 커피나무펜션 · 수안보온천',when:'2023.11.18 – 19',photos:Array.from({length:47},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20231118_chungju/20231118_chungju_${n}.jpeg`,cap:`충주 ${i+1}`}})},
+    {title:'태안 (안면도)',when:'2022.04.23 – 24',photos:Array.from({length:8},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20220423_taean/20220423_taean_${n}.jpeg`,cap:`태안 ${i+1}`}})},
+    {title:'문경',when:'2021.11.27 – 28',photos:Array.from({length:23},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20211127_mungyeong/20211127_mungyeong_${n}.jpeg`,cap:`문경 ${i+1}`}})}
+  ];
+  document.getElementById('album').innerHTML=album.map(a=>`<section class="alb"><div class="alb-head"><h3>${a.title}</h3><span>${a.when}</span></div><div class="alb-grid">${
+    a.photos.length?a.photos.map(p=>`<figure data-src="images/sundong3/${p.src}" data-cap="${p.cap}"><img src="images/sundong3/${p.src}" alt="${p.cap}" loading="lazy"><figcaption>${p.cap}</figcaption></figure>`).join('')
+    :'<div class="alb-empty">사진 준비 중</div>'}</div></section>`).join('');
+  const lb=document.getElementById('lb');
+  // 라이트박스: 오른쪽 절반 클릭 → 다음, 왼쪽 절반 → 이전 (모임 경계를 넘어 갤러리 전체를 이어서 이동)
+  let lbSet=[],lbIdx=0;
+  function lbShow(i){
+    lbIdx=(i+lbSet.length)%lbSet.length;const f=lbSet[lbIdx];
+    lb.querySelector('img').src=f.dataset.src;
+    lb.querySelector('p').textContent=`${f.dataset.cap}  (${lbIdx+1} / ${lbSet.length})`;
+  }
+  document.getElementById('album').addEventListener('click',e=>{
+    const f=e.target.closest('figure');if(!f)return;
+    lbSet=[...document.querySelectorAll('#album figure')];lb.hidden=false;lbShow(lbSet.indexOf(f));
+  });
+  lb.querySelector('.lb-x').addEventListener('click',e=>{e.stopPropagation();lb.hidden=true});
+  lb.addEventListener('click',e=>lbShow(lbIdx+(e.clientX>innerWidth/2?1:-1)));
+  lb.addEventListener('mousemove',e=>lb.style.cursor=e.clientX>innerWidth/2?'e-resize':'w-resize');
+  document.addEventListener('keydown',e=>{
+    if(lb.hidden)return;
+    if(e.key==='Escape')lb.hidden=true;
+    else if(e.key==='ArrowRight')lbShow(lbIdx+1);
+    else if(e.key==='ArrowLeft')lbShow(lbIdx-1);
+  });
+
+  const tabs=document.querySelectorAll('.tab'),panels=document.querySelectorAll('.panel');
+  function show(id){
+    tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.t===id));
+    panels.forEach(p=>p.classList.toggle('active',p.id===id));
+  }
+  tabs.forEach(t=>t.addEventListener('click',()=>show(t.dataset.t)));
+  // 새로고침·재방문 시 항상 모임 회칙 탭
+  window.addEventListener('pageshow',()=>show('p1'));
+</script>
+</body>
+</html>
