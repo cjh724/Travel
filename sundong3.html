@@ -105,6 +105,9 @@
   .stat small{color:var(--muted);display:block;font-size:.78rem}
   .places a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--accent)}
   .places a:hover{color:var(--accent)}
+  .plist{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:4px}
+  .plist a{font-family:"Gowun Batang",serif;font-weight:700;font-size:1.05rem}
+  .plist small{font-family:"Gowun Dodum",sans-serif;font-weight:400;color:var(--muted);font-size:.75rem;margin-left:4px}
   .ev{scroll-margin-top:60px}
   .ev.hit .card{outline:2px solid var(--accent);outline-offset:2px}
   .stat b{font-family:"Gowun Batang",serif;font-size:1.25rem}
@@ -235,8 +238,8 @@
   <section id="p2" class="panel">
     <h2>금전출납부</h2>
     <div class="stats">
-      <div class="stat"><small>함께한 모임</small><b>8번</b></div>
-      <div class="stat"><small>다녀온 곳</small><b class="places"><a href="#ev-mungyeong">문경</a> · <a href="#ev-taean">태안</a> · <a href="#ev-chungju">충주</a> · <a href="#ev-chuncheon">춘천</a> · <a href="#ev-gumi">구미</a></b></div>
+      <div class="stat"><small>함께한 모임</small><b>7번</b></div>
+      <div class="stat"><small>다녀온 곳</small><span class="places plist"><a href="#ev-mungyeong">문경<small>2021.11</small></a><a href="#ev-taean">태안<small>2022.04</small></a><a href="#ev-chungju">충주<small>2023.11</small></a><a href="#ev-chungju2">충주<small>2024.06</small></a><a href="#ev-chuncheon">춘천<small>2024.09</small></a><a href="#ev-gumi1">구미<small>2025.01</small></a><a href="#ev-gumi">구미<small>2025.10</small></a></span></div>
       <div class="stat"><small>다음 모임</small><b class="places"><a href="#ev-next">11.28 충주</a></b></div>
     </div>
     <div class="timeline" id="timeline"></div>
@@ -309,7 +312,7 @@
     {k:'dep',when:'2024.01.01 · 2024.06.09',title:'모임통장 적립',who:[],total:'1,147,621',items:[
       ['24.01.01','선동회 모임통장 (이자 미포함)',700000,0,700000],['24.06.09','선동회 모임통장',447621,0,1147621]],
       memo:'입금기간 : 2023.03 ~ 2023.12'},
-    {k:'trip',when:'2024.06.08 – 09',title:'제1회 선동회 · 충주 커피나무펜션 (충주호 방)',who:['김덕수','김응구','김정준','김진성','박상환','박준호','조준현'],total:'852,290',items:[
+    {k:'trip',id:'ev-chungju2',when:'2024.06.08 – 09',title:'제1회 선동회 · 충주 커피나무펜션 (충주호 방)',who:['김덕수','김응구','김정준','김진성','박상환','박준호','조준현'],total:'852,290',items:[
       ['06.08','커피나무펜션 (충주호 방)',0,200000,null],['','펜션 인원추가 + 숯',0,60000,null],['','아그집 들깨칼국수 (점심, 3인)',0,33000,null],
       ['','이마트 충주점',0,295190,null],['','커피나무 편의점',0,7500,null],
       ['06.09','카페 마일로 (충주 용천점)',0,38500,null],['','명산아래식당 (쏘가리매운탕, 능이토종닭백숙)',0,178000,null],['','카페 1097',0,40100,295331]],
@@ -320,11 +323,10 @@
       ['09.30','샘밭막국수',0,84000,null],['','샘필드 카페',0,32000,null]],
       memo:'510,000원에 대한 갹출 (우수리 뺌) · 60,000 / 4 = 15,000 · 450,000 / 5 = 90,000<div class="split"><span>응구 90,000</span><span>진성 105,000</span><span>정준 105,000</span><span>준호 105,000</span><span>준현 105,000</span></div>'},
     {k:'mark',text:'갹출 종료'},
-    {k:'gift',when:'2025.01.27',title:'박준호 딸 서연이 초등학교 입학 🎒',who:['김진성','김정준','김응구','박준호','조준현'],total:'100,000',items:[]},
+    {k:'gift',id:'ev-gumi1',when:'2025.01.27',title:'박준호 딸 서연이 초등학교 입학 🎒',who:['김진성','김정준','김응구','박준호','조준현'],total:'100,000',items:[['01.27','봉곡회수산',0,0,null]]},
     {k:'gift',id:'ev-gumi',when:'2025.10.03',title:'김응구 아들 도윤이 탄생 👶 · 구미 한우프라자',who:['김진성','김응구','박준호','조준현'],total:'362,000',items:[
       ['10.03','김응구 아들 도윤이 탄생 축하',0,100000,null],['','선동회 회식 (구미 칠곡 축협 한우프라자)',0,262000,null]],
       memo:'구미 한우프라자 영수증은 <b>히스토리</b> 탭에서 볼 수 있어요'},
-    {k:'trip',when:'2025.10.27',title:'구미 봉곡회수산',who:[],items:[]},
     {k:'plan',id:'ev-next',when:'2026.11.28',title:'충주 커피나무펜션',who:['김덕수','김응구','김정준','김진성','박상환','박준호','조준현'],items:[],memo:'다가오는 모임 — 7명 전원 참석 예정 · 사용 내역은 다녀온 뒤에 채워요'}
   ];
   const f=n=>n.toLocaleString('ko-KR');
@@ -334,7 +336,7 @@
     const tot=e.total?`<span class="ev-total ${e.total.startsWith('-')?'neg':''}">${e.k==='dep'?'잔액 ':'총 '}${e.total}원</span>`:'';
     const who=e.who.length?`<div class="who">${e.who.map(w=>`<span class="chip">${w}</span>`).join('')}</div>`:'';
     const rows=e.items.length?`<table class="items"><tbody>${e.items.map(([d,n,i,o,b])=>
-      `<tr class="${i?'in':''}"><td class="d">${d}</td><td>${n}</td><td class="n">${i?'+'+f(i):'−'+f(o)}</td><td class="bal">${b==null?'':amt(b)}</td></tr>`).join('')}</tbody></table>`:'';
+      `<tr class="${i?'in':''}"><td class="d">${d}</td><td>${n}</td><td class="n">${i?'+'+f(i):o?'−'+f(o):''}</td><td class="bal">${b==null?'':amt(b)}</td></tr>`).join('')}</tbody></table>`:'';
     const memo=e.memo?`<div class="memo">${e.memo}</div>`:'';
     return `<article class="ev ${e.k}"${e.id?` id="${e.id}"`:''}><div class="card"><div class="ev-head"><span class="ev-date">${e.when}</span><h3 class="ev-title">${e.title}</h3>${tot}</div>${who}${rows}${memo}</div></article>`;
   }).join('');
@@ -369,9 +371,9 @@
 
   // 갤러리: images/sundong3 에 사진을 넣고 photos 배열에 파일명·설명 추가
   const album=[
-    {title:'충주 커피나무펜션',when:'2026.11.28',photos:[]},
+    {title:'충주 커피나무펜션',when:'2026.11.28',photos:Array.from({length:1},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20261128_chungju/20261128_chungju_${n}.jpeg`,cap:`충주 ${i+1}`}})},
     {title:'구미 한우프라자',when:'2025.10.03',photos:[1,2,3,4].map(n=>({src:`20251003_gumi/20251003_gumi_0${n}.jpeg`,cap:`구미 한우프라자 ${n}`}))},
-    {title:'구미 모임 · 서연이 입학 축하',when:'2025.01.27',photos:Array.from({length:19},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20250127_gumi/20250127_gumi_${n}.jpeg`,cap:`구미 ${i+1}`}})},
+    {title:'구미 봉곡회수산 · 서연이 입학 축하',when:'2025.01.27',photos:Array.from({length:19},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20250127_gumi/20250127_gumi_${n}.jpeg`,cap:`구미 ${i+1}`}})},
     {title:'춘천 올데이펜션',when:'2024.09.29 – 30',photos:Array.from({length:31},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20240929_chuncheon/20240929_chuncheon_${n}.jpeg`,cap:`춘천 ${i+1}`}})},
     {title:'제1회 선동회 · 충주 커피나무펜션',when:'2024.06.08 – 09',photos:Array.from({length:30},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20240608_chungju/20240608_chungju_${n}.jpeg`,cap:`충주 ${i+1}`}})},
     {title:'충주 커피나무펜션 · 수안보온천',when:'2023.11.18 – 19',photos:Array.from({length:47},(_,i)=>{const n=String(i+1).padStart(2,'0');return {src:`20231118_chungju/20231118_chungju_${n}.jpeg`,cap:`충주 ${i+1}`}})},
